@@ -66,9 +66,7 @@ const Theme = () => {
                 className={`${mode === item.value && "active-theme"}`}
               />
               <p
-                className={`body-semibold 
-                text-light-100 ${mode === item.value ? "text-primary-100" : "text-dark100_light500"}
-                `}
+                className={`body-semibold ${mode === item.value ? "text-primary-100" : "text-dark100_light500"}`}
               >
                 {item.label}
               </p>
