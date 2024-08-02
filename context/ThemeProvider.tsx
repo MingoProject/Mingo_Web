@@ -18,17 +18,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       (!("theme" in localStorage) &&
         window.matchMedia("(prefers-color-schema:dark)").matches)
     ) {
-      setMode("light");
-      document.documentElement.classList.add("light");
-    } else {
       setMode("dark");
       document.documentElement.classList.add("dark");
+    } else {
+      setMode("light");
+      document.documentElement.classList.remove("dark");
     }
   };
 
   useEffect(() => {
     handleThemeChange();
   }, [mode]);
+
+  console.log("MODE: ", mode);
 
   return (
     <ThemeContext.Provider value={{ mode, setMode }}>

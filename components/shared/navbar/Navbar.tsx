@@ -41,15 +41,15 @@ const Navbar = () => {
       </div>
       <div className="flex-between w-auto">
         <Theme />
-        <Link href="/" className="mr-5 text-primary-100 ">
+        <Link href="/" className="mr-3 text-primary-100 ">
           <p>Huỳnh Nguyễn</p>
         </Link>
         <Link href="/" className="">
           <Image
-            src="/path/to/avatar.jpg"
+            src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
             alt="Avatar"
-            width={25}
-            height={25}
+            width={30}
+            height={30}
             className="rounded-full"
           />
         </Link>
