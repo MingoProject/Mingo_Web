@@ -10,39 +10,43 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import Image from "next/image";
 import Theme from "./Theme";
+import MobileNav from "./MobileNav";
 
 const Navbar = () => {
   return (
     <nav className="flex-between background-light700_dark300 fixed z-50 w-full gap-5 p-6 sm:px-12">
       <Link href="/" className="flex items-center gap-1">
-        <p className="text-dark100_light500 text-xl">
-          Min<span className="text-primary-100">gle</span>
+        <p className="text-dark100_light500 text-2xl">
+          Min<span className="text-2xl text-primary-100 ">gle</span>
         </p>
       </Link>
-      <div className="flex w-auto">
-        <Link href="/" className="mr-20 ">
-          <FontAwesomeIcon icon={faHouse} className="text-xl text-light-500 " />
-        </Link>
-        <Link href="/" className="mr-20">
+      <div className="hidden w-auto  sm:flex">
+        <Link href="/" className="mr-16 md:mr-20">
           <FontAwesomeIcon
-            icon={faMagnifyingGlass}
-            className="text-xl text-light-500 "
+            icon={faHouse}
+            className="text-2xl text-light-500 "
           />
         </Link>
-        <Link href="/" className="mr-20">
-          <FontAwesomeIcon icon={faBell} className="text-xl text-light-500 " />
+        <Link href="/" className="mr-16 md:mr-20">
+          <FontAwesomeIcon
+            icon={faMagnifyingGlass}
+            className="text-2xl text-light-500 "
+          />
+        </Link>
+        <Link href="/" className="mr-16 md:mr-20">
+          <FontAwesomeIcon icon={faBell} className="text-2xl text-light-500 " />
         </Link>
         <Link href="/" className="">
           <FontAwesomeIcon
             icon={faMessage}
-            className="text-xl text-light-500 "
+            className="text-2xl text-light-500 "
           />
         </Link>
       </div>
       <div className="flex-between w-auto">
         <Theme />
         <Link href="/" className="mr-3 text-primary-100 ">
-          <p>Huỳnh Nguyễn</p>
+          <p className="hidden md:block">Huỳnh Nguyễn</p>
         </Link>
         <Link href="/" className="">
           <Image
@@ -53,6 +57,9 @@ const Navbar = () => {
             className="rounded-full"
           />
         </Link>
+        <div className="flex w-auto  sm:hidden">
+          <MobileNav />
+        </div>
       </div>
     </nav>
   );
