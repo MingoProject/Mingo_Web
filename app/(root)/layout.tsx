@@ -5,13 +5,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="background-light800_dark400 relative">
       <Navbar />
-      <div className="flex">
-        leftSidebar
-        <section className="flex min-h-screen flex-1 flex-col px-6 pb-6 pt-36 max-md:pb-14 sm:px-14">
-          <div className="mx-auto w-full max-w-5xl">{children}</div>
+      <div className=" flex">
+        <section className=" flex flex-1 flex-col">
+          <div className=" mx-auto w-full pt-28">{children}</div>
         </section>
       </div>
-      Toaster
     </main>
   );
 };

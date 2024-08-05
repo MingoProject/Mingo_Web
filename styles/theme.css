@@ -32,7 +32,7 @@
   }
 
   .light-border {
-    @apply border-light-500 dark:border-dark-100;
+    @apply border-light-500;
   }
 
   .h1-bold {
@@ -112,11 +112,20 @@
   }
 
   .placeholder {
-    @apply placeholder:text-light-400 dark:placeholder:text-light-500;
+    @apply placeholder:text-light-500 dark:placeholder:text-dark-100;
   }
 
   .invert-colors {
     @apply invert dark:invert-0;
+  }
+
+  .custom-color-white {
+    filter: invert(1) brightness(2) sepia(1) saturate(1000%) hue-rotate(0deg);
+  }
+
+  .custom-color-gray {
+    filter: invert(1) brightness(0) sepia(1) saturate(1000%) hue-rotate(0deg)
+      brightness(50%);
   }
 
   .shadow-light100_dark100 {
@@ -128,7 +137,7 @@
   }
 
   .primary-gradient {
-    background: linear-gradient(129deg, #ff7000 0%, #e2995f 100%);
+    background: linear-gradient(129deg, #ffaabb 0%, #ffaabb 100%);
   }
 
   .dark-gradient {
