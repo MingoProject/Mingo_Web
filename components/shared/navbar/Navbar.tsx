@@ -19,6 +19,9 @@ const Navbar = () => {
         <p className="text-dark100_light500 text-2xl">
           Min<span className="text-2xl text-primary-100 ">gle</span>
         </p>
+        <p>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        </p>
       </Link>
       <div className="hidden w-auto  sm:flex">
         <Link href="/" className="mr-16 md:mr-20">
