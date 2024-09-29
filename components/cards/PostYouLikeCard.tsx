@@ -13,7 +13,7 @@ interface PostYouLike {
 const PostYouLikeCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
   return (
     <div className="mt-4 flex items-center justify-between text-xs md:text-sm ">
-      <div className="flex w-full items-start gap-4 border-b border-gray-200">
+      <div className="flex w-full items-start gap-4 border-b border-gray-200 pb-3">
         <Image
           src={postYouLike.posterAva}
           alt="Avatar"
@@ -27,9 +27,12 @@ const PostYouLikeCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
             <p>thích ảnh của </p>
             <p className="font-semibold">{postYouLike.posterName}</p>
           </div>
-          <span className="max-h-10 text-ellipsis text-[9px]">
-            {postYouLike.postContent}
-          </span>
+
+          <div className="max-h-10 overflow-hidden pr-3">
+            <span className="line-clamp-3  block text-[9px]">
+              {postYouLike.postContent}
+            </span>
+          </div>
         </div>
       </div>
       <p className="text-[10px]">{format(postYouLike.like_at, "HH:mm")}</p>

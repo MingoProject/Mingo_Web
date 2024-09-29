@@ -1,8 +1,8 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import React from "react";
 import { format } from "date-fns";
-import PostYouLikeCard from "../cards/PostYouLikeCard";
+import React from "react";
+import PostYouSaveCard from "../cards/PostYouSaveCard";
 
 interface PostYouLike {
   id: number;
@@ -23,7 +23,7 @@ interface FavoritePose {
   posts: PostYouLike[];
 }
 
-const Favorite = ({ onClose, posts }: FavoritePose) => {
+const Save = ({ onClose, posts }: FavoritePose) => {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center">
       {/* Background mờ - khi nhấn vào nền mờ thì đóng component */}
@@ -36,7 +36,7 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white ">
-              Bài viết đã thích
+              Bài viết đã lưu
             </span>
             <FontAwesomeIcon
               onClick={onClose}
@@ -52,7 +52,7 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
                 </p>
                 <div>
                   {item.posts.map((it) => (
-                    <PostYouLikeCard key={it.id} postYouLike={it} />
+                    <PostYouSaveCard key={it.id} postYouLike={it} />
                   ))}
                 </div>
               </div>
@@ -64,4 +64,4 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
   );
 };
 
-export default Favorite;
+export default Save;

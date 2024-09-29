@@ -18,14 +18,16 @@ const Security = () => {
         </p>
         <Menubar className="relative border-none bg-transparent text-xs shadow-none">
           <MenubarMenu>
-            <MenubarTrigger className="mb-5 flex items-center gap-2 text-primary-100">
+            <MenubarTrigger className="mb-5 flex cursor-pointer items-center gap-2 text-primary-100">
               <p className="whitespace-nowrap"> Bạn bè</p>
 
               <FontAwesomeIcon icon={faCaretDown} />
             </MenubarTrigger>
             <MenubarContent className="bg-gray-50">
-              <MenubarItem className="whitespace-nowrap">Mọi người</MenubarItem>
-              <MenubarItem className="whitespace-nowrap">
+              <MenubarItem className="cursor-pointer whitespace-nowrap hover:bg-primary-100 hover:text-white">
+                Mọi người
+              </MenubarItem>
+              <MenubarItem className="cursor-pointer whitespace-nowrap hover:bg-primary-100 hover:text-white">
                 Chỉ mình tôi
               </MenubarItem>
               <MenubarSeparator />
@@ -37,14 +39,16 @@ const Security = () => {
         <p className="whitespace-normal">Người có thể xem bài đăng của bạn</p>
         <Menubar className="relative border-none bg-transparent text-xs shadow-none">
           <MenubarMenu>
-            <MenubarTrigger className="mb-5 flex items-center gap-2 text-primary-100">
-              <p className="whitespace-nowrap"> Bạn bè</p>
+            <MenubarTrigger className="mb-5  flex cursor-pointer items-center gap-2 text-primary-100">
+              <p className=" whitespace-nowrap"> Bạn bè</p>
 
               <FontAwesomeIcon icon={faCaretDown} />
             </MenubarTrigger>
             <MenubarContent className="bg-gray-50">
-              <MenubarItem className="whitespace-nowrap">Mọi người</MenubarItem>
-              <MenubarItem className="whitespace-nowrap">
+              <MenubarItem className="cursor-pointer whitespace-nowrap hover:bg-primary-100 hover:text-white">
+                Mọi người
+              </MenubarItem>
+              <MenubarItem className="cursor-pointer whitespace-nowrap hover:bg-primary-100 hover:text-white">
                 Chỉ mình tôi
               </MenubarItem>
               <MenubarSeparator />

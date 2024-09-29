@@ -28,11 +28,13 @@ import ViewProfile from "@/components/home/ViewProfile";
 import Setting from "@/components/home/Setting";
 import Favorite from "@/components/home/Favorite";
 import { PostYouLike } from "@/lib/data/data";
+import Save from "@/components/home/Save";
 
 const Navbar = () => {
   const [isSetting, setIsSetting] = useState(false);
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [isSave, setIsSave] = useState(false);
 
   const handleIsSetting = () => {
     setIsSetting(true);
@@ -49,12 +51,21 @@ const Navbar = () => {
   const closeViewProfile = () => {
     setIsViewProfile(false);
   };
+
   const handleIsFavorite = () => {
     setIsFavorite(true);
   };
 
   const closeFavorite = () => {
     setIsFavorite(false);
+  };
+
+  const handleIsSave = () => {
+    setIsSave(true);
+  };
+
+  const closeSave = () => {
+    setIsSave(false);
   };
   return (
     <nav className="flex-between background-light700_dark300 fixed z-50 w-full gap-5 p-6 sm:px-12">
@@ -107,7 +118,10 @@ const Navbar = () => {
               />
             </MenubarTrigger>
             <MenubarContent className="mt-2 h-auto w-48 bg-gray-50 px-4 font-sans text-sm hover:border-none">
-              <MenubarItem onClick={handleIsViewProfile} className="mb-4 pt-4 ">
+              <MenubarItem
+                onClick={handleIsViewProfile}
+                className="mb-4 cursor-pointer pt-4 "
+              >
                 <div className="flex items-center gap-2">
                   <Image
                     src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
@@ -121,7 +135,10 @@ const Navbar = () => {
                   </p>
                 </div>
               </MenubarItem>
-              <MenubarItem onClick={handleIsSetting} className="pb-4">
+              <MenubarItem
+                onClick={handleIsSetting}
+                className="cursor-pointer pb-4"
+              >
                 {" "}
                 <div className="flex items-center gap-2">
                   <FontAwesomeIcon icon={faGear} className="text-light-500" />
@@ -131,7 +148,10 @@ const Navbar = () => {
                 </div>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem className="pb-4">
+              <MenubarItem
+                onClick={handleIsSave}
+                className="cursor-pointer pb-4"
+              >
                 {" "}
                 <div className="flex items-center gap-2">
                   <FontAwesomeIcon
@@ -144,16 +164,19 @@ const Navbar = () => {
                 </div>
               </MenubarItem>
               <MenubarSeparator />
-              <MenubarItem onClick={handleIsFavorite} className="pb-4">
+              <MenubarItem
+                onClick={handleIsFavorite}
+                className="cursor-pointer pb-4"
+              >
                 {" "}
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ">
                   <FontAwesomeIcon icon={faHeart} className="text-light-500" />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
                     Bài viết đã thích
                   </p>
                 </div>
               </MenubarItem>
-              <MenubarItem className="pb-4">
+              <MenubarItem className="cursor-pointer pb-4">
                 {" "}
                 <Button className="h-[30px] w-full bg-primary-100 text-center text-sm text-white">
                   Đăng xuất
@@ -168,6 +191,7 @@ const Navbar = () => {
         {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
         {isSetting && <Setting onClose={closeSetting} />}
         {isFavorite && <Favorite posts={PostYouLike} onClose={closeFavorite} />}
+        {isSave && <Save posts={PostYouLike} onClose={closeSave} />}
       </div>
     </nav>
   );

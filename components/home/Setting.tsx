@@ -38,14 +38,14 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
             <FontAwesomeIcon
               onClick={onClose}
               icon={faXmark}
-              className="mb-2"
+              className="mb-2 cursor-pointer"
             />
           </div>
           <div className="flex items-center justify-between  py-6 pl-8">
             <div className="flex w-1/2 flex-col items-start justify-start gap-14 text-light-500  ">
               <div
                 onClick={() => setActiveTab("setting")}
-                className={`flex items-center gap-1 ${
+                className={`flex cursor-pointer items-center gap-1 ${
                   activeTab === "setting"
                     ? " text-primary-100 opacity-100 "
                     : "opacity-40"
@@ -56,7 +56,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
               </div>
               <div
                 onClick={() => setActiveTab("changePassword")}
-                className={`flex items-center gap-1 ${
+                className={`flex cursor-pointer items-center gap-1 ${
                   activeTab === "changePassword"
                     ? " text-primary-100 opacity-100 "
                     : "opacity-40"
@@ -67,7 +67,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
               </div>
               <div
                 onClick={() => setActiveTab("security")}
-                className={`flex items-center gap-1 ${
+                className={`flex cursor-pointer items-center gap-1 ${
                   activeTab === "security"
                     ? " text-primary-100 opacity-100 "
                     : "opacity-40"

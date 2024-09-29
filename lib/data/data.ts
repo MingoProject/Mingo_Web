@@ -56,7 +56,7 @@ export const PostYouLike = [
       {
         id: 1,
         postContent:
-          "Thời tiết hôm nay thật dễ chịu. Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.",
+          "Tôi mới đọc một cuốn sách rất hay.Tôi mới đọc một cuốn sách rất hayTôi mới đọc một cuốn sách rất hayTôi mới đọc một cuốn sách rất hayTôi mới đọc một cuốn sách rất hayTôi mới đọc một cuốn sách rất hayThời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu. Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.Thời tiết hôm nay thật dễ chịu.",
         posterAva:
           "https://i.pinimg.com/564x/55/6f/ce/556fce5ac828eab9e5940d4103a99d1a.jpg",
         posterName: "Lan",
