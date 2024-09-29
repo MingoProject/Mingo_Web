@@ -1,0 +1,143 @@
+"use client";
+import React, { useState } from "react";
+import Image from "next/image";
+import {
+  ContextMenu,
+  ContextMenuContent,
+  ContextMenuItem,
+  ContextMenuTrigger,
+} from "@/components/ui/context-menu";
+import { Icon } from "@iconify/react";
+import Format from "./FormatCard";
+
+interface Text {
+  id: number;
+  text: string;
+  timestamp: Date;
+}
+
+interface ItemChat {
+  id: number;
+  userName: string;
+  avatarUrl: string;
+  status: string;
+  lastMessage: Text;
+  unreadCount: number;
+}
+
+const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
+  function timeSinceMessage(timestamp: Date | string) {
+    const now = new Date();
+    const messageTimestamp = new Date(timestamp);
+    const diffInMs = now.getTime() - messageTimestamp.getTime();
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays > 0) return `${diffInDays} ngày`;
+    if (diffInHours > 0) return `${diffInHours} giờ`;
+    if (diffInMinutes > 0) return `${diffInMinutes} phút`;
+    return `${diffInSeconds} giây`;
+  }
+
+  const [activeAction, setActiveAction] = useState("");
+  const [activeLabel, setActiveLabel] = useState("");
+
+  const handleAction = (action: string, label: string) => {
+    setActiveAction(action);
+    setActiveLabel(label);
+  };
+
+  const closeAction = () => {
+    setActiveAction("");
+    setActiveLabel("");
+  };
+
+  return (
+    <ContextMenu>
+      <ContextMenuTrigger>
+        <div className="flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100 hover:bg-opacity-20">
+          <div className="flex w-full items-center gap-3">
+            <div className="relative">
+              <Image
+                src={itemChat.avatarUrl}
+                alt="Avatar"
+                width={45}
+                height={45}
+                className="rounded-full"
+              />
+              {itemChat.status === "online" && (
+                <span className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-white bg-green-500"></span>
+              )}
+            </div>
+            <div className="flex w-2/3 flex-col gap-1 text-xs">
+              <span className="text-sm font-semibold">{itemChat.userName}</span>
+              <span className="truncate">{itemChat.lastMessage.text}</span>
+            </div>
+          </div>
+          <span className="mt-6 whitespace-nowrap px-1 text-[9px] text-gray-500">
+            {timeSinceMessage(itemChat.lastMessage.timestamp)}
+          </span>
+        </div>
+      </ContextMenuTrigger>
+      <ContextMenuContent className="bg-gray-50">
+        {[
+          {
+            icon: "system-uicons:picture",
+            label: "Lưu đoạn chat",
+            action: "lưu đoạn chat",
+          },
+          {
+            icon: "material-symbols:delete-outline",
+            label: "Xóa đoạn chat",
+            action: "xóa đoạn chat",
+          },
+          {
+            icon: "ion:notifications-off-outline",
+            label: "Tắt thông báo",
+            action: "tắt thông báo đoạn chat",
+          },
+          {
+            icon: "material-symbols:report-outline",
+            label: "Báo cáo",
+            action: "báo cáo",
+          },
+          {
+            icon: "material-symbols:block",
+            label: "Chặn",
+            action: "chặn đoạn chat",
+          },
+        ].map(({ icon, label, action }) => (
+          <ContextMenuItem
+            key={action}
+            onClick={() => handleAction(action, label)}
+            className="hover:bg-primary-100 hover:bg-opacity-90 hover:text-white gap-1"
+          >
+            <div className="flex items-center w-full h-full gap-1 group hover:text-white">
+              <Icon
+                icon={icon}
+                width={14}
+                height={14}
+                className="text-gray-500 dark:text-white group-hover:text-white"
+              />
+              <p className="text-ellipsis whitespace-nowrap font-sans text-xs group-hover:text-white">
+                {label}
+              </p>
+            </div>
+          </ContextMenuItem>
+        ))}
+      </ContextMenuContent>
+      {activeAction && (
+        <Format
+          onClose={closeAction}
+          content={`${activeAction} với`}
+          label={activeLabel}
+          userName={itemChat.userName}
+        />
+      )}
+    </ContextMenu>
+  );
+};
+
+export default ListUserChatCard;

@@ -121,7 +121,7 @@ const posts = [
 
 export default function Home() {
   return (
-    <div className="background-light800_dark400 flex w-full">
+    <div className="background-light800_dark400 flex w-full pt-28">
       <div className="background-light800_dark400 hidden w-2/5 pl-[2%] lg:block">
         <h1 className="text-dark100_light500 text-2xl">Hello Huỳnh,</h1>
         <h2 className="text-primary-100">How are you today?</h2>

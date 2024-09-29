@@ -93,7 +93,7 @@ const Navbar = () => {
         <Link href="/" className="mr-16 md:mr-20">
           <FontAwesomeIcon icon={faBell} className="text-2xl text-light-500 " />
         </Link>
-        <Link href="/" className="">
+        <Link href="/message" className="">
           <FontAwesomeIcon
             icon={faMessage}
             className="text-2xl text-light-500 "
