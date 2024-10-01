@@ -6,8 +6,8 @@ import React from "react";
 
 const page = () => {
   return (
-    <div className=" flex size-full border-t border-gray-200 pt-[86px] text-xs text-light-500 dark:text-white md:text-sm">
-      <div className="no-scrollbar flex h-full w-1/5 flex-col gap-2 overflow-y-auto bg-white px-4">
+    <div className=" text-dark100_light500 background-light700_dark300 flex size-full border-t border-gray-200 pt-[86px] text-xs  md:text-sm">
+      <div className="no-scrollbar text-dark100_light500 background-light700_dark300 flex h-full w-1/5 flex-col gap-2 overflow-y-auto  px-4">
         <MessageSearch />
         <ListUserChat />
       </div>
@@ -16,7 +16,7 @@ const page = () => {
         <HeaderMessageContent />
       </div>
 
-      <div className="h-full w-1/5 flex-col gap-2 overflow-y-auto bg-white ">
+      <div className="text-dark100_light500 background-light700_dark300 h-full w-1/5 flex-col gap-2 overflow-y-auto  ">
         <RightSide />
       </div>
     </div>

@@ -29,7 +29,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
         onClick={onClose}
       ></div>
 
-      <div className="no-scrollbar relative z-10 mt-16 h-[50vh] w-[50vw] overflow-y-auto rounded-2xl bg-white shadow-lg dark:bg-dark-100 dark:text-white">
+      <div className="no-scrollbar text-dark100_light500 background-light700_dark300 relative z-10 mt-16 h-[50vh] w-[50vw] overflow-y-auto rounded-2xl shadow-lg">
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white">
@@ -42,7 +42,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
           <div className="flex items-center justify-between  py-6 pl-8">
-            <div className="flex w-1/2 flex-col items-start justify-start gap-14 text-light-500  ">
+            <div className="text-dark100_light500 flex w-1/2 flex-col items-start justify-start gap-14  ">
               <div
                 onClick={() => setActiveTab("setting")}
                 className={`flex cursor-pointer items-center gap-1 ${
@@ -80,11 +80,13 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
             <div className="w-1/2 ">{renderContent()}</div>
           </div>
           <div className="flex w-full">
-            <div className="w-1/2"></div>
-            <div className="flex w-1/2 items-center justify-center">
-              <button className="mr-2 h-[36px] w-10/12 rounded-lg bg-primary-100 text-center text-sm text-white">
-                Lưu
-              </button>
+            <div className="w-1/2 "></div>
+            <div className="flex w-1/2 justify-center  pr-8">
+              <div className="flex h-full w-11/12 items-center justify-center ">
+                <button className="text-dark100_light500 h-[36px]  w-full  rounded-lg bg-primary-100 text-center text-sm">
+                  Lưu
+                </button>
+              </div>
             </div>
           </div>
         </div>

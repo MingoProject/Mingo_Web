@@ -23,7 +23,7 @@ const Format = ({
         onClick={onClose}
       ></div>
 
-      <div className="no-scrollbar relative z-10 h-[28vh] w-[30vw] overflow-y-auto rounded-md bg-white shadow-lg dark:bg-dark-100 dark:text-white">
+      <div className="no-scrollbar background-light700_dark300 text-dark100_light500 relative z-10 h-[28vh] w-[30vw] overflow-y-auto rounded-md shadow-lg">
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none  p-2 px-4 text-center text-lg">
@@ -39,14 +39,14 @@ const Format = ({
             <p>Xác nhận {content}</p>
             <p> {userName}</p>
           </div>
-          <div className="flex items-center justify-between px-8 py-4">
+          <div className="text-dark100_light500 flex items-center justify-between px-8 py-4">
             <Button
               onClick={onClose}
-              className="h-[35px] w-32 bg-white shadow-md"
+              className="h-[35px] w-32 bg-white shadow-md dark:border dark:bg-transparent"
             >
               Hủy
             </Button>
-            <Button className="text-dark100_primary100 h-[35px]  shadow-md w-32 bg-primary-100">
+            <Button className="h-[35px] w-32  bg-primary-100 text-white shadow-md ">
               Xác nhận
             </Button>
           </div>

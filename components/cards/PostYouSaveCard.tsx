@@ -12,7 +12,7 @@ interface PostYouLike {
 
 const PostYouSaveCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
   return (
-    <div className="mt-4 flex items-center justify-between text-xs ">
+    <div className="mt-4  flex items-center justify-between text-xs ">
       <div className="flex w-full items-start gap-4 border-b border-gray-200 pb-3">
         <Image
           src={postYouLike.posterAva}

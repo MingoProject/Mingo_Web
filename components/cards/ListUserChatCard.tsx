@@ -57,7 +57,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100 hover:bg-opacity-20">
+        <div className="text-dark100_light500 flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100/20">
           <div className="flex w-full items-center gap-3">
             <div className="relative">
               <Image
@@ -81,7 +81,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
           </span>
         </div>
       </ContextMenuTrigger>
-      <ContextMenuContent className="bg-gray-50">
+      <ContextMenuContent className="text-dark100_light500 bg-gray-50 dark:bg-neutral-800">
         {[
           {
             icon: "system-uicons:picture",
@@ -112,14 +112,14 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
           <ContextMenuItem
             key={action}
             onClick={() => handleAction(action, label)}
-            className="hover:bg-primary-100 hover:bg-opacity-90 hover:text-white gap-1"
+            className="gap-1 hover:bg-primary-100 hover:bg-opacity-90 hover:text-white"
           >
-            <div className="flex items-center w-full h-full gap-1 group hover:text-white">
+            <div className="group flex size-full items-center gap-1 hover:text-white">
               <Icon
                 icon={icon}
                 width={14}
                 height={14}
-                className="text-gray-500 dark:text-white group-hover:text-white"
+                className="text-gray-500 group-hover:text-white dark:text-white"
               />
               <p className="text-ellipsis whitespace-nowrap font-sans text-xs group-hover:text-white">
                 {label}

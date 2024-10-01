@@ -81,22 +81,25 @@ const Navbar = () => {
         <Link href="/" className="mr-16 md:mr-20">
           <FontAwesomeIcon
             icon={faHouse}
-            className="text-2xl text-light-500 "
+            className="text-dark100_light500 text-2xl "
           />
         </Link>
         <Link href="/" className="mr-16 md:mr-20">
           <FontAwesomeIcon
             icon={faMagnifyingGlass}
-            className="text-2xl text-light-500 "
+            className="text-dark100_light500 text-2xl "
           />
         </Link>
         <Link href="/" className="mr-16 md:mr-20">
-          <FontAwesomeIcon icon={faBell} className="text-2xl text-light-500 " />
+          <FontAwesomeIcon
+            icon={faBell}
+            className="text-dark100_light500 text-2xl "
+          />
         </Link>
         <Link href="/message" className="">
           <FontAwesomeIcon
             icon={faMessage}
-            className="text-2xl text-light-500 "
+            className="text-dark100_light500 text-2xl "
           />
         </Link>
       </div>
@@ -105,7 +108,7 @@ const Navbar = () => {
         <Link href="/" className="mr-3 text-primary-100 ">
           <p className="hidden md:block">Huỳnh Nguyễn</p>
         </Link>
-        <Menubar className="relative border-none  bg-transparent shadow-none">
+        <Menubar className="relative border-none bg-transparent   shadow-none focus:outline-none">
           <MenubarMenu>
             <MenubarTrigger>
               {" "}
@@ -117,10 +120,10 @@ const Navbar = () => {
                 className="rounded-full"
               />
             </MenubarTrigger>
-            <MenubarContent className="mt-2 h-auto w-48 bg-gray-50 px-4 font-sans text-sm hover:border-none">
+            <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-48 border-none font-sans text-sm ">
               <MenubarItem
                 onClick={handleIsViewProfile}
-                className="mb-4 cursor-pointer pt-4 "
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  "
               >
                 <div className="flex items-center gap-2">
                   <Image
@@ -137,11 +140,14 @@ const Navbar = () => {
               </MenubarItem>
               <MenubarItem
                 onClick={handleIsSetting}
-                className="cursor-pointer pb-4"
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
               >
                 {" "}
                 <div className="flex items-center gap-2">
-                  <FontAwesomeIcon icon={faGear} className="text-light-500" />
+                  <FontAwesomeIcon
+                    icon={faGear}
+                    className="text-dark100_light500"
+                  />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
                     Cài đặt
                   </p>
@@ -150,13 +156,13 @@ const Navbar = () => {
               <MenubarSeparator />
               <MenubarItem
                 onClick={handleIsSave}
-                className="cursor-pointer pb-4"
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
               >
                 {" "}
                 <div className="flex items-center gap-2">
                   <FontAwesomeIcon
                     icon={faFloppyDisk}
-                    className="text-light-500"
+                    className="text-dark100_light500"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
                     Bài viết đã lưu
@@ -166,17 +172,20 @@ const Navbar = () => {
               <MenubarSeparator />
               <MenubarItem
                 onClick={handleIsFavorite}
-                className="cursor-pointer pb-4"
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
               >
                 {" "}
                 <div className="flex items-center gap-2 ">
-                  <FontAwesomeIcon icon={faHeart} className="text-light-500" />
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className="text-dark100_light500"
+                  />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
                     Bài viết đã thích
                   </p>
                 </div>
               </MenubarItem>
-              <MenubarItem className="cursor-pointer pb-4">
+              <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
                 {" "}
                 <Button className="h-[30px] w-full bg-primary-100 text-center text-sm text-white">
                   Đăng xuất
