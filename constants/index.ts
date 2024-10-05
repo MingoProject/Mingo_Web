@@ -8,24 +8,24 @@ export const themes = [
 
 export const sidebarLinks: SidebarLink[] = [
   {
-    imgURL: "/assets/icons/home.svg",
+    icon: "fluent:home-20-regular",
     route: "/",
     label: "Home",
   },
   {
-    imgURL: "/assets/icons/search.svg",
-    route: "/Search",
+    icon: "iconoir:search",
+    route: "/search",
     label: "Search",
   },
   {
-    imgURL: "/assets/icons/star.svg",
-    route: "/Notifications",
+    icon: "pepicons-pencil:bell",
+    route: "/notifications",
     label: "Notifications",
   },
   {
-    imgURL: "/assets/icons/suitcase.svg",
-    route: "/Message",
-    label: "Message",
+    icon: "ant-design:message-outlined",
+    route: "/messages",
+    label: "Messages",
   },
 ];
 

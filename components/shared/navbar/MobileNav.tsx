@@ -9,6 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { sidebarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
+import { Icon } from "@iconify/react";
 
 const NavContent = () => {
   const pathname = usePathname();
@@ -25,18 +26,16 @@ const NavContent = () => {
               href={item.route}
               className={`${
                 isActive
-                  ? "primary-gradient rounded-lg text-light-700"
+                  ? "background-light600_dark200 text-dark100_light500 rounded-lg"
                   : "text-dark100_light500"
               } flex items-center justify-start gap-4 bg-transparent p-4`}
             >
-              <Image
-                src={item.imgURL}
-                alt={item.label}
-                width={20}
-                height={20}
-                className={`${isActive ? "" : "invert-colors"}`}
-              />
-              <p className={`${isActive ? "font-bold" : "font-medium"}`}>
+              <Icon
+                className=" text-2xl text-light-500"
+                icon={item.icon}
+              ></Icon>
+
+              <p className={`${isActive ? "font-medium" : "font-medium"}`}>
                 {item.label}
               </p>
             </Link>

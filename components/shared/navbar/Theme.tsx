@@ -38,9 +38,9 @@ const Theme = () => {
           )}
         </MenubarTrigger>
         <MenubarContent
-          className="absolute -right-12 mt-1 min-w-[120px]
-        rounded border bg-gray-50 py-2
-       dark:border-dark-400 dark:bg-dark-300
+          className="absolute -right-12 mt-3 min-w-[120px]
+        rounded border py-2 dark:border-dark-400
+       dark:bg-dark-300
         "
         >
           {themes.map((item) => (

@@ -1,15 +1,12 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faImage,
-  faVideo,
-  faFaceSmile,
-} from "@fortawesome/free-solid-svg-icons";
 import Filter from "@/components/shared/Filter";
 import { HomePageFilters } from "@/constants/filters";
 import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/PostsCard";
+import { Icon } from "@iconify/react";
+import CreatePost from "@/components/forms/CreatePost";
 
 const posts = [
   {
@@ -120,66 +117,90 @@ const posts = [
 ];
 
 export default function Home() {
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  useEffect(() => {
+    const user = localStorage.getItem("user") || "{}"; // Giả sử bạn lưu thông tin người dùng dưới dạng JSON trong localStorage
+    console.log("user", user);
+    if (user) {
+      setCurrentUser(JSON.parse(user)); // Chuyển đổi từ chuỗi JSON về đối tượng
+    }
+  }, []);
+
+  const toggleForm = () => {
+    setIsFormOpen(!isFormOpen);
+  };
   return (
-    <div className="background-light800_dark400 flex w-full">
+    <div className="background-light800_dark400 mt-7 flex w-full pt-20">
       <div className="background-light800_dark400 hidden w-2/5 pl-[2%] lg:block">
         <h1 className="text-dark100_light500 text-2xl">Hello Huỳnh,</h1>
         <h2 className="text-primary-100">How are you today?</h2>
         <div className=" mt-3 flex items-center">
           <Image
-            src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
+            src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
             alt="Avatar"
             width={45}
             height={45}
-            className="rounded-full"
+            className="rounded-full object-cover"
           />
           <p className="text-dark100_light500 ml-3 text-xl">Huỳnh</p>
         </div>
       </div>
-      <div className="background-light800_dark400 w-full justify-center px-3">
-        <div className="background-light700_dark300 h-36 w-full rounded-lg px-2">
-          <div className="mx-[5%] pl-4 pt-6">
+      <div className="background-light800_dark400 w-[700px] justify-center px-3">
+        <div
+          className="background-light700_dark300 h-[135px] w-full rounded-lg px-2"
+          onClick={toggleForm}
+        >
+          <div className="mx-[1%] pl-4 pt-6">
             <div className="flex">
-              <Image
-                src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
-                alt="Avatar"
-                width={45}
-                height={45}
-                className="rounded-full "
-              />
+              <div className="size-[40px] overflow-hidden rounded-full">
+                <Image
+                  src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
+                  alt="Avatar"
+                  width={40}
+                  height={40}
+                  className="rounded-full object-cover"
+                />
+              </div>
               <input
                 type="text"
                 placeholder="    Share something..."
-                className="background-light600_dark200 h-{45} ml-3 w-full rounded-full"
+                className="background-light600_dark200 ml-3 h-[40px] w-full rounded-full text-base"
+                readOnly // Đặt thành chỉ đọc để không thể nhập vào
               />
             </div>
           </div>
-          <div className="ml-7 mt-5 flex justify-center">
+
+          <div className="ml-7 mt-3 flex justify-center">
             <div className="flex">
-              <FontAwesomeIcon
-                icon={faImage}
-                className="mt-1 text-base text-primary-100"
+              <Icon
+                className="text-lg text-primary-100"
+                icon="gravity-ui:picture"
               />
-              <label className="ml-1 text-base text-primary-100">Image</label>
+              <label className="ml-1 text-sm text-primary-100">Image</label>
             </div>
             <div className="ml-[10%] flex">
-              <FontAwesomeIcon
-                icon={faVideo}
-                className="mt-1 text-base text-primary-100"
+              <Icon
+                className="text-lg text-primary-100"
+                icon="lets-icons:video-light"
               />
-              <label className="ml-1 text-base text-primary-100">Video</label>
+              <label className="ml-1 text-sm text-primary-100">Video</label>
             </div>
-            <div className="ml-[10%] flex">
-              <FontAwesomeIcon
-                icon={faFaceSmile}
-                className="mt-1 text-base text-primary-100"
+            <div className="ml-[10%] flex font-light">
+              <Icon
+                className="text-lg text-primary-100"
+                icon="icon-park-outline:emotion-happy"
               />
-              <label className="ml-1 text-base text-primary-100">Emotion</label>
+              <label className="ml-1 text-sm font-light text-primary-100">
+                Emotion
+              </label>
             </div>
           </div>
+
+          {/* Hiển thị Form Create Post nếu isFormOpen là true */}
         </div>
-        <div className="my-3 flex items-center">
-          <hr className="h-px w-full border-0 bg-primary-100" />
+        <div className="my-2 flex items-center">
+          <hr className="background-light800_dark300 h-px w-full border-0" />
           <div className="flex shrink-0 items-center pl-4">
             <p className="text-dark100_light500 mr-2">Filter: </p>
             <Filter
@@ -189,7 +210,7 @@ export default function Home() {
             />
           </div>
         </div>
-        <div className="background-light800_dark400 mt-5 flex w-full flex-col gap-6">
+        <div className="background-light800_dark400  flex w-full flex-col gap-6">
           {posts.length > 0 ? (
             posts.map((post) => (
               <PostsCard
@@ -214,11 +235,17 @@ export default function Home() {
           )}
         </div>
       </div>
-      <div className="background-light800_dark400 ml-3 hidden w-2/5 items-center justify-center md:block">
+      <div className="background-light800_dark400 ml-3 hidden w-2/5 items-center justify-center px-10 md:block">
         <div className="background-light700_dark300 mr-[3%] h-auto w-full rounded-lg border border-none p-3">
-          <p className="text-dark100_light500 text-xl"># HashTag</p>
+          <p className="text-dark100_light500 text-lg"># HashTag</p>
         </div>
       </div>
+      {isFormOpen && (
+        <CreatePost
+          // currentUser={currentUser}
+          onClose={() => setIsFormOpen(false)}
+        />
+      )}
     </div>
   );
 }
