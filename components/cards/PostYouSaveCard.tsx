@@ -22,20 +22,29 @@ const PostYouSaveCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
           className="rounded-md"
         />
         <div className="flex w-full flex-col gap-1 overflow-hidden">
-          <div className="overflow-hidden text-ellipsis pr-3">
+          {/* <div className="overflow-hidden text-ellipsis pr-3">
             <span className="line-clamp-3 block text-xs font-semibold">
+              {postYouLike.postContent}
+            </span>
+          </div> */}
+          <div className="max-h-10 w-full overflow-hidden">
+            <span className="line-clamp-2 w-full text-xs">
               {postYouLike.postContent}
             </span>
           </div>
 
           <div className="flex gap-1">
-            <p className="">Bài viết:</p>
-            <p>{postYouLike.posterName}</p>
+            <p className="whitespace-nowrap text-[10px] md:text-xs">
+              Bài viết:
+            </p>
+            <p className="text-[9px] md:text-xs">{postYouLike.posterName}</p>
           </div>
 
           <div className="flex gap-1">
-            <p className="">Đã lưu:</p>
-            <p>{format(postYouLike.like_at, "HH:mm PPP")}</p>
+            <p className="whitespace-nowrap text-[10px] lg:text-xs">Đã lưu:</p>
+            <p className="text-[9px] md:text-xs">
+              {format(postYouLike.like_at, "HH:mm PPP")}
+            </p>
           </div>
         </div>
       </div>

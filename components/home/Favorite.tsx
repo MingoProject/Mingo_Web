@@ -45,12 +45,12 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
             />
           </div>
           {posts.map((item) => (
-            <div key={item.id} className="px-4">
+            <div key={item.id} className="w-full px-4">
               <div className="flex w-full flex-col  py-2">
                 <p className="text-sm ">
                   {format(item.created_at, "dd-MM-yyyy")}
                 </p>
-                <div>
+                <div className="w-full">
                   {item.posts.map((it) => (
                     <PostYouLikeCard key={it.id} postYouLike={it} />
                   ))}

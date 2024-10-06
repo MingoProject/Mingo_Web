@@ -11,7 +11,7 @@ import { faCaretDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 const Security = () => {
   return (
-    <div className="text-dark100_light500 background-light700_dark300 flex h-full w-11/12 flex-col gap-8 pr-4 text-sm font-thin">
+    <div className="text-dark100_light500 background-light700_dark300 flex h-full w-11/12 flex-col gap-8 pr-4 text-xs font-thin md:text-sm">
       <div className="flex items-center justify-between">
         <p className="whitespace-normal">
           Người có thể xem thông tin cá nhân của bạn
@@ -23,7 +23,7 @@ const Security = () => {
 
               <FontAwesomeIcon icon={faCaretDown} />
             </MenubarTrigger>
-            <MenubarContent className="text-dark100_light500 bg-gray-50 dark:bg-neutral-800">
+            <MenubarContent className="text-dark100_light500 bg-gray-50  dark:bg-neutral-800">
               <MenubarItem className="cursor-pointer whitespace-nowrap hover:bg-primary-100 hover:text-white">
                 Mọi người
               </MenubarItem>

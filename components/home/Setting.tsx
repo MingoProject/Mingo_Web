@@ -42,7 +42,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
             />
           </div>
           <div className="flex items-center justify-between  py-6 pl-8">
-            <div className="text-dark100_light500 flex w-1/2 flex-col items-start justify-start gap-14  ">
+            <div className="text-dark100_light500 flex w-10 flex-col items-start justify-start gap-14 lg:w-1/2  ">
               <div
                 onClick={() => setActiveTab("setting")}
                 className={`flex cursor-pointer items-center gap-1 ${
@@ -51,8 +51,8 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                     : "opacity-40"
                 }`}
               >
-                <Icon icon="ph:user-list-light" width={14} height={14} />
-                <p>Chỉnh sửa thông tin cá nhân</p>
+                <Icon icon="ph:user-list-light" width={18} height={18} />
+                <p className="hidden lg:block">Chỉnh sửa thông tin cá nhân</p>
               </div>
               <div
                 onClick={() => setActiveTab("changePassword")}
@@ -62,8 +62,8 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                     : "opacity-40"
                 }`}
               >
-                <Icon icon="mdi:password-outline" width={14} height={14} />
-                <p>Đổi mật khẩu</p>
+                <Icon icon="mdi:password-outline" width={18} height={18} />
+                <p className="hidden lg:block">Đổi mật khẩu</p>
               </div>
               <div
                 onClick={() => setActiveTab("security")}
@@ -73,16 +73,16 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                     : "opacity-40"
                 }`}
               >
-                <Icon icon="fluent-mdl2:permissions" width={14} height={14} />
-                <p>Quyền riêng tư</p>
+                <Icon icon="fluent-mdl2:permissions" width={18} height={18} />
+                <p className="hidden lg:block">Quyền riêng tư</p>
               </div>
             </div>
-            <div className="w-1/2 ">{renderContent()}</div>
+            <div className="flex-1 lg:w-1/2 ">{renderContent()}</div>
           </div>
           <div className="flex w-full">
-            <div className="w-1/2 "></div>
-            <div className="flex w-1/2 justify-center  pr-8">
-              <div className="flex h-full w-11/12 items-center justify-center ">
+            <div className="w-16 lg:w-1/2 "></div>
+            <div className="flex flex-1 justify-center pr-8  lg:w-1/2">
+              <div className="flex h-full flex-1 items-center justify-center lg:w-11/12 ">
                 <button className="text-dark100_light500 h-[36px]  w-full  rounded-lg bg-primary-100 text-center text-sm">
                   Lưu
                 </button>
