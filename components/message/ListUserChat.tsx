@@ -18,7 +18,9 @@ const ListUserChat = () => {
       <Menubar className="relative border-none bg-transparent py-4 shadow-none">
         <MenubarMenu>
           <MenubarTrigger className="flex items-center gap-2">
-            <span className="ml-1 text-base font-semibold">Đoạn chat</span>
+            <span className="ml-1 whitespace-nowrap text-xs font-semibold md:text-base">
+              Đoạn chat
+            </span>
             <FontAwesomeIcon icon={faChevronDown} />
           </MenubarTrigger>
           <MenubarContent className="text-dark100_light500 background-light700_dark300 absolute top-full z-50 ml-20 mt-2 h-auto w-40  font-sans text-sm shadow-md">
