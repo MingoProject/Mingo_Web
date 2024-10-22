@@ -33,6 +33,9 @@ module.exports = {
           800: "#F4F3F3",
         },
         "accent-blue": "#1DA1F2",
+        "border-color": "#D9D9D9",
+        "custom-green": "#bee7c5",
+        "light-red": "#F8CED0",
       },
       fontFamily: {
         inter: ["var(--font-inter)"],
