@@ -1,12 +1,15 @@
 "use client";
 import { useEffect, useState } from "react";
-import Headers from "@/components/header/HeaderNoButton";
-import Table from "@/components/admin/user/Table";
-import TableSearch from "@/components/shared/TableSearch";
-import { SingleCourseTeacherData } from "@/components/shared/data";
-import Active from "@/components/cards/Active";
-import Off from "@/components/cards/Off";
+import Headers from "@/components/course/Headers";
+import Pagination from "@/components/course/Pagination";
+import Table from "@/components/course/Table";
+import TableSearch from "@/components/course/TableSearch";
+import { Button } from "@/components/ui/button";
+import { courseTeacherData } from "@/lib/course/data";
+import Active from "@/components/shared/button/Active";
+import Off from "@/components/shared/button/Off";
 import { format } from "date-fns";
+import Image from "next/image";
 import Link from "next/link";
 import { Icon } from "@iconify/react";
 import {
@@ -17,33 +20,38 @@ import {
   MenubarItem,
   MenubarSeparator,
 } from "@radix-ui/react-menubar";
-import PaginationUI from "@/components/shared/Pagination";
+import PaginationUI from "@/components/teacher/Pagination";
 import { PaginationProps } from "@/types/pagination";
+import { teacherDataTable } from "@/constants/teacher";
 
-type UserTable = {
+type Time = {
+  day: string;
+  startTime: string; // "HH:MM" định dạng 24 giờ
+  endTime: string; // "HH:MM" định dạng 24 giờ
+};
+
+type Course = {
   id: number;
-  studentName: string;
-  enrolled: Date; // Kiểu Date để chứa ngày kết thúc
-  birthday: Date; // Kiểu Date để chứa ngày kết thúc
-  gmail: string; // Mảng của kiểu Time chứa thông tin về các thời gian
-  phone: string; // Mảng của kiểu Time chứa thông tin về các thời gian
+  courseName: string;
+  startDate: Date; // Định dạng chuỗi để chứa ngày như "YYYY-MM-DD"
+  endDate: Date; // Kiểu Date để chứa ngày kết thúc
+  time: Time[]; // Mảng của kiểu Time chứa thông tin về các thời gian
   status: number; // Có thể là trạng thái hoạt động, ví dụ: 1 = Active, 2 = Inactive
 };
 
 const columns = [
-  { header: "Username", accessor: "username" },
+  { header: "Course Name", accessor: "courseName" },
   {
-    header: "Fullname",
-    accessor: "fullname",
+    header: "Start Date",
+    accessor: "startDate",
     className: "hidden md:table-cell",
   },
   {
-    header: "Created Date",
-    accessor: "createdDate",
+    header: "End Date",
+    accessor: "endDate",
     className: "hidden lg:table-cell",
   },
-  { header: "Email", accessor: "email" },
-  { header: "Phone", accessor: "phone" },
+  { header: "Time", accessor: "time" },
   { header: "Status", accessor: "status", className: "hidden lg:table-cell" },
 ];
 
@@ -59,24 +67,24 @@ const page = () => {
     key: "id",
     direction: "ascending",
   });
-  type SortableKeys = "id" | "username" | "fullname" | "createdDate";
+  type SortableKeys = "id" | "courseName" | "startDate" | "endDate";
 
   const getValueByKey = (
-    item: (typeof SingleCourseTeacherData)[0],
+    item: (typeof courseTeacherData)[0],
     key: SortableKeys
   ) => {
     switch (key) {
-      case "username":
-        return item.studentName;
-      case "fullname":
-        return item.studentName;
-      case "createdDate":
-        return item.enrolled;
+      case "courseName":
+        return item.courseName;
+      case "startDate":
+        return item.startDate;
+      case "endDate":
+        return item.endDate;
       default:
         return "";
     }
   };
-  const sorted = [...SingleCourseTeacherData].sort((a, b) => {
+  const sorted = [...courseTeacherData].sort((a, b) => {
     const aValue = getValueByKey(a, sortConfig.key);
     const bValue = getValueByKey(b, sortConfig.key);
 
@@ -100,10 +108,11 @@ const page = () => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     // Lọc theo searchQuery
     const matchesSearch =
-      item.studentName.toLowerCase().includes(lowerCaseQuery) ||
-      format(item.enrolled, "dd/MM/yyyy")
+      item.courseName.toLowerCase().includes(lowerCaseQuery) ||
+      format(item.startDate, "dd/MM/yyyy")
         .toLowerCase()
-        .includes(lowerCaseQuery);
+        .includes(lowerCaseQuery) ||
+      format(item.endDate, "dd/MM/yyyy").toLowerCase().includes(lowerCaseQuery);
 
     // Lọc theo giá trị bộ lọc được chọn
     const matchesFilter =
@@ -116,7 +125,7 @@ const page = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
-  const totalPages = Math.ceil(SingleCourseTeacherData.length / rowsPerPage);
+  const totalPages = Math.ceil(courseTeacherData.length / rowsPerPage);
   const totalResult = filterData.length;
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
@@ -142,40 +151,36 @@ const page = () => {
   if (!isMounted) {
     return null;
   }
+  const handlePageChange = (page: number) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page);
+    }
+  };
 
-  const renderRow = (item: UserTable) => (
+  const renderRow = (item: Course) => (
     <tr
       key={item.id}
       className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
     >
       <td className="px-4 py-2" key={item.id}>
         <Link href={`/course-teacher/${item.id}`}>
-          <h3>{item.studentName}</h3>
+          <h3>{item.courseName}</h3>
           <p className="text-xs text-gray-500">#00{item.id}</p>
         </Link>
       </td>
       <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.studentName}</p>
+        {format(item.startDate, "dd/MM/yyyy")}
       </td>
       <td className="px-4 py-2 hidden md:table-cell" key={item.id}>
-        <div className="flex flex-col w-full ">
-          <p>{format(item.enrolled, "PPP")}</p>
-          <p className="text-xs text-gray-500 pt-1">
-            {new Date(item.enrolled).toLocaleTimeString("en-US", {
-              hour: "2-digit",
-              minute: "2-digit",
-              hour12: true,
-            })}
+        {format(item.startDate, "dd/MM/yyyy")}
+      </td>
+      <td key={item.id}>
+        {item.time.map((it) => (
+          <p>
+            {it.day}, {it.startTime}-{it.endTime}
           </p>
-        </div>
+        ))}
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.gmail}</p>
-      </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.phone}</p>
-      </td>
-
       <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
         {item.status ? <Active /> : <Off />}
       </td>
@@ -204,16 +209,22 @@ const page = () => {
                 </MenubarTrigger>
                 <MenubarContent className="text-dark100_light500 bg-gray-50 absolute top-full right-[-3rem] z-50 mt-3 h-auto w-40 font-sans text-sm shadow-md">
                   <MenubarItem
+                    className=" flex w-full cursor-pointer items-center justify-start px-2 text-center hover:bg-primary-100 hover:text-white"
+                    onSelect={() => setFilterOption("number")}
+                  >
+                    <p className="p-1 pt-2">Số lượng học sinh</p>
+                  </MenubarItem>
+                  <MenubarItem
                     className="flex w-full cursor-pointer items-center justify-start px-2 text-center hover:bg-primary-100 hover:text-white"
                     onSelect={() => setFilterOption("online")}
                   >
-                    <p className="p-1 pb-2">Active</p>
+                    <p className="p-1 pb-2">Học sinh online</p>
                   </MenubarItem>
                   <MenubarItem
                     className="flex w-full cursor-pointer items-center justify-start px-2 text-center hover:bg-primary-100 hover:text-white"
                     onSelect={() => setFilterOption("offline")}
                   >
-                    <p className="p-1 pb-2">InActive</p>
+                    <p className="p-1 pb-2">Học sinh offline</p>
                   </MenubarItem>
                   <MenubarSeparator />
                 </MenubarContent>

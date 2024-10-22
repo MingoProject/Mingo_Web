@@ -154,17 +154,17 @@ const Chart = () => {
         <div className="flex w-1/5 items-center gap-2 font-medium leading-none">
           <FontAwesomeIcon
             icon={faSquare}
-            className="rounded-[3px] border border-primary-100 text-[14px] text-white"
+            className="text-[16px] text-primary-100"
           />
-
-          <p className="text-red-500 pt-1">InProgress</p>
+          <p className="text-green-500 pt-1">Done</p>
         </div>
         <div className="flex w-1/5 items-center gap-2 font-medium leading-none">
           <FontAwesomeIcon
             icon={faSquare}
-            className="text-[16px] text-primary-100"
+            className="rounded-[3px] border border-primary-100 text-[14px] text-white"
           />
-          <p className="text-green-500 pt-1">Done</p>
+
+          <p className="text-red-500 pt-1 whitespace-nowrap">In progress</p>
         </div>
       </CardFooter>
     </Card>

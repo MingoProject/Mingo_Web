@@ -36,6 +36,7 @@ module.exports = {
         "border-color": "#D9D9D9",
         "custom-green": "#bee7c5",
         "light-red": "#F8CED0",
+        "inactive-background": "#C4C4C4",
       },
       fontFamily: {
         inter: ["var(--font-inter)"],
