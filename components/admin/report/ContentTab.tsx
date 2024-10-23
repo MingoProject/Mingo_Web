@@ -18,29 +18,34 @@ type UserTable = {
 
 const columns = [
   {
-    header: "Post User",
+    header: "User",
     accessor: "postedUser",
     className: " text-lg font-md",
   },
   {
-    header: "PostId",
+    header: "Reported User",
     accessor: "postId",
     className: "hidden md:table-cell text-lg font-md",
   },
   {
-    header: "Type",
+    header: "Reported Date",
     accessor: "type",
     className: "hidden lg:table-cell text-lg font-md",
   },
   {
-    header: "Created Date",
-    accessor: "createdDate",
+    header: "Report Content",
+    accessor: "content",
     className: " text-lg font-md",
   },
-  { header: "Content", accessor: "content", className: " text-lg font-md" },
+  {
+    header: "Type",
+    accessor: "type",
+    className: " text-lg font-md",
+  },
+  { header: "Status", accessor: "type", className: " text-lg font-md" },
 ];
 
-const PostTab = () => {
+const ContentTab = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
@@ -149,9 +154,25 @@ const PostTab = () => {
         </Link>
       </td>
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">{item.postId}</p>
+        <p className="text-sm ">{item.postedUser}</p>
       </td>
-
+      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
+        <p className="text-sm ">
+          <div className="flex flex-col w-full ">
+            <p>{format(item.createdDate, "PPP")}</p>
+            <p className="text-xs text-gray-500 pt-1">
+              {new Date(item.createdDate).toLocaleTimeString("en-US", {
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: true,
+              })}
+            </p>
+          </div>
+        </p>
+      </td>
+      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
+        <p className="text-sm ">{item.content}</p>
+      </td>
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
         <p className="text-sm text-gray-500">
           {item.type === 0 ? (
@@ -198,22 +219,29 @@ const PostTab = () => {
         </p>
       </td>
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">
-          <div className="flex flex-col w-full ">
-            <p>{format(item.createdDate, "PPP")}</p>
-            <p className="text-xs text-gray-500 pt-1">
-              {new Date(item.createdDate).toLocaleTimeString("en-US", {
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: true,
-              })}
-            </p>
-          </div>
+        <p className="text-sm text-gray-500">
+          {item.type === 0 || item.type === 1 ? (
+            <MyButton
+              title="Considered"
+              backgroundColor="bg-custom-green"
+              color="text-green-500"
+              fontWeight="font-medium"
+              fontSize="text-[14px]"
+              height="h-[30px]"
+              width="w-[143px]"
+            />
+          ) : (
+            <MyButton
+              title="Unconsidered"
+              backgroundColor="bg-light-red"
+              color="text-red-500"
+              fontWeight="font-medium"
+              fontSize="text-[14px]"
+              height="h-[30px]"
+              width="w-[143px]"
+            />
+          )}
         </p>
-      </td>
-
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">{item.content}</p>
       </td>
     </tr>
   );
@@ -235,4 +263,4 @@ const PostTab = () => {
   );
 };
 
-export default PostTab;
+export default ContentTab;

@@ -18,29 +18,35 @@ type UserTable = {
 
 const columns = [
   {
-    header: "Post User",
+    header: "Created User",
     accessor: "postedUser",
     className: " text-lg font-md",
   },
   {
-    header: "PostId",
+    header: "User ID",
     accessor: "postId",
     className: "hidden md:table-cell text-lg font-md",
   },
   {
-    header: "Type",
-    accessor: "type",
-    className: "hidden lg:table-cell text-lg font-md",
+    header: "Fullname",
+    accessor: "postedUser",
+    className: " text-lg font-md",
   },
   {
     header: "Created Date",
     accessor: "createdDate",
     className: " text-lg font-md",
   },
-  { header: "Content", accessor: "content", className: " text-lg font-md" },
+
+  {
+    header: "Report Content",
+    accessor: "content",
+    className: " text-lg font-md",
+  },
+  { header: "Status", accessor: "type", className: " text-lg font-md" },
 ];
 
-const PostTab = () => {
+const UserTab = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
@@ -143,60 +149,23 @@ const PostTab = () => {
       className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
     >
       <td className="px-4 py-2" key={item.postId}>
-        <Link href={`/post/${item.postId}`}>
+        <Link href={`/user/${item.postId}`}>
           <h3>{item.postedUser}</h3>
           <p className="text-xs text-gray-500">#00{item.postId}</p>
         </Link>
       </td>
+
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
         <p className="text-sm ">{item.postId}</p>
       </td>
 
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm text-gray-500">
-          {item.type === 0 ? (
-            <MyButton
-              title="Image"
-              backgroundColor="bg-light-blue"
-              color="text-blue-500"
-              fontWeight="font-medium"
-              fontSize="text-[14px]"
-              height="h-[30px]"
-              width="w-[97px]"
-            />
-          ) : item.type === 1 ? (
-            <MyButton
-              title="Video"
-              backgroundColor="bg-light-yellow"
-              color="text-yellow-500"
-              fontWeight="font-medium"
-              fontSize="text-[14px]"
-              height="h-[30px]"
-              width="w-[97px]"
-            />
-          ) : item.type === 2 ? (
-            <MyButton
-              title="Status"
-              backgroundColor="bg-custom-green"
-              color="text-green-500"
-              fontWeight="font-medium"
-              fontSize="text-[14px]"
-              height="h-[30px]"
-              width="w-[97px]"
-            />
-          ) : (
-            <MyButton
-              title="Post"
-              backgroundColor="bg-light-red"
-              color="text-red-500"
-              fontWeight="font-medium"
-              fontSize="text-[14px]"
-              height="h-[30px]"
-              width="w-[97px]"
-            />
-          )}
-        </p>
+      <td className="px-4 py-2" key={item.postId}>
+        <div>
+          <h3>{item.postedUser}</h3>
+          <p className="text-xs text-gray-500">#00{item.postId}</p>
+        </div>
       </td>
+
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
         <p className="text-sm ">
           <div className="flex flex-col w-full ">
@@ -214,6 +183,32 @@ const PostTab = () => {
 
       <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
         <p className="text-sm ">{item.content}</p>
+      </td>
+
+      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
+        <p className="text-sm text-gray-500">
+          {item.type === 0 || item.type === 1 ? (
+            <MyButton
+              title="Considered"
+              backgroundColor="bg-custom-green"
+              color="text-green-500"
+              fontWeight="font-medium"
+              fontSize="text-[12px]"
+              height="h-[30px]"
+              width="w-[143px]"
+            />
+          ) : (
+            <MyButton
+              title="Unconsidered"
+              backgroundColor="bg-light-red"
+              color="text-red-500"
+              fontWeight="font-medium"
+              fontSize="text-[12px]"
+              height="h-[30px]"
+              width="w-[143px]"
+            />
+          )}
+        </p>
       </td>
     </tr>
   );
@@ -235,4 +230,4 @@ const PostTab = () => {
   );
 };
 
-export default PostTab;
+export default UserTab;
