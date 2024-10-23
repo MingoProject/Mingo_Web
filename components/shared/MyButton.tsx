@@ -2,7 +2,7 @@ import React from "react";
 import classNames from "classnames";
 interface MyButtonProps {
   title: string;
-  onClick: () => void;
+  onClick?: () => void;
   padding?: string;
   paddingTop?: string;
   paddingBottom?: string;
@@ -11,7 +11,7 @@ interface MyButtonProps {
   paddingRight?: string;
   rounded?: string;
   borderWidth?: string;
-  border: "border";
+  border?: "border";
   borderColor?: string;
   backgroundColor?: string;
   fontSize?: string;

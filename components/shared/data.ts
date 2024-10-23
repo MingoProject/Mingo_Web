@@ -2009,3 +2009,111 @@ export const teacherDataTable = [
     status: "Active",
   },
 ];
+
+export const PostData = [
+  {
+    postedUser: "Oohsehun",
+    postId: "1",
+    type: 1, // Text
+    createdDate: new Date("12-10-2024"),
+    content: "hello moi nguoi",
+  },
+  {
+    postedUser: "JennieKim",
+    postId: "2",
+    type: 2, // Image
+    createdDate: new Date("12-11-2024"),
+    content: "Check out my new photo!",
+  },
+  {
+    postedUser: "LisaManoban",
+    postId: "3",
+    type: 3, // Video
+    createdDate: new Date("12-12-2024"),
+    content: "Watch my new dance video!",
+  },
+  {
+    postedUser: "Jisoo",
+    postId: "4",
+    type: 4, // Link
+    createdDate: new Date("12-13-2024"),
+    content: "Read this article: https://news.com",
+  },
+  {
+    postedUser: "Oohsehun",
+    postId: "5",
+    type: 1, // Text
+    createdDate: new Date("12-14-2024"),
+    content: "It's a great day!",
+  },
+  {
+    postedUser: "Chanyeol",
+    postId: "6",
+    type: 2, // Image
+    createdDate: new Date("12-15-2024"),
+    content: "Check out this amazing sunset!",
+  },
+  {
+    postedUser: "Baekhyun",
+    postId: "7",
+    type: 3, // Video
+    createdDate: new Date("12-16-2024"),
+    content: "My latest music video is out now!",
+  },
+  {
+    postedUser: "Kai",
+    postId: "8",
+    type: 4, // Link
+    createdDate: new Date("12-17-2024"),
+    content: "Here's a cool website: https://coolwebsite.com",
+  },
+  {
+    postedUser: "Rosé",
+    postId: "9",
+    type: 1, // Text
+    createdDate: new Date("12-18-2024"),
+    content: "Working on some new music today!",
+  },
+  {
+    postedUser: "D.O.",
+    postId: "10",
+    type: 2, // Image
+    createdDate: new Date("12-19-2024"),
+    content: "Look at this delicious meal!",
+  },
+  {
+    postedUser: "Suho",
+    postId: "11",
+    type: 3, // Video
+    createdDate: new Date("12-20-2024"),
+    content: "Watch my latest vlog!",
+  },
+  {
+    postedUser: "Lay",
+    postId: "12",
+    type: 4, // Link
+    createdDate: new Date("12-21-2024"),
+    content: "Check out this new app: https://newapp.com",
+  },
+  {
+    postedUser: "Lay",
+    postId: "13",
+    type: 0, // Link
+    createdDate: new Date("12-21-2024"),
+    content: "Check out this new app: https://newapp.com",
+  },
+  {
+    postedUser: "Lay",
+    postId: "14",
+    type: 0, // Link
+    createdDate: new Date("12-21-2024"),
+    content: "Check out this new app: https://newapp.com",
+  },
+  {
+    postedUser: "Lay",
+    postId: "15",
+    type: 0, // Link
+    createdDate: new Date("12-21-2024"),
+    content: "Check out this new app: https://newapp.com",
+  },
+];
