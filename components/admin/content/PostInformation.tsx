@@ -3,8 +3,6 @@ import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns"; // Import format từ date-fns
 import LableValue from "@/components/header/LableValue";
-import MyButton from "@/components/shared/MyButton";
-import { faEye } from "@fortawesome/free-solid-svg-icons";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Table from "@/components/shared/Table";
@@ -102,6 +100,7 @@ const PostInformation = ({ item }: { item: Post }) => {
         return "";
     }
   };
+
   const sorted = [...posts].sort((a, b) => {
     const aValue = getValueByKey(a, sortConfig.key);
     const bValue = getValueByKey(b, sortConfig.key);
@@ -122,10 +121,6 @@ const PostInformation = ({ item }: { item: Post }) => {
     setSortConfig({ key, direction });
   };
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const rowsPerPage = 8;
-  const startIndex = (currentPage - 1) * rowsPerPage;
-  const endIndex = startIndex + rowsPerPage;
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
