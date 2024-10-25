@@ -1,9 +1,15 @@
 import { BADGE_CRITERIA } from "@/constants";
 
-export interface SidebarLink {
+export interface NavbarLink {
   icon: string;
   route: string;
   label: string;
+}
+
+export interface SidebarLink {
+  route: string;
+  label: string;
+  icon: string;
 }
 
 export interface Job {

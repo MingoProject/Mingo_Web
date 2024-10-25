@@ -209,3 +209,136 @@ export const PostYouLike = [
     ],
   },
 ];
+
+export const ListUserChatData = [
+  {
+    id: 1,
+    userName: "Huỳnh",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "online",
+    lastMessage: {
+      id: 1,
+      text: "Chào bạn!",
+      timestamp: new Date(),
+    },
+    unreadCount: 2,
+  },
+  {
+    id: 2,
+    userName: "Minh",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "offline",
+    lastMessage: {
+      id: 1,
+      text: "Hẹn gặp lại!",
+      timestamp: new Date(Date.now() - 600000), // 10 phút trước
+    },
+    unreadCount: 1,
+  },
+  {
+    id: 3,
+    userName: "An",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "typing",
+    lastMessage: {
+      id: 1,
+      text: "Đang gõ...",
+      timestamp: new Date(Date.now() - 30000), // 30 giây trước
+    },
+    unreadCount: 0,
+  },
+  {
+    id: 4,
+    userName: "Linh",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "online",
+    lastMessage: {
+      id: 1,
+      text: "Tôi sẽ gửi tài liệu!",
+      timestamp: new Date(Date.now() - 120000), // 2 phút trước
+    },
+    unreadCount: 3,
+  },
+  {
+    id: 5,
+    userName: "Thảo",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "offline",
+    lastMessage: {
+      id: 1,
+      text: "Cảm ơn bạn!",
+      timestamp: new Date(Date.now() - 3600000), // 1 giờ trước
+    },
+    unreadCount: 0,
+  },
+  {
+    id: 6,
+    userName: "Nam",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "online",
+    lastMessage: {
+      id: 1,
+      text: "Chúc mừng sinh nhật!",
+      timestamp: new Date(Date.now() - 7200000), // 2 giờ trước
+    },
+    unreadCount: 4,
+  },
+  {
+    id: 7,
+    userName: "Hương",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "offline",
+    lastMessage: {
+      id: 1,
+      text: "Đã nhận được tin nhắn!",
+      timestamp: new Date(Date.now() - 1800000), // 30 phút trước
+    },
+    unreadCount: 2,
+  },
+  {
+    id: 8,
+    userName: "Quang",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "typing",
+    lastMessage: {
+      id: 1,
+      text: "Đang kiểm tra thông tin...",
+      timestamp: new Date(Date.now() - 15000), // 15 giây trước
+    },
+    unreadCount: 1,
+  },
+  {
+    id: 9,
+    userName: "Khoa",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "online",
+    lastMessage: {
+      id: 1,
+      text: "Gặp bạn sau nhé!",
+      timestamp: new Date(Date.now() - 900000), // 15 phút trước
+    },
+    unreadCount: 5,
+  },
+  {
+    id: 10,
+    userName: "Bích",
+    avatarUrl:
+      "https://i.pinimg.com/564x/0c/84/81/0c84818a315c2b0308b52e9e3216e2b1.jpg",
+    status: "offline",
+    lastMessage: {
+      id: 1,
+      text: "Rất vui được nói chuyện với bạn!",
+      timestamp: new Date(Date.now() - 7200000), // 2 giờ trước
+    },
+    unreadCount: 0,
+  },
+];
