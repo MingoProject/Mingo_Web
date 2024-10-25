@@ -7,6 +7,10 @@
     @apply bg-light-500 dark:bg-dark-100;
   }
 
+  .background-light700_dark400 {
+    @apply bg-light-700 dark:bg-dark-400;
+  }
+
   .background-light600_dark200 {
     @apply bg-light-600 dark:bg-dark-200;
   }

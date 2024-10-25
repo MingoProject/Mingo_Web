@@ -1,7 +1,7 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
-import React from "react";
+
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
@@ -98,7 +98,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 p-6 sm:px-5">
+    <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
       <Link href="/" className="flex items-center gap-1">
         <p className="text-dark100_light500 text-3xl">
           Min<span className="text-3xl text-primary-100 ">gle</span>
@@ -126,7 +126,7 @@ const Navbar = () => {
                   isActive
                     ? "background-light600_dark200 text-dark100_light500 rounded-lg"
                     : "text-dark100_light500"
-                } ml-[12%] flex h-[43px] items-center justify-start gap-4 bg-transparent p-4 cursor-pointer`}
+                } ml-[12%] flex h-[43px] cursor-pointer items-center justify-start gap-4 bg-transparent p-4`}
               >
                 <Icon className="text-2xl text-light-500" icon={item.icon} />
                 {isActive && (
@@ -180,12 +180,11 @@ const Navbar = () => {
         </div>
       </div>
 
-      {/* Right drawer/modal */}
       {isDrawerOpen && (
-        <div className="fixed background-light700_dark300 left-0 top-16 h-full w-1/3 bg-white shadow-lg z-50">
+        <div className="background-light700_dark300 fixed left-0 top-16 z-50 size-full bg-white shadow-lg md:w-1/2 lg:w-2/5">
           <div className="p-6">
             <button
-              className="absolute top-4 right-4 text-lg"
+              className="absolute right-4 top-4 text-lg"
               onClick={closeDrawer}
             >
               <Icon
@@ -199,27 +198,27 @@ const Navbar = () => {
                   Search{" "}
                 </div>
                 <div className="p-6">
-                  <div className="flex items-center mb-4">
+                  <div className="mb-4 flex items-center">
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={handleInputChange}
                       placeholder="Search..."
-                      className="flex-grow bg-transparent h-10 px-4 rounded-l-lg border border-primary-100 focus:outline-none focus:ring focus:ring-primary-200"
+                      className="focus:ring-primary-200 h-10 grow rounded-l-lg border border-primary-100 bg-transparent px-4 focus:outline-none focus:ring"
                     />
-                    <button className="h-10 px-4 bg-primary-100 text-white rounded-r-lg">
+                    <button className="h-10 rounded-r-lg bg-primary-100 px-4 text-white">
                       Search
                     </button>
                   </div>
 
-                  <h2 className="text-lg font-normal text-primary-100 mb-2">
+                  <h2 className="mb-2 text-lg font-normal text-primary-100">
                     Recently
                   </h2>
                   <ul className="space-y-1">
                     {recentSearches.map((search, index) => (
                       <li
                         key={index}
-                        className="flex justify-between items-center py-2 px-5 rounded-md  hover:bg-light-700 dark:hover:bg-dark-400 cursor-pointer"
+                        className="flex cursor-pointer items-center justify-between rounded-md px-5  py-2 hover:bg-light-700 dark:hover:bg-dark-400"
                       >
                         <span className="text-dark100_light500">{search}</span>
                         <button onClick={() => handleDeleteSearch(search)}>
@@ -239,8 +238,8 @@ const Navbar = () => {
                 <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
                   Notifications
                 </div>
-                <div className="flex  text-primary-100 mt-4">Recently</div>
-                <div className="flex mt-5 flex-col  space-y-4">
+                <div className="mt-4  flex text-primary-100">Recently</div>
+                <div className="mt-5 flex flex-col  space-y-4">
                   {notifications.map((notification) => (
                     <div
                       key={notification.id}
@@ -249,9 +248,9 @@ const Navbar = () => {
                       <img
                         src={notification.avatar}
                         alt="Avatar"
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="size-10 rounded-full object-cover"
                       />
-                      <div className="flex-1 pr-4 ml-2">
+                      <div className="ml-2 flex-1 pr-4">
                         <p className="text-dark100_light500 font-light">
                           {notification.content}
                         </p>

@@ -1,6 +1,8 @@
+import Image from "next/image";
 import React, { useEffect, useState } from "react";
+import { Button } from "../ui/button";
 
-const CreatePost = ({ onClose }) => {
+const CreatePost = ({ onClose }: any) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [media, setMedia] = useState<File[]>([]);
@@ -92,67 +94,86 @@ const CreatePost = ({ onClose }) => {
         onClick={onClose}
       />
 
-      <div className="fixed z-50 my-auto flex h-[500px] w-full justify-center">
-        <div className="w-[50%] rounded-lg bg-white p-6 shadow-md">
-          <div className="mb-4 flex items-center">
-            <img
+      <div className=" fixed inset-0 z-50 flex items-center justify-center">
+        <div className="background-light700_dark300 w-1/2 rounded-lg py-6 shadow-md">
+          <div>
+            <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
+              Tạo bài viết
+            </div>
+          </div>
+          <div className="my-7 mb-4 flex items-center px-6">
+            <Image
+              width={40}
+              height={40}
               src={currentUser?.avatar || "/path/to/avatar.jpg"}
               alt="Avatar"
               className="mr-2 size-10 rounded-full"
             />
-            <h2 className="text-lg font-semibold">Create a Post</h2>
+            <div className="">
+              <span className="text-dark100_light500">
+                {currentUser?.fullname}
+              </span>
+              <div>
+                <select
+                  id="privacy"
+                  value={privacy}
+                  onChange={handlePrivacyChange}
+                  className="background-light800_dark400 rounded-lg px-3 py-2 text-[#D9D9D9]"
+                >
+                  <option value="public">Public</option>
+                  <option value="friends">Friends</option>
+                  <option value="private">Private</option>
+                </select>
+              </div>
+            </div>
           </div>
 
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="mx-6">
             <div className="mb-4">
               <textarea
                 value={content}
                 onChange={handleContentChange}
                 placeholder="What's on your mind?"
-                className="h-24 w-full rounded border border-gray-300 p-2"
+                className="text-dark100_light500 h-24 w-full bg-transparent p-2"
               />
             </div>
-            <div className="mb-4">
-              <input
-                type="file"
-                accept="image/*, video/*"
-                multiple
-                onChange={handleMediaChange}
-                className="rounded border border-gray-300 p-2"
-              />
+            <div className="flex items-center">
+              <span className="text-dark100_light500">Thêm ảnh/video</span>
+              <div className="mb-4 ml-auto">
+                <input
+                  type="file"
+                  accept="image/*, video/*"
+                  multiple
+                  onChange={handleMediaChange}
+                  className=" p-2"
+                />
+              </div>
             </div>
-            <div className="mb-4">
-              <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={handleLocationChange}
-                className="w-full rounded border border-gray-300 p-2"
-              />
+            <div className="flex items-center">
+              <span className="text-dark100_light500">Thêm vị trí</span>
+              <div className="mb-4  ml-auto">
+                <input
+                  type="text"
+                  placeholder="Location"
+                  value={location}
+                  onChange={handleLocationChange}
+                  className="w-full rounded border border-gray-300 p-2"
+                />
+              </div>
             </div>
-            <div className="mb-4">
-              <label htmlFor="privacy" className="mr-2">
-                Privacy:
-              </label>
-              <select
-                id="privacy"
-                value={privacy}
-                onChange={handlePrivacyChange}
-                className="rounded border border-gray-300 p-2"
-              >
-                <option value="public">Public</option>
-                <option value="friends">Friends</option>
-                <option value="private">Private</option>
-              </select>
+            <div className="flex items-center">
+              <span className="text-dark100_light500"> Gắn thẻ</span>
+              <div className="mb-4 ml-auto"></div>
             </div>
+
             {error && <p className="text-red-500">{error}</p>}
-            <button
+            <Button
               type="submit"
-              className="w-full rounded bg-blue-500 p-2 text-white hover:bg-blue-600"
+              className="mt-5 w-full rounded bg-primary-100 p-2 text-white"
               disabled={loading}
             >
               {loading ? "Creating..." : "Create Post"}
-            </button>
+            </Button>
           </form>
         </div>
       </div>
