@@ -5,12 +5,35 @@ import React from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
-import { sidebarLinks } from "@/constants";
+import { navbarLinks, sidebarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
 import Theme from "./Theme";
 import MobileNav from "./MobileNav";
 import { getTimestamp } from "@/lib/utils";
-
+import {
+  faHouse,
+  faMagnifyingGlass,
+  faBell,
+  faMessage,
+  faGear,
+  faFloppyDisk,
+  faHeart,
+} from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import {
+  Menubar,
+  MenubarMenu,
+  MenubarTrigger,
+  MenubarContent,
+  MenubarItem,
+  MenubarSeparator,
+} from "@radix-ui/react-menubar";
+import { Button } from "@/components/ui/button";
+import ViewProfile from "@/components/home/ViewProfile";
+import Setting from "@/components/home/Setting";
+import Favorite from "@/components/home/Favorite";
+import { PostYouLike } from "@/lib/data/data";
+import Save from "@/components/home/Save";
 export const notifications = [
   {
     id: 1,
@@ -67,7 +90,42 @@ const recentSearches = [
 const Navbar = () => {
   const pathname = usePathname();
   const [searchTerm, setSearchTerm] = useState("");
+  const [isSetting, setIsSetting] = useState(false);
+  const [isViewProfile, setIsViewProfile] = useState(false);
+  const [isFavorite, setIsFavorite] = useState(false);
+  const [isSave, setIsSave] = useState(false);
 
+  const handleIsSetting = () => {
+    setIsSetting(true);
+  };
+
+  const closeSetting = () => {
+    setIsSetting(false);
+  };
+
+  const handleIsViewProfile = () => {
+    setIsViewProfile(true);
+  };
+
+  const closeViewProfile = () => {
+    setIsViewProfile(false);
+  };
+
+  const handleIsFavorite = () => {
+    setIsFavorite(true);
+  };
+
+  const closeFavorite = () => {
+    setIsFavorite(false);
+  };
+
+  const handleIsSave = () => {
+    setIsSave(true);
+  };
+
+  const closeSave = () => {
+    setIsSave(false);
+  };
   const handleInputChange = (e: any) => {
     setSearchTerm(e.target.value);
   };
@@ -108,7 +166,7 @@ const Navbar = () => {
       {/* Sidebar links */}
       <div className="hidden w-auto sm:flex">
         <Sheet>
-          {sidebarLinks.map((item) => {
+          {navbarLinks.map((item) => {
             // Check if the route is for a drawer (Search, Notifications) or a regular link
             const isDrawerLink =
               item.route === "/search" || item.route === "/notifications";
@@ -166,20 +224,102 @@ const Navbar = () => {
         <Link href="/" className="mr-3 text-primary-100 ">
           <p className="hidden md:block">Huỳnh Nguyễn</p>
         </Link>
-        <Link href="/personal-page" className="">
-          <Image
-            src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
-            alt="Avatar"
-            width={30}
-            height={30}
-            className="rounded-full"
-          />
-        </Link>
-        <div className="flex w-auto sm:hidden">
+        <Menubar className="relative border-none bg-transparent   shadow-none focus:outline-none">
+          <MenubarMenu>
+            <MenubarTrigger>
+              {" "}
+              <Image
+                src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
+                alt="Avatar"
+                width={30}
+                height={30}
+                className="rounded-full"
+              />
+            </MenubarTrigger>
+            <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-48 border-none font-sans text-sm ">
+              <MenubarItem
+                onClick={handleIsViewProfile}
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  "
+              >
+                <Link href="/personal-page" className="">
+                  <div className="flex items-center gap-2">
+                    <Image
+                      src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
+                      alt="Avatar"
+                      width={30}
+                      height={30}
+                      className="rounded-full"
+                    />
+                    <p className="text-ellipsis whitespace-nowrap font-sans text-xs font-normal">
+                      Xem trang cá nhân
+                    </p>
+                  </div>
+                </Link>
+              </MenubarItem>
+              <MenubarItem
+                onClick={handleIsSetting}
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+              >
+                {" "}
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon
+                    icon={faGear}
+                    className="text-dark100_light500"
+                  />
+                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                    Cài đặt
+                  </p>
+                </div>
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem
+                onClick={handleIsSave}
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+              >
+                {" "}
+                <div className="flex items-center gap-2">
+                  <FontAwesomeIcon
+                    icon={faFloppyDisk}
+                    className="text-dark100_light500"
+                  />
+                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                    Bài viết đã lưu
+                  </p>
+                </div>
+              </MenubarItem>
+              <MenubarSeparator />
+              <MenubarItem
+                onClick={handleIsFavorite}
+                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+              >
+                {" "}
+                <div className="flex items-center gap-2 ">
+                  <FontAwesomeIcon
+                    icon={faHeart}
+                    className="text-dark100_light500"
+                  />
+                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                    Bài viết đã thích
+                  </p>
+                </div>
+              </MenubarItem>
+              <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
+                {" "}
+                <Button className="h-[30px] w-full bg-primary-100 text-center text-sm text-white">
+                  Đăng xuất
+                </Button>
+              </MenubarItem>
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+        <div className="flex w-auto  sm:hidden">
           <MobileNav />
         </div>
+        {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
+        {isSetting && <Setting onClose={closeSetting} />}
+        {isFavorite && <Favorite posts={PostYouLike} onClose={closeFavorite} />}
+        {isSave && <Save posts={PostYouLike} onClose={closeSave} />}
       </div>
-
       {/* Right drawer/modal */}
       {isDrawerOpen && (
         <div className="fixed background-light700_dark300 left-0 top-16 h-full w-1/3 bg-white shadow-lg z-50">
