@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import Headers from "@/components/header/HeaderNoButton";
-import Table from "@/components/admin/user/Table";
+import Table from "@/components/shared/Table";
 import TableSearch from "@/components/shared/TableSearch";
 import { PostData } from "@/components/shared/data";
 import Active from "@/components/cards/Active";

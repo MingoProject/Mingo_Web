@@ -13,7 +13,7 @@ const TableSearch = ({
     onSearch(e.target.value);
   };
   return (
-    <div className="flex-1 h-[38px] ml-4 flex sm:w-auto items-center gap-2 text-xs rounded-full px-2 border-2">
+    <div className="flex-1 h-[38px] flex sm:w-auto items-center gap-2 text-xs rounded-full px-2 border-2">
       <Icon
         icon="solar:magnifer-linear"
         width={20}

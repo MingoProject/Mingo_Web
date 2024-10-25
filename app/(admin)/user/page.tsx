@@ -1,9 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 import Headers from "@/components/header/HeaderNoButton";
-import Table from "@/components/admin/user/Table";
 import TableSearch from "@/components/shared/TableSearch";
-import { SingleCourseTeacherData } from "@/components/shared/data";
+import { userData } from "@/components/shared/data";
 import Active from "@/components/cards/Active";
 import Off from "@/components/cards/Off";
 import { format } from "date-fns";
@@ -19,15 +18,21 @@ import {
 } from "@radix-ui/react-menubar";
 import PaginationUI from "@/components/shared/Pagination";
 import { PaginationProps } from "@/types/pagination";
+import Table from "@/components/shared/Table";
 
 type UserTable = {
   id: number;
-  studentName: string;
-  enrolled: Date; // Kiểu Date để chứa ngày kết thúc
-  birthday: Date; // Kiểu Date để chứa ngày kết thúc
-  gmail: string; // Mảng của kiểu Time chứa thông tin về các thời gian
-  phone: string; // Mảng của kiểu Time chứa thông tin về các thời gian
-  status: number; // Có thể là trạng thái hoạt động, ví dụ: 1 = Active, 2 = Inactive
+  fullname: string;
+  gender: string;
+  address: string;
+  nickName: string;
+  gmail: string;
+  phone: string;
+  status: number; // Trạng thái người dùng (ví dụ: 'active', 'inactive')
+  job: string; // Nghề nghiệp
+  bio: string; // Giới thiệu về bản thân
+  hobbies: string[]; // Sở thích (danh sách)
+  enrolled: Date; // Ngày tham gia (đăng ký)
 };
 
 const columns = [
@@ -61,22 +66,19 @@ const page = () => {
   });
   type SortableKeys = "id" | "username" | "fullname" | "createdDate";
 
-  const getValueByKey = (
-    item: (typeof SingleCourseTeacherData)[0],
-    key: SortableKeys
-  ) => {
+  const getValueByKey = (item: (typeof userData)[0], key: SortableKeys) => {
     switch (key) {
       case "username":
-        return item.studentName;
+        return item.fullname;
       case "fullname":
-        return item.studentName;
+        return item.nickName;
       case "createdDate":
         return item.enrolled;
       default:
         return "";
     }
   };
-  const sorted = [...SingleCourseTeacherData].sort((a, b) => {
+  const sorted = [...userData].sort((a, b) => {
     const aValue = getValueByKey(a, sortConfig.key);
     const bValue = getValueByKey(b, sortConfig.key);
 
@@ -100,8 +102,8 @@ const page = () => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     // Lọc theo searchQuery
     const matchesSearch =
-      item.studentName.toLowerCase().includes(lowerCaseQuery) ||
-      format(item.enrolled, "dd/MM/yyyy")
+      item.fullname.toLowerCase().includes(lowerCaseQuery) ||
+      format(item.birthday, "dd/MM/yyyy")
         .toLowerCase()
         .includes(lowerCaseQuery);
 
@@ -116,7 +118,7 @@ const page = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
-  const totalPages = Math.ceil(SingleCourseTeacherData.length / rowsPerPage);
+  const totalPages = Math.ceil(userData.length / rowsPerPage);
   const totalResult = filterData.length;
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
@@ -149,13 +151,13 @@ const page = () => {
       className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
     >
       <td className="px-4 py-2" key={item.id}>
-        <Link href={`/course-teacher/${item.id}`}>
-          <h3>{item.studentName}</h3>
+        <Link href={`/user/${item.id}`}>
+          <h3>{item.fullname}</h3>
           <p className="text-xs text-gray-500">#00{item.id}</p>
         </Link>
       </td>
       <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.studentName}</p>
+        <p className="text-sm text-gray-500">{item.fullname}</p>
       </td>
       <td className="px-4 py-2 hidden md:table-cell" key={item.id}>
         <div className="flex flex-col w-full ">
@@ -187,7 +189,9 @@ const page = () => {
       <div className="w-full rounded-md shadow-md mt-4 dark:bg-light-300">
         {/* TOP */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full dark:text-dark-360 rounded-md mt-0">
-          <TableSearch onSearch={setSearchQuery} />
+          <div className="px-4">
+            <TableSearch onSearch={setSearchQuery} />
+          </div>
           <div className="flex justify-between items-center gap-4 p-4">
             <Menubar className="relative border-none bg-transparent py-4 shadow-none">
               <MenubarMenu>
@@ -231,13 +235,6 @@ const page = () => {
           />
         </div>
         {/* PAGINATION */}
-        {/* <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={handlePageChange}
-          totalResult={totalResult}
-          rowPage={rowsPerPage}
-        /> */}
         <div className="p-4 mt-4 text-sm flex items-center justify-center md:justify-between text-gray-500 dark:text-dark-360">
           <PaginationUI paginationUI={paginationUI} />
         </div>

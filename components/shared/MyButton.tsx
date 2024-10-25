@@ -1,5 +1,8 @@
 import React from "react";
 import classNames from "classnames";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { IconDefinition } from "@fortawesome/fontawesome-svg-core";
+
 interface MyButtonProps {
   title: string;
   onClick?: () => void;
@@ -22,6 +25,8 @@ interface MyButtonProps {
   fontFamily?: string;
   isShadow?: boolean;
   isActive?: boolean;
+  icon?: IconDefinition; // New prop for FontAwesome icon
+  iconPosition?: "left" | "right"; // Option for icon position
 }
 
 const MyButton: React.FC<MyButtonProps> = ({
@@ -45,9 +50,12 @@ const MyButton: React.FC<MyButtonProps> = ({
   fontFamily = "font-sans",
   isShadow = false,
   isActive = false,
+  icon,
+  iconPosition = "left", // Default position for icon
 }) => {
   const activeBackgroundColor = isActive ? "bg-red-500" : backgroundColor;
   const activeTextColor = isActive ? "text-white" : color;
+
   return (
     <button
       onClick={onClick}
@@ -65,11 +73,17 @@ const MyButton: React.FC<MyButtonProps> = ({
         fontFamily,
         width,
         height,
-        "flex items-center justify-center", // Center the text
+        "flex items-center justify-center", // Center the text and icon
         { "shadow-lg": isShadow } // Conditional shadow
       )}
     >
-      {title}
+      {icon && iconPosition === "left" && (
+        <FontAwesomeIcon icon={icon} className="mr-2" /> // Icon on the left
+      )}
+      <span>{title}</span>
+      {icon && iconPosition === "right" && (
+        <FontAwesomeIcon icon={icon} className="ml-2" /> // Icon on the right
+      )}
     </button>
   );
 };

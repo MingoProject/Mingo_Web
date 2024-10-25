@@ -1,12 +1,12 @@
 "use client";
 import { useEffect, useState } from "react";
-import Table from "@/components/admin/user/Table";
 import { PostData } from "@/components/shared/data";
 import { format } from "date-fns";
 import Link from "next/link";
 import PaginationUI from "@/components/shared/Pagination";
 import { PaginationProps } from "@/types/pagination";
 import MyButton from "@/components/shared/MyButton";
+import Table from "@/components/shared/Table";
 
 type CommentTable = {
   postedUser: string;
