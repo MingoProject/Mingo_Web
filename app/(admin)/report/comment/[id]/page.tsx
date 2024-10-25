@@ -6,6 +6,8 @@ import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
 import PostedUser from "@/components/admin/content/PostedUser";
 import PostInformation from "@/components/admin/content/PostInformation";
 import ReportInformation from "@/components/admin/report/ReportInformation";
+import UserReportInformation from "@/components/admin/report/UserReportInformation";
+import CommentReportInformation from "@/components/admin/report/CommentReportInformation";
 
 interface Params {
   id: number;
@@ -31,7 +33,7 @@ const Page = ({ params }: { params: Params }) => {
         <PostedUser item={userDetail} />
         <TilteIcon title="Report Information" icon={faAddressCard} />
         {postDetail ? (
-          <ReportInformation item={postDetail} />
+          <CommentReportInformation item={postDetail} />
         ) : (
           <div>Post not found</div>
         )}

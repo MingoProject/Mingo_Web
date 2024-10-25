@@ -26,15 +26,16 @@ type Post = {
   }[];
 };
 
-const ReportInformation = ({ item }: { item: Post }) => {
+const CommentReportInformation = ({ item }: { item: Post }) => {
   const [showAll, setShowAll] = useState(false);
+  const [showAllProof, setShowAllProof] = useState(false);
 
   return (
     <div className="w-full flex flex-col ">
       <div className="w-full flex gap-60 p-4 pb-0">
         <div className="flex flex-col self-center">
-          <LableValue label="Report ID" value={item.id.toString()} />
-          <LableValue label="Report Content" value={item.content} />
+          <LableValue label="Comment ID" value={item.id.toString()} />
+          <LableValue label="Type" value={item.id.toString()} />
         </div>
         <div className="flex flex-col self-center ">
           <LableValue
@@ -47,8 +48,11 @@ const ReportInformation = ({ item }: { item: Post }) => {
           />
         </div>
       </div>
+      <div className="flex flex-col px-4">
+        <LableValue label="Content" value={item.content} />
+      </div>
       <div className="w-full px-4 flex flex-col gap-4">
-        <LableValue label="Proof" />
+        <LableValue label="Attachment" />
         <div className="grid grid-cols-5 gap-4">
           {item.attachment
             ?.slice(0, showAll ? item.attachment.length : 15)
@@ -83,8 +87,44 @@ const ReportInformation = ({ item }: { item: Post }) => {
           </button>
         )}
       </div>
+      <div className="w-full px-4 flex flex-col gap-4">
+        <LableValue label="Proof" />
+        <div className="grid grid-cols-5 gap-4">
+          {item.attachment
+            ?.slice(0, showAllProof ? item.attachment.length : 15)
+            .map((attachment, index) => {
+              console.log("Rendering attachment:", attachment); // Debug line
+              return (
+                <Image
+                  key={index}
+                  src={attachment.src}
+                  height={165}
+                  width={195}
+                  alt="attachment"
+                  className="w-full h-auto object-cover"
+                />
+              );
+            })}
+        </div>
+        {item.attachment?.length > 15 && !showAllProof && (
+          <button
+            className="mt-4 text-blue-500"
+            onClick={() => setShowAllProof(true)}
+          >
+            Show All
+          </button>
+        )}
+        {showAllProof && (
+          <button
+            className="mt-4 text-blue-500"
+            onClick={() => setShowAllProof(false)}
+          >
+            <p className="text-primary-100">Ẩn bớt</p>
+          </button>
+        )}
+      </div>
     </div>
   );
 };
 
-export default ReportInformation;
+export default CommentReportInformation;

@@ -189,7 +189,7 @@ const page = () => {
       <div className="w-full rounded-md shadow-md mt-4 dark:bg-light-300">
         {/* TOP */}
         <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full dark:text-dark-360 rounded-md mt-0">
-          <div className="px-4">
+          <div className="px-4 w-full">
             <TableSearch onSearch={setSearchQuery} />
           </div>
           <div className="flex justify-between items-center gap-4 p-4">

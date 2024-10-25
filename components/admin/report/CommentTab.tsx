@@ -149,7 +149,7 @@ const CommentTab = () => {
       className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
     >
       <td className="px-4 py-2" key={item.postId}>
-        <Link href={`/user/${item.postId}`}>
+        <Link href={`/report/comment/${item.postId}`}>
           <h3>{item.postedUser}</h3>
           <p className="text-xs text-gray-500">#00{item.postId}</p>
         </Link>

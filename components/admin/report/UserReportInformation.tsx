@@ -26,15 +26,14 @@ type Post = {
   }[];
 };
 
-const ReportInformation = ({ item }: { item: Post }) => {
+const UserReportInformation = ({ item }: { item: Post }) => {
   const [showAll, setShowAll] = useState(false);
 
   return (
     <div className="w-full flex flex-col ">
       <div className="w-full flex gap-60 p-4 pb-0">
-        <div className="flex flex-col self-center">
+        <div className="flex flex-col self-start">
           <LableValue label="Report ID" value={item.id.toString()} />
-          <LableValue label="Report Content" value={item.content} />
         </div>
         <div className="flex flex-col self-center ">
           <LableValue
@@ -87,4 +86,4 @@ const ReportInformation = ({ item }: { item: Post }) => {
   );
 };
 
-export default ReportInformation;
+export default UserReportInformation;

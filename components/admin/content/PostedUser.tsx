@@ -29,7 +29,7 @@ const PostedUser = ({ item }: { item: User }) => {
     router.push(`/user/${item.id}`);
   };
   return (
-    <div className="w-full py-4 flex flex-col ">
+    <div className="w-full pb-4  flex flex-col ">
       <div className="w-full flex gap-24 p-4 pt-8">
         <div
           className="self-center rounded-[10px]"
