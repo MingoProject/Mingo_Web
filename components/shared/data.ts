@@ -2,274 +2,6 @@
 
 export let role = "admin";
 
-import { TeacherCourse } from "@/types/pagination";
-
-// export const teacherData: TeacherCourse[] = [
-//   {
-//     teacher: {
-//       id: "1",
-//       name: "John Smith",
-//       birth: new Date("1985-06-15"),
-//       email: "john.smith@example.com",
-//       phone: "+123456789",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "123 Main St",
-//         city: "New York",
-//         country: "USA",
-//       },
-//       more: "Experienced in teaching English and Business Communication.",
-//     },
-//     course: {
-//       id: "1",
-//       name: "Advanced English Grammar",
-//     },
-//     joinDate: new Date("2022-01-10"),
-//     kindJob: "Full-time",
-//     description:
-//       "Teaching advanced grammar concepts to improve students' written and spoken English.",
-//     earning: 5000,
-//     point: 4.8,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "1", // John Smith
-//       name: "John Smith",
-//       birth: new Date("1985-06-15"),
-//       email: "john.smith@example.com",
-//       phone: "+123456789",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "123 Main St",
-//         city: "New York",
-//         country: "USA",
-//       },
-//       more: "Experienced in teaching English and Business Communication.",
-//     },
-//     course: {
-//       id: "2",
-//       name: "Business Communication Skills",
-//     },
-//     joinDate: new Date("2022-02-01"),
-//     kindJob: "Full-time",
-//     description: "Focusing on effective communication in business contexts.",
-//     earning: 5000,
-//     point: 4.8,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "2",
-//       name: "Emily Johnson",
-//       birth: new Date("1990-09-25"),
-//       email: "emily.johnson@example.com",
-//       phone: "+987654321",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "456 Oak Ave",
-//         city: "Los Angeles",
-//         country: "USA",
-//       },
-//       more: "Specializes in teaching IELTS and TOEFL preparation courses.",
-//     },
-//     course: {
-//       id: "3",
-//       name: "IELTS Preparation",
-//     },
-//     joinDate: new Date("2021-05-15"),
-//     kindJob: "Part-time",
-//     description: "Guiding students through IELTS exam strategies.",
-//     earning: 3000,
-//     point: 4.9,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "2", // Emily Johnson
-//       name: "Emily Johnson",
-//       birth: new Date("1990-09-25"),
-//       email: "emily.johnson@example.com",
-//       phone: "+987654321",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "456 Oak Ave",
-//         city: "Los Angeles",
-//         country: "USA",
-//       },
-//       more: "Specializes in teaching IELTS and TOEFL preparation courses.",
-//     },
-//     course: {
-//       id: "4",
-//       name: "TOEFL Preparation",
-//     },
-//     joinDate: new Date("2021-06-15"),
-//     kindJob: "Part-time",
-//     description: "Helping students prepare for the TOEFL exam.",
-//     earning: 3000,
-//     point: 4.9,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "3",
-//       name: "Michael Brown",
-//       birth: new Date("1978-12-05"),
-//       email: "michael.brown@example.com",
-//       phone: "+1122334455",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "789 Pine Rd",
-//         city: "Chicago",
-//         country: "USA",
-//       },
-//       more: "Over 20 years of experience in teaching Business English.",
-//     },
-//     course: {
-//       id: "5",
-//       name: "Business English Communication",
-//     },
-//     joinDate: new Date("2020-03-22"),
-//     kindJob: "Full-time",
-//     description: "Teaching professional English communication skills.",
-//     earning: 6000,
-//     point: 4.7,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "3",
-//       name: "Michael Brown",
-//       birth: new Date("1978-12-05"),
-//       email: "michael.brown@example.com",
-//       phone: "+1122334455",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "789 Pine Rd",
-//         city: "Chicago",
-//         country: "USA",
-//       },
-//       more: "Over 20 years of experience in teaching Business English.",
-//     },
-//     course: {
-//       id: "6",
-//       name: "Negotiation Skills in English",
-//     },
-//     joinDate: new Date("2020-04-01"),
-//     kindJob: "Full-time",
-//     description: "Teaching negotiation tactics and skills in English.",
-//     earning: 6000,
-//     point: 4.7,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "4",
-//       name: "Sarah White",
-//       birth: new Date("1982-11-19"),
-//       email: "sarah.white@example.com",
-//       phone: "+2233445566",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "321 Birch Blvd",
-//         city: "Houston",
-//         country: "USA",
-//       },
-//       more: "Expert in teaching conversational English and pronunciation.",
-//     },
-//     course: {
-//       id: "7",
-//       name: "English Pronunciation Mastery",
-//     },
-//     joinDate: new Date("2023-07-01"),
-//     kindJob: "Contract",
-//     description:
-//       "Helping students achieve clear and accurate English pronunciation.",
-//     earning: 4000,
-//     point: 4.6,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "4", // Sarah White
-//       name: "Sarah White",
-//       birth: new Date("1982-11-19"),
-//       email: "sarah.white@example.com",
-//       phone: "+2233445566",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "321 Birch Blvd",
-//         city: "Houston",
-//         country: "USA",
-//       },
-//       more: "Expert in teaching conversational English and pronunciation.",
-//     },
-//     course: {
-//       id: "8",
-//       name: "Conversational English Skills",
-//     },
-//     joinDate: new Date("2023-08-01"),
-//     kindJob: "Contract",
-//     description:
-//       "Enhancing students' ability to communicate effectively in English.",
-//     earning: 4000,
-//     point: 4.6,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "5",
-//       name: "David Lee",
-//       birth: new Date("1995-03-08"),
-//       email: "david.lee@example.com",
-//       phone: "+3344556677",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "654 Maple St",
-//         city: "San Francisco",
-//         country: "USA",
-//       },
-//       more: "Focused on teaching online courses for beginners.",
-//     },
-//     course: {
-//       id: "9",
-//       name: "Basic English for Beginners",
-//     },
-//     joinDate: new Date("2022-10-05"),
-//     kindJob: "Part-time",
-//     description: "Teaching foundational English skills.",
-//     earning: 2500,
-//     point: 4.5,
-//     status: "Active",
-//   },
-//   {
-//     teacher: {
-//       id: "5", // David Lee
-//       name: "David Lee",
-//       birth: new Date("1995-03-08"),
-//       email: "david.lee@example.com",
-//       phone: "+3344556677",
-//       ava: "/assets/images/wenjun-lin-.jpg",
-//       address: {
-//         street: "654 Maple St",
-//         city: "San Francisco",
-//         country: "USA",
-//       },
-//       more: "Focused on teaching online courses for beginners.",
-//     },
-//     course: {
-//       id: "10",
-//       name: "English for Kids",
-//     },
-//     joinDate: new Date("2022-11-01"),
-//     kindJob: "Part-time",
-//     description: "Teaching English to children using fun and engaging methods.",
-//     earning: 2500,
-//     point: 4.5,
-//     status: "Active",
-//   },
-// ];
-
 export const PostData = [
   {
     postedUser: "Oohsehun",
@@ -558,5 +290,193 @@ export const userData = [
     bio: "Đam mê số liệu và phân tích.",
     hobbies: ["Đọc sách", "Tập thể dục"],
     enrolled: new Date("1995-06-15"),
+  },
+];
+
+// Các ví dụ dữ liệu mẫu cho Post
+
+type Post = {
+  id: number;
+  userId: number;
+  content: string;
+  createAt: Date;
+  location: string;
+  hashtag: string[];
+  tag: string[];
+  privacy: string;
+  attachment: { id: number; src: string }[];
+  like: number;
+  share: number;
+  reaction: { type: string; count: number }[];
+  comment: {
+    commentId: number;
+    author: string;
+    createAt: Date;
+    content: string;
+    parentComment?: number;
+  }[];
+};
+
+export const posts: Post[] = [
+  {
+    id: 1,
+    userId: 101,
+    content: "Enjoying the beautiful sunset at the beach!",
+    createAt: new Date("2024-10-25T17:30:00"),
+    location: "Miami Beach",
+    hashtag: ["#sunset", "#beach", "#relax"],
+    tag: ["@johndoe"],
+    privacy: "public",
+
+    attachment: [
+      { id: 1, src: "/assets/images/background.jpg" },
+      { id: 2, src: "/assets/images/background.jpg" },
+      { id: 3, src: "/assets/images/background.jpg" },
+      { id: 4, src: "/assets/images/background.jpg" },
+      { id: 5, src: "/assets/images/background.jpg" },
+      { id: 6, src: "/assets/images/background.jpg" },
+      { id: 7, src: "/assets/images/background.jpg" },
+      { id: 8, src: "/assets/images/background.jpg" },
+      { id: 9, src: "/assets/images/background.jpg" },
+      { id: 10, src: "/assets/images/background.jpg" },
+      { id: 11, src: "/assets/images/background.jpg" },
+      { id: 12, src: "/assets/images/background.jpg" },
+      { id: 13, src: "/assets/images/background.jpg" },
+      { id: 14, src: "/assets/images/background.jpg" },
+      { id: 15, src: "/assets/images/background.jpg" },
+      { id: 16, src: "/assets/images/background.jpg" },
+    ],
+    like: 120,
+    share: 15,
+    reaction: [
+      { type: "like", count: 80 },
+      { type: "love", count: 30 },
+      { type: "wow", count: 10 },
+    ],
+    comment: [
+      {
+        commentId: 201,
+        author: "johndoe",
+        createAt: new Date("2024-10-25T18:00:00"),
+        content: "Amazing view!",
+      },
+      {
+        commentId: 202,
+        author: "janesmith",
+        createAt: new Date("2024-10-25T18:10:00"),
+        content: "Wish I was there!",
+        parentComment: 201,
+      },
+    ],
+  },
+  {
+    id: 2,
+    userId: 102,
+    content: "Just finished my first marathon!",
+    createAt: new Date("2024-09-15T10:00:00"),
+    location: "Central Park, NYC",
+    hashtag: ["#marathon", "#fitness", "#achievement"],
+    tag: ["@runningclub"],
+    privacy: "public",
+    attachment: [{ id: 1, src: "/assets/images/background.jpg" }],
+    like: 200,
+    share: 30,
+    reaction: [
+      { type: "like", count: 150 },
+      { type: "congrats", count: 40 },
+      { type: "inspired", count: 10 },
+    ],
+    comment: [
+      {
+        commentId: 203,
+        author: "runningfan",
+        createAt: new Date("2024-09-15T11:00:00"),
+        content: "Congrats on finishing!",
+      },
+    ],
+  },
+  {
+    id: 3,
+    userId: 103,
+    content: "Check out my latest painting!",
+    createAt: new Date("2024-10-10T14:00:00"),
+    location: "Studio Art Room",
+    hashtag: ["#art", "#painting", "#hobby"],
+    tag: [],
+    privacy: "public",
+    attachment: [{ id: 1, src: "/assets/images/background.jpg" }],
+    like: 300,
+    share: 45,
+    reaction: [
+      { type: "like", count: 180 },
+      { type: "love", count: 90 },
+      { type: "wow", count: 30 },
+    ],
+    comment: [
+      {
+        commentId: 204,
+        author: "artlover",
+        createAt: new Date("2024-10-10T14:30:00"),
+        content: "This is incredible!",
+      },
+    ],
+  },
+  {
+    id: 4,
+    userId: 104,
+    content: "Visiting Japan has been a dream come true.",
+    createAt: new Date("2024-08-20T09:00:00"),
+    location: "Tokyo, Japan",
+    hashtag: ["#travel", "#japan", "#adventure"],
+    tag: ["@travelbuddy"],
+    privacy: "public",
+    attachment: [{ id: 1, src: "/assets/images/background.jpg" }],
+    like: 400,
+    share: 100,
+    reaction: [
+      { type: "like", count: 250 },
+      { type: "love", count: 100 },
+      { type: "wow", count: 50 },
+    ],
+    comment: [
+      {
+        commentId: 205,
+        author: "wanderlust",
+        createAt: new Date("2024-08-20T09:15:00"),
+        content: "Japan is amazing!",
+      },
+      {
+        commentId: 206,
+        author: "travelfreak",
+        createAt: new Date("2024-08-20T09:30:00"),
+        content: "Can't wait to go there myself!",
+      },
+    ],
+  },
+  {
+    id: 5,
+    userId: 105,
+    content: "Trying out a new recipe for dinner tonight.",
+    createAt: new Date("2024-07-18T18:00:00"),
+    location: "Home Kitchen",
+    hashtag: ["#cooking", "#recipe", "#foodie"],
+    tag: [],
+    privacy: "public",
+    attachment: [{ id: 1, src: "/assets/images/background.jpg" }],
+    like: 150,
+    share: 20,
+    reaction: [
+      { type: "like", count: 100 },
+      { type: "yum", count: 30 },
+      { type: "love", count: 20 },
+    ],
+    comment: [
+      {
+        commentId: 207,
+        author: "foodlover",
+        createAt: new Date("2024-07-18T18:20:00"),
+        content: "Looks delicious!",
+      },
+    ],
   },
 ];

@@ -2,7 +2,7 @@ import React from "react";
 
 type LabelValueProps = {
   label: string;
-  value: string;
+  value?: string;
   labelColor?: string; // Màu cho label
   valueColor?: string; // Màu cho value
 };

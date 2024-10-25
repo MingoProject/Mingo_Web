@@ -25,19 +25,6 @@ type User = {
 
 type FriendType = "all" | "bestFriend" | "follower" | "block" | "following";
 
-interface Friend {
-  id: number;
-  name: string;
-}
-
-interface UserWithFriends {
-  id: number;
-  name: string;
-  friends: {
-    [key in FriendType]: Friend[];
-  };
-}
-
 const columns = [
   {
     header: "Username",

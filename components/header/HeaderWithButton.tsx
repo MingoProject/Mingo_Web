@@ -41,7 +41,17 @@ const HeaderWithButton = ({ title, type }: { title: string; type: number }) => {
         </div>
       ) : (
         <div className="flex gap-4">
-          <MyButton title="Delete" />
+          <MyButton
+            title="Delete"
+            backgroundColor="bg-red-500"
+            color="text-white"
+            icon={faTrashCan}
+            iconPosition="left"
+            width="w-[90px]"
+            height="h-[35px]"
+            fontSize="text-[14px]"
+            fontWeight="font-medium"
+          />
           <MyButton
             title="Confirm"
             backgroundColor="bg-green-500"
