@@ -1,4 +1,4 @@
-import { SidebarLink } from "@/types";
+import { NavbarLink, SidebarLink } from "@/types";
 
 export const themes = [
   { value: "light", label: "Light", icon: "/assets/icons/sun.svg" },
@@ -6,7 +6,7 @@ export const themes = [
   { value: "system", label: "System", icon: "/assets/icons/computer.svg" },
 ];
 
-export const sidebarLinks: SidebarLink[] = [
+export const navbarLinks: NavbarLink[] = [
   {
     icon: "fluent:home-20-regular",
     route: "/",
@@ -24,8 +24,31 @@ export const sidebarLinks: SidebarLink[] = [
   },
   {
     icon: "ant-design:message-outlined",
-    route: "/messages",
+    route: "/message",
     label: "Messages",
+  },
+];
+
+export const sidebarLinks: SidebarLink[] = [
+  {
+    icon: "majesticons:home-line",
+    route: "/dashboard",
+    label: "Dashboard",
+  },
+  {
+    icon: "hugeicons:contact-book",
+    route: "/user",
+    label: "User",
+  },
+  {
+    icon: "hugeicons:note-edit",
+    route: "/post",
+    label: "Post",
+  },
+  {
+    icon: "carbon:course",
+    route: "/report",
+    label: "Report",
   },
 ];
 

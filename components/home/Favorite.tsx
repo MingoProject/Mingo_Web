@@ -32,7 +32,7 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
         onClick={onClose}
       ></div>
 
-      <div className="no-scrollbar relative z-10 mt-16 h-[50vh]  w-[50vw] overflow-y-auto rounded-2xl bg-white shadow-lg dark:bg-dark-100 dark:text-white">
+      <div className="no-scrollbar text-dark100_light500 background-light700_dark300 relative z-10  mt-16 h-[50vh] w-[50vw] overflow-y-auto rounded-2xl shadow-lg ">
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white ">
@@ -45,12 +45,12 @@ const Favorite = ({ onClose, posts }: FavoritePose) => {
             />
           </div>
           {posts.map((item) => (
-            <div key={item.id} className="px-4">
+            <div key={item.id} className="w-full px-4">
               <div className="flex w-full flex-col  py-2">
                 <p className="text-sm ">
                   {format(item.created_at, "dd-MM-yyyy")}
                 </p>
-                <div>
+                <div className="w-full">
                   {item.posts.map((it) => (
                     <PostYouLikeCard key={it.id} postYouLike={it} />
                   ))}
