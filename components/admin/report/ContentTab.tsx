@@ -49,7 +49,6 @@ const ContentTab = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
-  //Sorted
   const [sortConfig, setSortConfig] = useState<{
     key: SortableKeys;
     direction: "ascending" | "descending";
@@ -145,22 +144,22 @@ const ContentTab = () => {
   const renderRow = (item: UserTable) => (
     <tr
       key={item.postId}
-      className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
+      className="dark:text-dark-360 my-4 border-t border-gray-300  text-sm "
     >
       <td className="px-4 py-2" key={item.postId}>
         <Link href={`/report/content/${item.postId}`}>
-          <h3>{item.postedUser}</h3>
-          <p className="text-xs text-gray-500">#00{item.postId}</p>
+          <h3 className="text-base">{item.postedUser}</h3>
+          <p className="text-base text-gray-500">#00{item.postId}</p>
         </Link>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">{item.postedUser}</p>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.postId}>
+        <p className="text-base ">{item.postedUser}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">
-          <div className="flex flex-col w-full ">
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.postId}>
+        <p className="text-base ">
+          <div className="flex w-full flex-col ">
             <p>{format(item.createdDate, "PPP")}</p>
-            <p className="text-xs text-gray-500 pt-1">
+            <p className="pt-1 text-base text-gray-500">
               {new Date(item.createdDate).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -170,11 +169,11 @@ const ContentTab = () => {
           </div>
         </p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm ">{item.content}</p>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.postId}>
+        <p className="text-base ">{item.content}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm text-gray-500">
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.postId}>
+        <p className="text-base text-gray-500">
           {item.type === 0 ? (
             <MyButton
               title="Image"
@@ -218,8 +217,8 @@ const ContentTab = () => {
           )}
         </p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.postId}>
-        <p className="text-sm text-gray-500">
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.postId}>
+        <p className="text-base text-gray-500">
           {item.type === 0 || item.type === 1 ? (
             <MyButton
               title="Considered"
@@ -257,7 +256,7 @@ const ContentTab = () => {
         />
       </div>
 
-      <div className="p-4 mt-4 text-sm flex items-center justify-center md:justify-between text-gray-500 dark:text-dark-360">
+      <div className="mt-4 flex items-center justify-center p-4 text-sm text-gray-500 md:justify-between">
         <PaginationUI paginationUI={paginationUI} />
       </div>
     </div>

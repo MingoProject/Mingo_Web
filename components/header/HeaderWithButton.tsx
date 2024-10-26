@@ -8,9 +8,9 @@ import {
 
 const HeaderWithButton = ({ title, type }: { title: string; type: number }) => {
   return (
-    <div className="flex justify-between items-center w-full">
+    <div className="flex w-full items-center justify-between">
       <div className="flex w-full flex-col">
-        <p className="text-[32px] text-light-500">{title}</p>
+        <p className="text-dark100_light500 text-[32px]">{title}</p>
         <p className="text-[16px] text-primary-100">
           Let's check your update today!
         </p>
@@ -68,6 +68,7 @@ const HeaderWithButton = ({ title, type }: { title: string; type: number }) => {
             backgroundColor="bg-gray-200"
             icon={faXmark}
             iconPosition="left"
+            color="text-light-500"
             width="w-[90px]"
             height="h-[35px]"
             fontSize="text-[14px]"

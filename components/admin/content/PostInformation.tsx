@@ -68,7 +68,6 @@ const PostInformation = ({ item }: { item: Post }) => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
-  //Sorted
   const [sortConfig, setSortConfig] = useState<{
     key: SortableKeys;
     direction: "ascending" | "descending";
@@ -135,22 +134,22 @@ const PostInformation = ({ item }: { item: Post }) => {
     return item.comment.map((comment) => (
       <tr
         key={comment.commentId} // Sử dụng commentId làm key
-        className="border-t border-gray-300 my-4 text-sm dark:text-dark-360"
+        className="text-dark100_light500 my-4 border-t border-gray-300 text-sm"
       >
         <td className="px-4 py-2">
           <Link href={`/user/${item.userId}`}>
-            <h3>{comment.author}</h3>
-            <p className="text-xs text-gray-500">#00{item.id}</p>
+            <h3 className="text-base">{comment.author}</h3>
+            <p className="text-base text-gray-500">#00{item.id}</p>
           </Link>
         </td>
-        <td className="px-4 py-2 hidden lg:table-cell">
-          <p className="text-sm">{comment.commentId}</p>
+        <td className="hidden px-4 py-2 lg:table-cell">
+          <p className="text-base">{comment.commentId}</p>
         </td>
-        <td className="px-4 py-2 hidden lg:table-cell">
-          <p className="text-sm ">
-            <div className="flex flex-col w-full ">
+        <td className="hidden px-4 py-2 lg:table-cell">
+          <p className="text-base ">
+            <div className="flex w-full flex-col ">
               <p>{format(comment.createAt, "PPP")}</p>
-              <p className="text-xs text-gray-500 pt-1">
+              <p className="pt-1 text-xs text-gray-500">
                 {new Date(comment.createAt).toLocaleTimeString("en-US", {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -160,19 +159,19 @@ const PostInformation = ({ item }: { item: Post }) => {
             </div>
           </p>
         </td>
-        <td className="px-4 py-2 hidden lg:table-cell">
-          <p className="text-sm ">{comment.content}</p>
+        <td className="hidden px-4 py-2 lg:table-cell">
+          <p className="text-base ">{comment.content}</p>
         </td>
-        <td className="px-4 py-2 hidden lg:table-cell">
-          <p className="text-sm ">{comment.parentComment ?? "N/A"}</p>
+        <td className="hidden px-4 py-2 lg:table-cell">
+          <p className="text-base ">{comment.parentComment ?? "N/A"}</p>
         </td>
       </tr>
     ));
   };
 
   return (
-    <div className="w-full py-4 flex flex-col ">
-      <div className="w-full flex gap-24 p-4 pb-0">
+    <div className="flex w-full flex-col py-4 ">
+      <div className="flex w-full gap-24 p-4 pb-0">
         <div className="flex flex-col self-center ">
           <LableValue label="Post ID" value={item.id.toString()} />
 
@@ -186,11 +185,11 @@ const PostInformation = ({ item }: { item: Post }) => {
           <LableValue label="Location" value={item.id.toString()} />
         </div>
       </div>
-      <div className="w-full px-4 flex flex-col">
+      <div className="flex w-full flex-col px-4">
         <LableValue label="Hastag" value={item.hashtag.join(", ")} />
         <LableValue label="Tag" value={item.hashtag.join(", ")} />
       </div>
-      <div className="w-full flex gap-60 px-4">
+      <div className="flex w-full gap-60 px-4">
         <div className="flex flex-col self-center ">
           <LableValue label="Type" value={"status"} />
         </div>
@@ -198,11 +197,11 @@ const PostInformation = ({ item }: { item: Post }) => {
           <LableValue label="Privacy" value={item.privacy} />
         </div>
       </div>
-      <div className="w-full px-4 flex flex-col">
+      <div className="flex w-full flex-col px-4">
         <LableValue label="Like" value={item.like.toString()} />
         <LableValue label="Share" value={item.share.toString()} />
       </div>
-      <div className="w-full px-4 flex flex-col gap-4">
+      <div className="flex w-full flex-col gap-4 px-4">
         <LableValue label="Attachment" />
         <div className="grid grid-cols-5 gap-4">
           {item.attachment
@@ -214,7 +213,7 @@ const PostInformation = ({ item }: { item: Post }) => {
                 height={165}
                 width={195}
                 alt="attachment"
-                className="w-full h-auto object-cover"
+                className="h-auto w-full object-cover"
               />
             ))}
         </div>

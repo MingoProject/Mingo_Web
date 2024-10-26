@@ -14,9 +14,9 @@ const LabelValue = ({
   valueColor = "font-bold", // Mặc định màu cho value
 }: LabelValueProps) => {
   return (
-    <p className="flex gap-2 text-[18px]">
+    <p className="flex gap-2 text-[16px]">
       <span className={labelColor}>{label}:</span>
-      <span className={`${valueColor} text-[18px]`}>{value}</span>{" "}
+      <span className={`${valueColor} text-[16px]`}>{value}</span>{" "}
       {/* Sử dụng màu từ prop */}
     </p>
   );

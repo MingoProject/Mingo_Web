@@ -6,6 +6,8 @@ import { format } from "date-fns";
 import Done from "@/components/cards/Done";
 import InProgress from "@/components/cards/InProgress";
 import Chart from "./Chart";
+import { faBell } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 type Report = {
   id: number;
@@ -107,7 +109,7 @@ const BodyTable = () => {
   const renderRow = (item: Report) => (
     <tr
       key={item.id}
-      className="dark:text-dark-360 my-4 border-t border-gray-300 text-xs  md:text-sm "
+      className="text-dark100_light500 my-4 border-t border-gray-300 text-xs  md:text-sm "
     >
       <td className="break-words p-2 text-xs md:px-4">
         <Link href={`/course/${item.id}`}>
@@ -175,15 +177,27 @@ const BodyTable = () => {
   };
 
   return (
-    <div className="mt-4 flex h-80  w-full rounded-[10px] border p-4 shadow-md">
-      <div className="no-scrollbar h-full w-2/3 overflow-auto">
-        <Table
-          columns={columns}
-          renderRow={renderRow}
-          data={sorted} // Pass sorted data to the table
-          onSort={(key: string) => requestSort(key as SortableKeys)} // Sorting function
-        />
+    <div className="text-dark100_light500 mt-4 flex h-80  w-full rounded-[10px] border p-4 shadow-md">
+      <div className="w-2/3">
+        <p className="flex items-center gap-4 border-b border-gray-300 pb-1">
+          <FontAwesomeIcon
+            icon={faBell}
+            className="text-dark100_light500 mb-2"
+          />
+          <span className="text-dark100_light500 text-[20px]">
+            Recent notification
+          </span>
+        </p>
+        <div className="no-scrollbar size-full h-60 overflow-auto">
+          <Table
+            columns={columns}
+            renderRow={renderRow}
+            data={sorted} // Pass sorted data to the table
+            onSort={(key: string) => requestSort(key as SortableKeys)} // Sorting function
+          />
+        </div>
       </div>
+
       <div className=" w-1/3 p-4 py-0">
         <Chart />
       </div>

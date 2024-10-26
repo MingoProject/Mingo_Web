@@ -56,7 +56,6 @@ const page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
-  //Sorted
   const [sortConfig, setSortConfig] = useState<{
     key: SortableKeys;
     direction: "ascending" | "descending";
@@ -146,23 +145,20 @@ const page = () => {
   }
 
   const renderRow = (item: UserTable) => (
-    <tr
-      key={item.id}
-      className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
-    >
+    <tr key={item.id} className=" my-4 border-t border-gray-300  text-sm ">
       <td className="px-4 py-2" key={item.id}>
         <Link href={`/user/${item.id}`}>
-          <h3>{item.fullname}</h3>
-          <p className="text-xs text-gray-500">#00{item.id}</p>
+          <h3 className="text-base">{item.fullname}</h3>
+          <p className="text-base text-gray-500">#00{item.id}</p>
         </Link>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.fullname}</p>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
+        <p className="text-base ">{item.fullname}</p>
       </td>
-      <td className="px-4 py-2 hidden md:table-cell" key={item.id}>
-        <div className="flex flex-col w-full ">
-          <p>{format(item.enrolled, "PPP")}</p>
-          <p className="text-xs text-gray-500 pt-1">
+      <td className="hidden px-4 py-2 md:table-cell" key={item.id}>
+        <div className="flex w-full flex-col ">
+          <p className="text-base">{format(item.enrolled, "PPP")}</p>
+          <p className="pt-1 text-base text-gray-500">
             {new Date(item.enrolled).toLocaleTimeString("en-US", {
               hour: "2-digit",
               minute: "2-digit",
@@ -171,42 +167,42 @@ const page = () => {
           </p>
         </div>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.gmail}</p>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
+        <p className="text-base text-gray-500">{item.gmail}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
-        <p className="text-sm text-gray-500">{item.phone}</p>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
+        <p className="text-base text-gray-500">{item.phone}</p>
       </td>
 
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         {item.status ? <Active /> : <Off />}
       </td>
     </tr>
   );
   return (
-    <div className="w-full h-full flex flex-col p-4">
+    <div className="background-light700_dark400 text-dark100_light500 flex size-full flex-col p-4 text-base">
       <Headers />
-      <div className="w-full rounded-md shadow-md mt-4 dark:bg-light-300">
+      <div className=" mt-4 w-full rounded-md shadow-md">
         {/* TOP */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 w-full dark:text-dark-360 rounded-md mt-0">
-          <div className="px-4 w-full">
+        <div className=" mt-0 flex w-full flex-col items-center justify-between gap-4 rounded-md md:flex-row">
+          <div className="w-full px-4">
             <TableSearch onSearch={setSearchQuery} />
           </div>
-          <div className="flex justify-between items-center gap-4 p-4">
+          <div className="flex items-center justify-between gap-4 p-4">
             <Menubar className="relative border-none bg-transparent py-4 shadow-none">
               <MenubarMenu>
                 <MenubarTrigger className="flex items-center gap-2">
-                  <button className="flex text-sm items-center py-2 px-4 border-2 dark:border-light100_dark400 gap-1 dark:text-dark-360 h-[35px] text-dark360_light360 shadow-md hover:opacity-75 transition-opacity duration-300 rounded-lg">
+                  <button className=" flex h-[35px] items-center gap-1 rounded-lg border-2 px-4 py-2 text-sm shadow-md transition-opacity duration-300 hover:opacity-75">
                     <Icon
                       icon="tabler:adjustments-horizontal"
                       width={14}
                       height={14}
                       className="text-gray-800 dark:text-white"
                     />
-                    Filter
+                    <p className="text-dark100_light500">Filter</p>
                   </button>
                 </MenubarTrigger>
-                <MenubarContent className="text-dark100_light500 bg-gray-50 absolute top-full right-[-3rem] z-50 mt-3 h-auto w-40 font-sans text-sm shadow-md">
+                <MenubarContent className="text-dark100_light500 absolute -right-12 top-full z-50 mt-3 h-auto w-40 bg-gray-50 font-sans text-sm shadow-md">
                   <MenubarItem
                     className="flex w-full cursor-pointer items-center justify-start px-2 text-center hover:bg-primary-100 hover:text-white"
                     onSelect={() => setFilterOption("online")}
@@ -235,7 +231,7 @@ const page = () => {
           />
         </div>
         {/* PAGINATION */}
-        <div className="p-4 mt-4 text-sm flex items-center justify-center md:justify-between text-gray-500 dark:text-dark-360">
+        <div className=" mt-4 flex items-center justify-center p-4 text-sm text-gray-500 md:justify-between">
           <PaginationUI paginationUI={paginationUI} />
         </div>
       </div>
