@@ -13,7 +13,7 @@ const TableSearch = ({
     onSearch(e.target.value);
   };
   return (
-    <div className="flex-1 h-[38px] flex sm:w-auto items-center gap-2 text-xs rounded-full px-2 border-2">
+    <div className="flex h-[38px] flex-1 items-center gap-2 rounded-full border px-2 text-xs sm:w-auto">
       <Icon
         icon="solar:magnifer-linear"
         width={20}
@@ -25,7 +25,7 @@ const TableSearch = ({
         placeholder=""
         value={searchQuery}
         onChange={handleSearch}
-        className="w-full p-2 bg-transparent outline-none"
+        className="text-dark100_light500 w-full bg-transparent p-2 text-[16px] outline-none"
       />
     </div>
   );

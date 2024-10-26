@@ -135,24 +135,21 @@ const FriendList = () => {
   }
 
   const renderRow = (item: User) => (
-    <tr
-      key={item.id}
-      className="border-t border-gray-300 my-4 text-sm  dark:text-dark-360 "
-    >
+    <tr key={item.id} className=" my-4 border-t border-gray-300  text-sm ">
       <td className="px-4 py-2" key={item.id}>
         <Link href={`/post/${item.id}`}>
           <h3>{item.fullname}</h3>
           <p className="text-xs text-gray-500">#00{item.id}</p>
         </Link>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         <p className="text-sm ">{item.fullname}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         <p className="text-sm ">
-          <div className="flex flex-col w-full ">
+          <div className="flex w-full flex-col ">
             <p>{format(item.enrolled, "PPP")}</p>
-            <p className="text-xs text-gray-500 pt-1">
+            <p className="pt-1 text-xs text-gray-500">
               {new Date(item.enrolled).toLocaleTimeString("en-US", {
                 hour: "2-digit",
                 minute: "2-digit",
@@ -162,13 +159,13 @@ const FriendList = () => {
           </div>
         </p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         <p className="text-sm ">{item.gmail}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         <p className="text-sm ">{item.phone}</p>
       </td>
-      <td className="px-4 py-2 hidden lg:table-cell" key={item.id}>
+      <td className="hidden px-4 py-2 lg:table-cell" key={item.id}>
         <p className="text-sm text-gray-500">
           {item.status === 0 ? <Off /> : <Active />}
         </p>
@@ -177,35 +174,35 @@ const FriendList = () => {
   );
 
   return (
-    <div className="w-full flex flex-col py-6">
+    <div className="flex w-full flex-col py-6">
       <TableSearch onSearch={setSearchQuery} />
-      <div className="flex flex-col lg:flex-row gap-10 w-full py-4 text-sm font-bold dark:text-white">
+      <div className="flex w-full flex-col gap-10 py-4 text-sm font-bold dark:text-white lg:flex-row">
         <button
-          className={`flex items-center gap-1 ${activeTab === "all" ? "text-red-500 opacity-100" : "opacity-40"}`}
+          className={`flex items-center gap-1 ${activeTab === "all" ? "text-primary-100 opacity-100" : "opacity-40"}`}
           onClick={() => setActiveTab("all")}
         >
           All Friends
         </button>
         <button
-          className={`flex items-center gap-1 ${activeTab === "bestFriend" ? "text-red-500 opacity-100" : "opacity-40"}`}
+          className={`flex items-center gap-1 ${activeTab === "bestFriend" ? "text-primary-100 opacity-100" : "opacity-40"}`}
           onClick={() => setActiveTab("bestFriend")}
         >
           Best Friends
         </button>
         <button
-          className={`flex items-center gap-1 ${activeTab === "following" ? "text-red-500 opacity-100" : "opacity-40"}`}
+          className={`flex items-center gap-1 ${activeTab === "following" ? "text-primary-100 opacity-100" : "opacity-40"}`}
           onClick={() => setActiveTab("following")}
         >
           Following
         </button>
         <button
-          className={`flex items-center gap-1 ${activeTab === "block" ? "text-red-500 opacity-100" : "opacity-40"}`}
+          className={`flex items-center gap-1 ${activeTab === "block" ? "text-primary-100 opacity-100" : "opacity-40"}`}
           onClick={() => setActiveTab("block")}
         >
           Blocked
         </button>
         <button
-          className={`flex items-center gap-1 ${activeTab === "follower" ? "text-red-500 opacity-100" : "opacity-40"}`}
+          className={`flex items-center gap-1 ${activeTab === "follower" ? "text-primary-100 opacity-100" : "opacity-40"}`}
           onClick={() => setActiveTab("follower")}
         >
           Followers

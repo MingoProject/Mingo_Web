@@ -29,8 +29,8 @@ const PostedUser = ({ item }: { item: User }) => {
     router.push(`/user/${item.id}`);
   };
   return (
-    <div className="w-full pb-4  flex flex-col ">
-      <div className="w-full flex gap-24 p-4 pt-8">
+    <div className="flex w-full  flex-col pb-4 ">
+      <div className="flex w-full gap-24 p-4 pt-8">
         <div
           className="self-center rounded-[10px]"
           style={{
@@ -41,7 +41,7 @@ const PostedUser = ({ item }: { item: User }) => {
           }}
         >
           <Image
-            src="/assets/images/background.jpg"
+            src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
             alt="background"
             layout="fill" // Lấp đầy khung
             objectFit="cover" // Cắt ảnh để phù hợp với khung

@@ -16,7 +16,7 @@ const Table = ({
   return (
     <table className="w-full border-collapse">
       <thead>
-        <tr className="dark:text-dark-360 text-left text-xs md:text-sm">
+        <tr className="text-dark100_light500 text-left text-xs md:text-sm">
           {columns.map((col) => (
             <th
               key={col.accessor}
@@ -25,12 +25,12 @@ const Table = ({
               <div className="flex items-center">
                 <span>{col.header}</span>
                 <button
-                  className="dark:text-dark-360 inline-flex items-center px-2"
+                  className="text-dark100_light500 inline-flex items-center px-2"
                   onClick={() => onSort(col.accessor)} // Pass column key for sorting
                 >
                   <Icon
                     icon={sortIcon}
-                    className="text-gray-800 dark:text-white"
+                    className="text-dark100_light500"
                     width={18}
                     height={18}
                   />

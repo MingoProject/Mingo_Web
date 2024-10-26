@@ -77,7 +77,7 @@ const chartConfig = {
 const Chart = () => {
   return (
     <Card className="flex size-full flex-col border-none">
-      <CardHeader className="items-center pb-0">
+      <CardHeader className="text-dark100_light500 items-center pb-0">
         <CardDescription>Last month</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-1 items-center justify-center pb-0">
@@ -156,15 +156,15 @@ const Chart = () => {
             icon={faSquare}
             className="text-[16px] text-primary-100"
           />
-          <p className="text-green-500 pt-1">Done</p>
+          <p className="pt-1 text-green-500">Done</p>
         </div>
         <div className="flex w-1/5 items-center gap-2 font-medium leading-none">
           <FontAwesomeIcon
             icon={faSquare}
-            className="rounded-[3px] border border-primary-100 text-[14px] text-white"
+            className="rounded-[3px] text-[14px] text-white"
           />
 
-          <p className="text-red-500 pt-1 whitespace-nowrap">In progress</p>
+          <p className="whitespace-nowrap pt-1 text-red-500">In progress</p>
         </div>
       </CardFooter>
     </Card>

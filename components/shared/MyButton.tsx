@@ -80,7 +80,7 @@ const MyButton: React.FC<MyButtonProps> = ({
       {icon && iconPosition === "left" && (
         <FontAwesomeIcon icon={icon} className="mr-2" /> // Icon on the left
       )}
-      <span>{title}</span>
+      <span className={`${color}`}>{title}</span>
       {icon && iconPosition === "right" && (
         <FontAwesomeIcon icon={icon} className="ml-2" /> // Icon on the right
       )}

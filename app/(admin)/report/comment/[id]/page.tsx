@@ -24,9 +24,9 @@ const Page = ({ params }: { params: Params }) => {
   }
 
   return (
-    <div className="w-full h-full flex flex-col p-4">
+    <div className="text-dark100_light500 background-light700_dark400 flex size-full flex-col p-4">
       <HeaderWithButton title="Report User Detail" type={2} />
-      <div className="w-full shadow-sm rounded-[10px] p-4">
+      <div className="w-full rounded-[10px] p-4 shadow-sm">
         <TilteIcon title="Created User" icon={faAddressCard} />
         <PostedUser item={userDetail} />
         <TilteIcon title="Reported User" icon={faAddressCard} />

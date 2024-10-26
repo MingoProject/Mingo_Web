@@ -12,17 +12,17 @@ const Sidebar = () => {
   const pathname = usePathname();
 
   return (
-    <nav className="fixed z-50 h-screen w-64 border-r border-gray-100 bg-white p-6 shadow-md">
-      <div className="flex flex-col items-center bg-white">
+    <nav className="background-light700_dark200 fixed z-50 h-screen w-64 border-r border-gray-100 p-6 shadow-md dark:border-none">
+      <div className="background-light700_dark200 flex flex-col items-center">
         <Image
           src="/assets/images/644ca5c74a1b194f2e0fabe66f3e4d60.jpg"
           alt="Avatar"
           width={60}
           height={60}
           priority
-          className="mb-3 rounded-full"
+          className="mb-3 size-20 rounded-full object-cover"
         />
-        <Link href="/admin/dashboard" className="text-dark400_primary100">
+        <Link href="/admin/dashboard" className="text-dark100_light500">
           <p className="hidden text-center md:block">Huỳnh Nguyễn</p>
         </Link>
       </div>
@@ -30,12 +30,12 @@ const Sidebar = () => {
       <div className="mt-4 flex items-center justify-center gap-5">
         <Icon
           icon="ion:search-outline"
-          className="text-dark400_light600 mr-3 mt-2 text-2xl"
+          className="text-dark100_light500 mr-3 mt-2 text-2xl"
         />
         <Link href="/notification">
           <Icon
             icon="pepicons-pencil:bell"
-            className="text-dark400_light600 mt-2 text-2xl"
+            className="text-dark100_light500 mt-2 text-2xl"
           />
         </Link>
 
@@ -43,9 +43,7 @@ const Sidebar = () => {
       </div>
 
       <div className="mt-10">
-        <span className="text-dark400_primary100 text-sm font-medium">
-          Main menu
-        </span>
+        <span className="text-sm font-medium text-primary-100">Main menu</span>
       </div>
 
       <div className="mt-2 hidden sm:block">
@@ -59,20 +57,18 @@ const Sidebar = () => {
               key={route}
               href={route}
               className={`flex h-12 items-center gap-4 rounded-lg p-4 ${
-                isActive
-                  ? "primary-gradient text-light-500"
-                  : "text-dark400_light600"
+                isActive ? "primary-gradient text-white" : "text-light-500"
               }`}
             >
               <Icon
                 icon={icon}
                 className={`ml-2 text-2xl ${
-                  isActive ? "text-light-500" : "text-dark400_light600"
+                  isActive ? "primary-gradient text-white" : "text-light-500"
                 }`}
               />
               <p
                 className={`${
-                  isActive ? "text-light-500" : "text-dark400_light600"
+                  isActive ? "primary-gradient text-white" : "text-light-500"
                 }`}
               >
                 {label}
