@@ -14,7 +14,7 @@ import HeaderNoButton from "@/components/header/HeaderNoButton";
 import PostTab from "@/components/admin/content/PostTab";
 import MessageTab from "@/components/admin/content/MessageTab";
 
-const page = () => {
+const Page = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
@@ -45,9 +45,8 @@ const page = () => {
 
       <div className="text-dark100_light500 mt-0 flex w-full flex-col items-center justify-between gap-4 rounded-md md:flex-row">
         <TableSearch onSearch={setSearchQuery} />
-
         <div className="flex items-center justify-between gap-4 p-4">
-          <Menubar className="relative border-none bg-transparent py-4 shadow-none">
+          <Menubar className="relative border-none bg-transparent p-4 shadow-none">
             <MenubarMenu>
               <MenubarTrigger className="flex items-center gap-2">
                 <button className=" text-dark100_light500 flex h-[35px] items-center gap-1 rounded-lg border-2 px-4 py-2 text-sm shadow-md transition-opacity duration-300 hover:opacity-75">
@@ -91,12 +90,12 @@ const page = () => {
           </Menubar>
         </div>
       </div>
-      <div className="flex w-full flex-col gap-8 p-4 pt-0 text-lg font-bold dark:text-white lg:flex-row">
+      <div className="flex w-full flex-col gap-8  text-lg  font-bold dark:text-white lg:flex-row">
         <button
-          className={`flex items-center gap-1  ${
+          className={`flex items-center gap-1 ${
             activeTab === "post"
               ? "border-b border-primary-100 text-primary-100 opacity-100"
-              : "opacity-40"
+              : "text-light-600"
           }`}
           onClick={() => setActiveTab("post")}
         >
@@ -106,16 +105,16 @@ const page = () => {
           className={`flex items-center gap-1 ${
             activeTab === "message"
               ? "border-b border-primary-100 text-primary-100 opacity-100"
-              : "opacity-40"
+              : "text-light-600"
           }`}
           onClick={() => setActiveTab("message")}
         >
           Message
         </button>
       </div>
-      <div className="">{renderContent()}</div>
+      <div className="pt-2">{renderContent()}</div>
     </div>
   );
 };
 
-export default page;
+export default Page;

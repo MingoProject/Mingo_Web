@@ -16,32 +16,32 @@ const FilterPost = ({ selectedFilter, setSelectedFilter }: any) => {
   };
 
   return (
-    <Menubar className="text-dark100_light500 background-light800_dark400 w-full max-w-md">
+    <Menubar className="text-dark100_light500 background-light700_dark400 w-full max-w-md">
       <MenubarMenu>
         <MenubarTrigger className="text-sm">Filter Options</MenubarTrigger>
-        <MenubarContent className="text-dark100_light500 background-light800_dark400">
+        <MenubarContent className="text-dark100_light500 background-light700_dark400">
           {/* <MenubarLabel>Lọc bài viết theo</MenubarLabel> */}
           <MenubarItem
             onSelect={() => applyFilter("Mới nhất")}
             className={selectedFilter === "Mới nhất" ? "" : ""}
           >
-            Mới nhất
+            Newest
           </MenubarItem>
           <MenubarItem
             onSelect={() => applyFilter("Cũ nhất")}
             className={selectedFilter === "Cũ nhất" ? "" : ""}
           >
-            Cũ nhất
+            Oldest
           </MenubarItem>
           <MenubarItem
             onSelect={() => applyFilter("Hot nhất")}
             className={selectedFilter === "Hot nhất" ? " " : ""}
           >
-            Số lượt like nhiều nhất
+            Most popular
           </MenubarItem>
           <MenubarSeparator />
           <MenubarItem onSelect={() => console.log("Clear Filters")}>
-            Xóa bộ lọc
+            Delete filter
           </MenubarItem>
         </MenubarContent>
       </MenubarMenu>

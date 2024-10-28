@@ -111,7 +111,7 @@ const BodyTable = () => {
       key={item.id}
       className="text-dark100_light500 my-4 border-t border-gray-300 text-xs  md:text-sm "
     >
-      <td className="break-words p-2 text-xs md:px-4">
+      <td className="break-words p-2 text-base md:px-4">
         <Link href={`/course/${item.id}`}>
           <h3>{item.createdUser}</h3>
           <p className=" text-gray-500">#00{item.id}</p>
@@ -177,7 +177,7 @@ const BodyTable = () => {
   };
 
   return (
-    <div className="text-dark100_light500 mt-4 flex h-80  w-full rounded-[10px] border p-4 shadow-md">
+    <div className="text-dark100_light500 mr-10 mt-4 flex h-80  w-full rounded-[10px] border p-4 shadow-md">
       <div className="w-2/3">
         <p className="flex items-center gap-4 border-b border-gray-300 pb-1">
           <FontAwesomeIcon
@@ -185,7 +185,7 @@ const BodyTable = () => {
             className="text-dark100_light500 mb-2"
           />
           <span className="text-dark100_light500 text-[20px]">
-            Recent notification
+            Recent reports
           </span>
         </p>
         <div className="no-scrollbar size-full h-60 overflow-auto">

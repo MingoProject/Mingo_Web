@@ -145,7 +145,7 @@ const UserTab = () => {
   const renderRow = (item: UserTable) => (
     <tr
       key={item.postId}
-      className="text-dark100_light500  my-4 border-t border-gray-300  text-sm "
+      className="text-dark100_light500  mb-4 mt-3 border-t border-gray-300  text-sm "
     >
       <td className="px-4 py-2" key={item.postId}>
         <Link href={`/report/${item.postId}`}>

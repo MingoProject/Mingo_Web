@@ -3,6 +3,45 @@ import Image from "next/image";
 import { useEffect, useState } from "react";
 import router from "next/router";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
+import InfomationUser from "@/components/forms/personalPage/InfomationUser";
+
+const mockUserData = {
+  _id: "6718b362124dc3d07eb0fc1d",
+  username: "123",
+  fullname: "Huỳnh Nguyễn Thị Như",
+  numberphone: "0348775966",
+  email: "huynh@gmail.com",
+  birthday: "2024-10-22T00:00:00.000+00:00",
+  gender: "female",
+  password: "$2a$10$.DclnSpDCcXEjR0p0F8FS.dtH70nrWuQPVxPFH7Le.iYS..72YJl2",
+  avatar: "https://randomuser.me/api/portraits/women/75.jpg", // link ảnh giả
+  background: "https://source.unsplash.com/random/800x600", // link ảnh nền giả
+  address: {
+    street: "456 Le Duan",
+    district: "District 1",
+    city: "Ho Chi Minh City",
+    country: "Vietnam",
+  },
+
+  job: {
+    title: "Data Analyst",
+    company: "Tech Solutions",
+    location: "Ho Chi Minh City",
+  },
+  hobbies: [
+    { title: "Reading", icon: "solar:book-2-broken" }, // Cập nhật với icon
+    { title: "Cooking", icon: "game-icons:rice-cooker" },
+    { title: "Yoga", icon: "iconoir:yoga" },
+  ],
+  bio: "A tech enthusiast who loves data and coding.",
+  nickName: "Huỳnh Huỳnh",
+  friends: ["6718b362124dc3d07eb0fc2a", "6718b362124dc3d07eb0fc3b"], // giả định danh sách bạn bè
+  bestFriends: ["6718b362124dc3d07eb0fc2a"], // giả định danh sách bạn thân
+  following: ["6718b362124dc3d07eb0fc4c", "6718b362124dc3d07eb0fc5d"], // giả định danh sách theo dõi
+  block: ["6718b362124dc3d07eb0fc6e"], // giả định danh sách chặn
+  isAdmin: false,
+  userId: "1b95baed-bfca-4e51-b32c-16478884edad",
+};
 
 function Page() {
   const [activeTab, setActiveTab] = useState("posts");
@@ -22,7 +61,7 @@ function Page() {
       <div className="flex">
         <div>
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-            Trang cá nhân
+            Personal page
           </div>
           <div className="ml-[20%]">
             <span className="text-dark100_light500 text-[36px]">Hello,</span>
@@ -55,7 +94,8 @@ function Page() {
         </div>
         <div className="ml-[5%]">
           <h1 className="text-dark100_light500 text-[25px]">
-            {userInfo?.fullname}
+            {userInfo?.fullname}{" "}
+            {mockUserData.nickName && <span> ({mockUserData.nickName})</span>}
           </h1>
           <div className="mt-[30px]">
             <span className="text-dark100_light500">
@@ -68,7 +108,14 @@ function Page() {
           </div>
         </div>
       </div>
-      <div className="mx-[20%] my-5 flex justify-around">
+      <div>
+        <InfomationUser
+          job={mockUserData.job}
+          hobbies={mockUserData.hobbies}
+          address={mockUserData.address}
+        />
+      </div>
+      <div className="m-10 mx-[20%] mb-5 flex justify-around">
         <span
           className={`cursor-pointer ${
             activeTab === "posts"
@@ -77,7 +124,7 @@ function Page() {
           }`}
           onClick={() => setActiveTab("posts")}
         >
-          Bài viết
+          Posts
         </span>
         <span
           className={`cursor-pointer ${
@@ -87,7 +134,7 @@ function Page() {
           }`}
           onClick={() => setActiveTab("friends")}
         >
-          Bạn bè
+          Friends
         </span>
         <span
           className={`cursor-pointer ${
@@ -97,7 +144,7 @@ function Page() {
           }`}
           onClick={() => setActiveTab("photos")}
         >
-          Ảnh
+          Pictures
         </span>
         <span
           className={`cursor-pointer ${
@@ -107,7 +154,7 @@ function Page() {
           }`}
           onClick={() => setActiveTab("videos")}
         >
-          Video
+          Videos
         </span>
       </div>
       <div className="mx-[100px] my-5">

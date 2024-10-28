@@ -16,17 +16,21 @@ const Table = ({
   return (
     <table className="w-full border-collapse">
       <thead>
-        <tr className="text-dark100_light500 text-left text-xs md:text-sm">
+        <tr className="text-dark100_light500 text-left text-lg md:text-base">
           {columns.map((col) => (
             <th
               key={col.accessor}
-              className={`relative p-2 md:p-4 ${col.className || ""}`}
+              className={`text-dark100_light500 relative p-2 text-lg md:p-4 ${col.className || ""}`}
             >
               <div className="flex items-center">
-                <span>{col.header}</span>
+                <span className="text-dark100_light500  text-base">
+                  {" "}
+                  {/* Thay đổi cỡ chữ tại đây */}
+                  {col.header}
+                </span>
                 <button
                   className="text-dark100_light500 inline-flex items-center px-2"
-                  onClick={() => onSort(col.accessor)} // Pass column key for sorting
+                  onClick={() => onSort(col.accessor)}
                 >
                   <Icon
                     icon={sortIcon}

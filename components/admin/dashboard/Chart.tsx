@@ -70,7 +70,7 @@ const chartConfig = {
   },
   done: {
     label: "Done",
-    color: "pink",
+    color: "#617F67",
   },
 } satisfies ChartConfig;
 
@@ -91,7 +91,7 @@ const Chart = () => {
               data={chartData}
               dataKey="visitors"
               nameKey="browser"
-              stroke="pink"
+              stroke="#617F67"
               strokeWidth={1}
               fontSize={12}
               labelLine={false}
@@ -161,7 +161,7 @@ const Chart = () => {
         <div className="flex w-1/5 items-center gap-2 font-medium leading-none">
           <FontAwesomeIcon
             icon={faSquare}
-            className="rounded-[3px] text-[14px] text-white"
+            className="rounded-[3px] border border-primary-100 text-[14px] text-white"
           />
 
           <p className="whitespace-nowrap pt-1 text-red-500">In progress</p>

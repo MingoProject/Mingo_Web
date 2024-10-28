@@ -52,7 +52,7 @@ const columns = [
   { header: "Status", accessor: "status", className: "hidden lg:table-cell" },
 ];
 
-const page = () => {
+const Page = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
 
@@ -117,8 +117,8 @@ const page = () => {
 
   const [currentPage, setCurrentPage] = useState(1);
   const rowsPerPage = 8;
-  const totalPages = Math.ceil(userData.length / rowsPerPage);
-  const totalResult = filterData.length;
+  // const totalPages = Math.ceil(userData.length / rowsPerPage);
+  // const totalResult = filterData.length;
   const startIndex = (currentPage - 1) * rowsPerPage;
   const endIndex = startIndex + rowsPerPage;
   const currentData = filterData.slice(startIndex, endIndex);
@@ -197,7 +197,7 @@ const page = () => {
                       icon="tabler:adjustments-horizontal"
                       width={14}
                       height={14}
-                      className="text-gray-800 dark:text-white"
+                      className="text-dark100_light500"
                     />
                     <p className="text-dark100_light500">Filter</p>
                   </button>
@@ -239,4 +239,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

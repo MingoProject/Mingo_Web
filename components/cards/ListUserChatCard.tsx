@@ -72,11 +72,15 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
               )}
             </div>
             <div className="hidden w-2/3 gap-1 text-xs md:flex md:flex-col">
-              <span className="text-sm font-semibold">{itemChat.userName}</span>
-              <span className="truncate">{itemChat.lastMessage.text}</span>
+              <span className="text-base font-semibold">
+                {itemChat.userName}
+              </span>
+              <span className="truncate text-sm font-medium">
+                {itemChat.lastMessage.text}
+              </span>
             </div>
           </div>
-          <span className="mt-6 hidden whitespace-nowrap px-1 text-[9px] text-gray-500 md:block">
+          <span className="mt-6 hidden whitespace-nowrap px-1 text-[11px] text-gray-500 md:block">
             {timeSinceMessage(itemChat.lastMessage.timestamp)}
           </span>
         </div>
