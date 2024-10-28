@@ -4,9 +4,9 @@ import Image from "next/image";
 import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/PostsCard";
 import OpenCreatePost from "@/components/forms/OpenCreatePost";
-import Hashtags from "../../../fakeData/Hashtags";
 import FilterPost from "@/components/forms/FilterPost";
 import usePosts from "@/hooks/usePosts";
+import Hashtag from "@/components/forms/home/Hashtag";
 
 export default function Home() {
   const posts = usePosts();
@@ -109,20 +109,7 @@ export default function Home() {
       </div>
 
       <div className="background-light800_dark400 hidden w-2/5 items-center justify-center bg-light-600 px-1 md:block">
-        <div className="background-light700_dark300 mx-auto h-auto w-[70%] rounded-lg border pt-3 shadow-lg dark:border-none dark:border-transparent dark:shadow-none">
-          <div>
-            <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Hashtags
-            </div>
-          </div>
-          <ul className="ml-3 mt-3 space-y-2">
-            {Hashtags.map((hashtag) => (
-              <li key={hashtag.hashtag_id} className="text-dark100_light500">
-                {hashtag.hashtag_name}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Hashtag />
       </div>
     </div>
   );

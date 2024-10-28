@@ -4,18 +4,19 @@ import Image from "next/image";
 import PostsCard from "@/components/cards/PostsCard";
 import NoResult from "@/components/shared/NoResult";
 import OpenCreatePost from "../OpenCreatePost";
-import posts from "../../../fakeData/PostsData";
+import usePosts from "@/hooks/usePosts";
 import RenderFriend from "./RenderFriend";
 import picturesData from "../../../fakeData/PicturesData";
 import FilterPost from "../FilterPost";
 
 const RenderContentPage = ({ activeTab }: any) => {
+  const posts = usePosts();
   const [activeTabFriend, setActiveTabFriend] = useState("all");
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
   const [filteredPosts, setFilteredPosts] = useState(posts);
   useEffect(() => {
-    const sortedPosts = [...posts];
+    const sortedPosts = [...posts]; // Sắp xếp bài viết nếu có
     if (selectedFilter === "Mới nhất") {
       sortedPosts.sort(
         (a, b) =>
@@ -27,10 +28,10 @@ const RenderContentPage = ({ activeTab }: any) => {
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
     } else if (selectedFilter === "Hot nhất") {
-      sortedPosts.sort((a, b) => b.like.length - a.like.length);
+      sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
     setFilteredPosts(sortedPosts);
-  }, [selectedFilter]);
+  }, [selectedFilter, posts]);
 
   switch (activeTab) {
     case "posts":
@@ -70,27 +71,35 @@ const RenderContentPage = ({ activeTab }: any) => {
               </div>
             </div>
             <div className="background-light800_dark400  flex w-full flex-col gap-6">
-              {filteredPosts.length > 0 ? (
+              {filteredPosts.length === 0 ? ( // Kiểm tra chiều dài của filteredPosts
+                <NoResult
+                  title="No Result"
+                  description="No articles found"
+                  link="/"
+                  linkTitle="Trở lại"
+                />
+              ) : (
                 filteredPosts.map((post) => (
                   <PostsCard
                     key={post._id}
-                    _id={post._id}
-                    author={post.author}
-                    avatar={post.avatar}
-                    title={post.title}
-                    images={post.images}
-                    like={post.like}
-                    comment={post.comment}
+                    postId={post.postId}
+                    author={
+                      post.author || {
+                        _id: "unknown",
+                        fullname: "Unknown",
+                        username: "unknown",
+                      }
+                    } // Thay đổi author thành object IUser
+                    content={post.content}
+                    media={post.media}
                     createdAt={post.createdAt}
+                    likes={post.likes || []} // Mảng chứa IUser
+                    comments={post.comments || []} // Mảng chứa IComment
+                    shares={post.shares || []} // Mảng chứa IUser
+                    location={post.location}
+                    privacy={post.privacy}
                   />
                 ))
-              ) : (
-                <NoResult
-                  title="no result"
-                  description="No articles found"
-                  link="/"
-                  linkTitle="Tro lai"
-                />
               )}
             </div>
           </div>

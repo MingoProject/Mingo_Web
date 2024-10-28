@@ -237,10 +237,7 @@ const Navbar = () => {
               />
             </MenubarTrigger>
             <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-48 border-none font-sans text-sm ">
-              <MenubarItem
-                onClick={handleIsViewProfile}
-                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  "
-              >
+              <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
                 <Link href="/personal-page" className="">
                   <div className="flex items-center gap-2">
                     <Image
@@ -386,9 +383,11 @@ const Navbar = () => {
                       key={notification.id}
                       className="flex items-center justify-between p-2 "
                     >
-                      <img
+                      <Image
                         src={notification.avatar}
                         alt="Avatar"
+                        width={40}
+                        height={40}
                         className="size-10 rounded-full object-cover"
                       />
                       <div className="ml-2 flex-1 pr-4">
