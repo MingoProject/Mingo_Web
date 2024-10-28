@@ -30,7 +30,7 @@ const OpenCreatePost = () => {
             <input
               type="text"
               placeholder="    Share something..."
-              className="background-light600_dark200 ml-3 h-[40px] w-full rounded-full text-base"
+              className="background-light800_dark400 ml-3 h-[40px] w-full rounded-full text-base"
               readOnly
             />
           </div>

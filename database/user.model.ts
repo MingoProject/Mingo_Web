@@ -1,5 +1,7 @@
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from "uuid";
+import { Address } from "./address.model";
+import { Job } from "./job.model";
 
 const UserSchema = new mongoose.Schema({
   userId: {
@@ -51,17 +53,33 @@ const UserSchema = new mongoose.Schema({
     default: null, // Thay đổi thành null
   },
   address: {
-    type: String,
-    default: null, // Thay đổi thành null
+    type: Address, // Sử dụng AddressSchema đã import
+    default: null,
   },
   job: {
-    type: String,
-    default: null, // Thay đổi thành null
+    type: Job, // Sử dụng JobSchema đã import
+    default: null,
   },
-  hobbies: {
-    type: [String],
-    default: [], // Mảng rỗng
-  },
+  // address: {
+  //   type: String,
+  //   default: null, // Thay đổi thành null
+  // },
+  // job: {
+  //   type: String,
+  //   default: null, // Thay đổi thành null
+  // },
+  // hobbies: {
+  //   type: [String],
+  //   default: [], // Mảng rỗng
+  // },
+
+  hobbies: [
+    {
+      type: mongoose.Schema.Types.ObjectId, // Tham chiếu tới mô hình Hobby
+      ref: "Hobby",
+      default: [], // Mảng rỗng
+    },
+  ],
   bio: {
     type: String,
     default: null, // Thay đổi thành null

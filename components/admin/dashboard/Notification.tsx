@@ -41,7 +41,7 @@ const Notification = () => {
             className="text-dark100_light500 mb-2"
           />
           <span className="text-dark100_light500 text-[20px]">
-            Recent notification
+            Recent notifications
           </span>
         </p>
         <div className=" no-scrollbar flex h-52 w-full flex-col gap-2 overflow-auto">

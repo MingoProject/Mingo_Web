@@ -4,9 +4,6 @@ import HeaderWithButton from "@/components/header/HeaderWithButton";
 import TilteIcon from "@/components/header/TilteIcon";
 import { faAddressCard } from "@fortawesome/free-solid-svg-icons";
 import PostedUser from "@/components/admin/content/PostedUser";
-import PostInformation from "@/components/admin/content/PostInformation";
-import ReportInformation from "@/components/admin/report/ReportInformation";
-import UserReportInformation from "@/components/admin/report/UserReportInformation";
 import CommentReportInformation from "@/components/admin/report/CommentReportInformation";
 
 interface Params {

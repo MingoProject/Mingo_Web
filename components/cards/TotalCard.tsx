@@ -13,7 +13,7 @@ const TotalCard = ({
 }) => {
   const handleSeeDeatail = () => {};
   return (
-    <div className=" flex h-56 w-44 flex-col items-center justify-between rounded-[10px] border  p-4 shadow-md ">
+    <div className=" flex h-56 w-52 flex-col items-center justify-between rounded-[10px] border  p-4 shadow-md ">
       <div className="flex w-full flex-col items-center gap-3">
         <p className="text-dark100_light500 text-[20px] font-medium">
           Total {title}

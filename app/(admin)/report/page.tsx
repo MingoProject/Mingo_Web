@@ -15,7 +15,7 @@ import ContentTab from "@/components/admin/report/ContentTab";
 import CommentTab from "@/components/admin/report/CommentTab";
 import HeaderNoButton from "@/components/header/HeaderNoButton";
 
-const page = () => {
+const Page = () => {
   const [isMounted, setIsMounted] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [filterOption, setFilterOption] = useState("");
@@ -94,7 +94,7 @@ const page = () => {
           </Menubar>
         </div>
       </div>
-      <div className="flex w-full flex-col gap-8 p-4 pt-0 text-lg font-bold dark:text-white lg:flex-row">
+      <div className="flex w-full flex-col gap-8 pt-0 text-lg font-bold dark:text-white lg:flex-row">
         <button
           className={`flex items-center gap-1  ${
             activeTab === "user"
@@ -126,9 +126,9 @@ const page = () => {
           Comment
         </button>
       </div>
-      <div className="">{renderContent()}</div>
+      <div className="pt-2">{renderContent()}</div>
     </div>
   );
 };
 
-export default page;
+export default Page;

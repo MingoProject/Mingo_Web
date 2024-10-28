@@ -5,16 +5,12 @@ import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
-import { navbarLinks, sidebarLinks } from "@/constants";
+import { navbarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
 import Theme from "./Theme";
 import MobileNav from "./MobileNav";
 import { getTimestamp } from "@/lib/utils";
 import {
-  faHouse,
-  faMagnifyingGlass,
-  faBell,
-  faMessage,
   faGear,
   faFloppyDisk,
   faHeart,
@@ -34,6 +30,7 @@ import Setting from "@/components/home/Setting";
 import Favorite from "@/components/home/Favorite";
 import { PostYouLike } from "@/lib/data/data";
 import Save from "@/components/home/Save";
+import Search from "../search/Search";
 export const notifications = [
   {
     id: 1,
@@ -79,17 +76,9 @@ export const notifications = [
   },
 ];
 
-const recentSearches = [
-  "React Hooks",
-  "Tailwind CSS",
-  "Next.js",
-  "JavaScript ES6 Features",
-  "Web Development Trends",
-];
-
 const Navbar = () => {
   const pathname = usePathname();
-  const [searchTerm, setSearchTerm] = useState("");
+
   const [isSetting, setIsSetting] = useState(false);
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
@@ -101,10 +90,6 @@ const Navbar = () => {
 
   const closeSetting = () => {
     setIsSetting(false);
-  };
-
-  const handleIsViewProfile = () => {
-    setIsViewProfile(true);
   };
 
   const closeViewProfile = () => {
@@ -125,14 +110,6 @@ const Navbar = () => {
 
   const closeSave = () => {
     setIsSave(false);
-  };
-  const handleInputChange = (e: any) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const handleDeleteSearch = (search: any) => {
-    // Logic to delete a search term can be added here
-    console.log(`Delete search: ${search}`);
   };
 
   // State for handling the right drawer/modal
@@ -236,7 +213,7 @@ const Navbar = () => {
                 className="rounded-full"
               />
             </MenubarTrigger>
-            <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-48 border-none font-sans text-sm ">
+            <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">
               <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
                 <Link href="/personal-page" className="">
                   <div className="flex items-center gap-2">
@@ -247,7 +224,7 @@ const Navbar = () => {
                       height={30}
                       className="rounded-full"
                     />
-                    <p className="text-ellipsis whitespace-nowrap font-sans text-xs font-normal">
+                    <p className="text-ellipsis whitespace-nowrap  text-base font-normal">
                       Xem trang cá nhân
                     </p>
                   </div>
@@ -263,7 +240,7 @@ const Navbar = () => {
                     icon={faGear}
                     className="text-dark100_light500"
                   />
-                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                  <p className="text-ellipsis whitespace-nowrap  text-base">
                     Cài đặt
                   </p>
                 </div>
@@ -279,7 +256,7 @@ const Navbar = () => {
                     icon={faFloppyDisk}
                     className="text-dark100_light500"
                   />
-                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                  <p className="text-ellipsis whitespace-nowrap  text-base">
                     Bài viết đã lưu
                   </p>
                 </div>
@@ -295,14 +272,14 @@ const Navbar = () => {
                     icon={faHeart}
                     className="text-dark100_light500"
                   />
-                  <p className="text-ellipsis whitespace-nowrap font-sans text-xs">
+                  <p className="text-ellipsis whitespace-nowrap  text-base">
                     Bài viết đã thích
                   </p>
                 </div>
               </MenubarItem>
               <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
                 {" "}
-                <Button className="h-[30px] w-full bg-primary-100 text-center text-sm text-white">
+                <Button className="h-[30px] w-full bg-primary-100 text-center text-base text-white">
                   Đăng xuất
                 </Button>
               </MenubarItem>
@@ -332,43 +309,7 @@ const Navbar = () => {
             </button>
             {activeDrawer === "/search" && (
               <>
-                <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-                  Search{" "}
-                </div>
-                <div className="p-6">
-                  <div className="mb-4 flex items-center">
-                    <input
-                      type="text"
-                      value={searchTerm}
-                      onChange={handleInputChange}
-                      placeholder="Search..."
-                      className="focus:ring-primary-200 h-10 grow rounded-l-lg border border-primary-100 bg-transparent px-4 focus:outline-none focus:ring"
-                    />
-                    <button className="h-10 rounded-r-lg bg-primary-100 px-4 text-white">
-                      Search
-                    </button>
-                  </div>
-
-                  <h2 className="mb-2 text-lg font-normal text-primary-100">
-                    Recently
-                  </h2>
-                  <ul className="space-y-1">
-                    {recentSearches.map((search, index) => (
-                      <li
-                        key={index}
-                        className="flex cursor-pointer items-center justify-between rounded-md px-5  py-2 hover:bg-light-700 dark:hover:bg-dark-400"
-                      >
-                        <span className="text-dark100_light500">{search}</span>
-                        <button onClick={() => handleDeleteSearch(search)}>
-                          <Icon
-                            icon="mdi:close"
-                            className="text-dark100_light500"
-                          />
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
+                <Search />
               </>
             )}
             {activeDrawer === "/notifications" && (

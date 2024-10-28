@@ -66,7 +66,7 @@ export default function Home() {
       <div className="background-light800_dark400 w-[700px] justify-center px-3">
         <OpenCreatePost />
         <div className="my-2 flex items-center">
-          <div className="flex shrink-0 items-center pl-4">
+          <div className="ml-auto flex shrink-0 items-center pl-4">
             <p className="text-dark100_light500 mr-2">Filter: </p>
             <FilterPost
               selectedFilter={selectedFilter}

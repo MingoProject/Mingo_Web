@@ -62,7 +62,7 @@ const RenderContentPage = ({ activeTab }: any) => {
             <OpenCreatePost />
             <div className="my-2 flex items-center">
               {/* <hr className="background-light700_dark300 h-px w-full border-0" /> */}
-              <div className="flex shrink-0 items-center pl-4">
+              <div className="ml-auto flex shrink-0 items-center pl-4">
                 <p className="text-dark100_light500 mr-2">Filter: </p>
                 <FilterPost
                   selectedFilter={selectedFilter}
@@ -70,7 +70,7 @@ const RenderContentPage = ({ activeTab }: any) => {
                 />
               </div>
             </div>
-            <div className="background-light800_dark400  flex w-full flex-col gap-6">
+            <div className="background-light700_dark400  flex w-full flex-col gap-6">
               {filteredPosts.length === 0 ? ( // Kiểm tra chiều dài của filteredPosts
                 <NoResult
                   title="No Result"
@@ -107,7 +107,7 @@ const RenderContentPage = ({ activeTab }: any) => {
       );
     case "friends":
       return (
-        <div className="mx-[8%] w-full">
+        <div className="mx-[8%] ">
           <div className="flex w-full items-center">
             <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
               Friends
@@ -118,7 +118,7 @@ const RenderContentPage = ({ activeTab }: any) => {
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-11/12 rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="background-light800_dark300 w-11/12 rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
               />
             </div>
 
@@ -129,28 +129,28 @@ const RenderContentPage = ({ activeTab }: any) => {
           <div className="mt-5">
             <div className="mb-4 flex space-x-4">
               <button
-                className={`rounded-lg p-2 ${activeTabFriend === "all" ? "bg-primary-100 text-white" : "bg-gray-200"}`}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "all" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
                 onClick={() => setActiveTabFriend("all")}
               >
-                Xem tất
+                All
               </button>
               <button
-                className={`rounded-lg p-2 ${activeTabFriend === "recently" ? "bg-primary-100 text-white" : "bg-gray-200"}`}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "recently" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
                 onClick={() => setActiveTabFriend("recently")}
               >
-                Gần đây
+                Recent
               </button>
               <button
-                className={`rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "bg-gray-200"}`}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
                 onClick={() => setActiveTabFriend("followed")}
               >
-                Đang theo dõi
+                Following
               </button>
               <button
-                className={`rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "bg-gray-200"}`}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
                 onClick={() => setActiveTabFriend("blocked")}
               >
-                Đã chặn
+                Blocked
               </button>
             </div>
 
