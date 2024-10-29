@@ -5,7 +5,7 @@ import posts from "@/fakeData/PostsData";
 import { useRouter } from "next/navigation";
 import NoResult from "@/components/shared/NoResult"; // Thêm import cho component NoResult
 import PostsCard from "@/components/cards/PostsCard"; // Giả định bạn đã có component PostsCard
-import Image from "next/image";
+import UserCard from "./UserCard";
 
 const RenderSearch = ({ activeTab, query }: any) => {
   const [results, setResults] = useState<any[]>([]); // Đổi thành mảng đối tượng để lưu thông tin kết quả
@@ -34,6 +34,7 @@ const RenderSearch = ({ activeTab, query }: any) => {
               name: user.fullname,
               username: user.username,
               avatar: user.avatar,
+
               userId: user.userId, // Thêm userId để sử dụng cho navigation
             }))
           : postResults.map((post) => ({
@@ -111,23 +112,14 @@ const RenderSearch = ({ activeTab, query }: any) => {
           {results
             .filter((result) => result.type === "user")
             .map((user) => (
-              <div
+              <UserCard
                 key={user.userId}
-                onClick={() => handleUserClick(user.userId)}
-                style={{ cursor: "pointer" }}
-                className="mb-4 flex items-center"
-              >
-                <Image
-                  src={user.avatar}
-                  alt={user.username}
-                  width={32}
-                  height={32}
-                  className="mr-2 size-8 rounded-full"
-                />
-                <span>
-                  {user.name} (@{user.username})
-                </span>
-              </div>
+                userId={user.userId}
+                name={user.name}
+                username={user.username}
+                avatar={user.avatar}
+                onClick={handleUserClick}
+              />
             ))}
           {results.filter((result) => result.type === "user").length === 0 && (
             <NoResult

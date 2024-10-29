@@ -33,7 +33,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white">
-              Cài đặt
+              Setting
             </span>
             <FontAwesomeIcon
               onClick={onClose}
@@ -52,7 +52,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                 }`}
               >
                 <Icon icon="ph:user-list-light" width={18} height={18} />
-                <p className="hidden lg:block">Chỉnh sửa thông tin cá nhân</p>
+                <p className="hidden lg:block">Edit Personal Information</p>
               </div>
               <div
                 onClick={() => setActiveTab("changePassword")}
@@ -63,7 +63,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                 }`}
               >
                 <Icon icon="mdi:password-outline" width={18} height={18} />
-                <p className="hidden lg:block">Đổi mật khẩu</p>
+                <p className="hidden lg:block">Change Password</p>
               </div>
               <div
                 onClick={() => setActiveTab("security")}
@@ -74,7 +74,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
                 }`}
               >
                 <Icon icon="fluent-mdl2:permissions" width={18} height={18} />
-                <p className="hidden lg:block">Quyền riêng tư</p>
+                <p className="hidden lg:block">Privacy</p>
               </div>
             </div>
             <div className="flex-1 lg:w-1/2 ">{renderContent()}</div>
@@ -84,7 +84,7 @@ const Setting = ({ onClose }: { onClose: () => void }) => {
             <div className="flex flex-1 justify-center pr-8  lg:w-1/2">
               <div className="flex h-full flex-1 items-center justify-center lg:w-11/12 ">
                 <button className="text-dark100_light500 h-[36px]  w-full  rounded-lg bg-primary-100 text-center text-sm">
-                  Lưu
+                  Save
                 </button>
               </div>
             </div>
