@@ -1,114 +1,63 @@
-import mongoose from "mongoose";
-import { v4 as uuidv4 } from "uuid";
-import { Address } from "./address.model";
-import { Job } from "./job.model";
+import { Schema, models, model, Document } from "mongoose";
+import { IAudit, AuditSchema } from "./audit.model";
+export interface IUser extends Document, IAudit {
+  firstName: string;
+  lastName: string;
+  nickName: string;
+  phoneNumber: string;
+  email: string;
+  password: string;
+  roles: string[];
+  avatar: string;
+  avatarPublicId: string;
+  background: string;
+  backgroundPublicId: string;
+  gender: boolean;
+  address: string;
+  job: string;
+  hobbies: string[];
+  bio: string;
+  //   point: number;
+  relationShip: string;
+  birthDay: Date;
+  attendDate: Date;
+  flag: boolean;
+  friendIds: Schema.Types.ObjectId[];
+  followingIds: Schema.Types.ObjectId[];
+  bestFriendIds: Schema.Types.ObjectId[];
+  blockedIds: Schema.Types.ObjectId[];
+}
 
-const UserSchema = new mongoose.Schema({
-  userId: {
-    type: String,
-    unique: true,
-    default: uuidv4, // Tạo giá trị userId duy nhất
-  },
-  username: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  fullname: {
-    type: String,
-    required: true,
-  },
-  numberphone: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-    match: [
-      /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-      "Please fill a valid email address",
-    ],
-  },
-  birthday: {
-    type: Date,
-    required: true,
-  },
-  gender: {
-    type: String,
-    enum: ["male", "female", "other"],
-    required: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  avatar: {
-    type: String,
-    default: null, // Thay đổi thành null
-  },
-  background: {
-    type: String,
-    default: null, // Thay đổi thành null
-  },
-  address: {
-    type: Address, // Sử dụng AddressSchema đã import
-    default: null,
-  },
-  job: {
-    type: Job, // Sử dụng JobSchema đã import
-    default: null,
-  },
-  // address: {
-  //   type: String,
-  //   default: null, // Thay đổi thành null
-  // },
-  // job: {
-  //   type: String,
-  //   default: null, // Thay đổi thành null
-  // },
-  // hobbies: {
-  //   type: [String],
-  //   default: [], // Mảng rỗng
-  // },
-
-  hobbies: [
-    {
-      type: mongoose.Schema.Types.ObjectId, // Tham chiếu tới mô hình Hobby
-      ref: "Hobby",
-      default: [], // Mảng rỗng
-    },
-  ],
-  bio: {
-    type: String,
-    default: null, // Thay đổi thành null
-  },
-  nickName: {
-    type: String,
-    default: null, // Thay đổi thành null
-  },
-  friends: {
-    type: [String],
-    default: [], // Mảng rỗng
-  },
-  bestFriends: {
-    type: [String],
-    default: [], // Mảng rỗng
-  },
-  following: {
-    type: [String],
-    default: [], // Mảng rỗng
-  },
-  block: {
-    type: [String],
-    default: [], // Mảng rỗng
-  },
-  isAdmin: {
-    type: Boolean,
-    default: false, // Mặc định là false
-  },
+const UserSchema = new Schema<IUser>({
+  firstName: { type: String, required: true },
+  lastName: { type: String, required: true },
+  nickName: { type: String, required: false },
+  phoneNumber: { type: String, required: true },
+  email: { type: String, required: true, unique: true },
+  password: { type: String, required: true },
+  roles: { type: [String], required: true },
+  avatar: { type: String, required: false },
+  avatarPublicId: { type: String, require: false },
+  background: { type: String, required: false },
+  backgroundPublicId: { type: String, required: false },
+  gender: { type: Boolean, required: false },
+  address: { type: String, required: false },
+  job: { type: String, required: false },
+  hobbies: { type: [String], required: false },
+  bio: { type: String, required: false },
+  //   point: { type: Number, required: false, default: 0 },
+  relationShip: { type: String, required: false },
+  birthDay: { type: Date, required: false },
+  attendDate: { type: Date, required: true },
+  flag: { type: Boolean, required: true, default: true },
+  friendIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
+  followingIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
+  bestFriendIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
+  blockedIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
 });
 
-// Kiểm tra và xuất mô hình
-export default mongoose.models.User || mongoose.model("User", UserSchema);
+UserSchema.add(AuditSchema);
+
+const User = models.User || model("User", UserSchema);
+
+export default User;

@@ -1,28 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React from "react";
-interface IJob {
-  title: string; // Vị trí công việc
-  company?: string; // Công ty (tuỳ chọn)
-  location?: string; // Địa điểm làm việc (tuỳ chọn)
-}
-
-interface IHobby {
-  title: string; // Tên sở thích
-  icon: string; // Tên icon từ Iconify
-}
-
-interface IAddress {
-  street: string; // Đường
-  district?: string; // Quận (tuỳ chọn)
-  city: string; // Thành phố
-  country: string; // Quốc gia
-}
 
 interface InfomationUserProps {
-  job: IJob;
-  hobbies: IHobby[];
-  address: IAddress;
+  job: string;
+  hobbies: string[];
+  address: string;
 }
 
 const InfomationUser = ({ job, hobbies, address }: InfomationUserProps) => {
@@ -36,10 +19,7 @@ const InfomationUser = ({ job, hobbies, address }: InfomationUserProps) => {
           {job ? (
             <div>
               <span className="text-dark100_light500 ">
-                Job:{" "}
-                <span className="font-semibold">
-                  Working in the {job.title} at {job.company} in {job.location}
-                </span>
+                Job: <span className="font-semibold">{job}</span>
               </span>
             </div>
           ) : null}{" "}
@@ -47,15 +27,15 @@ const InfomationUser = ({ job, hobbies, address }: InfomationUserProps) => {
             <div className="mt-4  flex w-full items-center">
               <div className="text-dark100_light500 block  w-2/3 justify-between lg:flex">
                 {" "}
-                {address.street ? (
+                {address ? (
                   <div>
                     <span className="text-dark100_light500 ">Address: </span>
                     <span className="text-dark100_light500 font-semibold">
-                      {address.street}
+                      {address}
                     </span>
                   </div>
                 ) : null}
-                {address.district ? (
+                {/* {address.district ? (
                   <div className="mt-4 lg:mt-0">
                     <span className="text-dark100_light500 ">District: </span>
                     <span className="text-dark100_light500 font-semibold">
@@ -78,7 +58,7 @@ const InfomationUser = ({ job, hobbies, address }: InfomationUserProps) => {
                       {address.country}
                     </span>
                   </div>
-                ) : null}
+                ) : null} */}
               </div>
             </div>
           ) : null}{" "}
@@ -93,12 +73,12 @@ const InfomationUser = ({ job, hobbies, address }: InfomationUserProps) => {
                     key={index}
                     className="mx-2 flex items-center rounded-lg border px-2 py-1"
                   >
-                    <Icon
+                    {/* <Icon
                       icon={hobby.icon}
                       className=" mr-1 text-xl text-primary-100"
-                    />{" "}
+                    />{" "} */}
                     {/* Hiển thị icon */}
-                    <span>{hobby.title}</span> {/* Hiển thị tên sở thích */}
+                    <span>{hobby}</span> {/* Hiển thị tên sở thích */}
                   </div>
                 ))}
               </div>

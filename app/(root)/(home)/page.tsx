@@ -5,31 +5,109 @@ import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/PostsCard";
 import OpenCreatePost from "@/components/forms/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
-import usePosts from "@/hooks/usePosts";
 import Hashtag from "@/components/forms/home/Hashtag";
+import { fetchPosts } from "@/lib/services/post.service";
+import fetchDetailedPosts from "@/hooks/usePosts";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+
+// export interface UserResponseDTO {
+//   _id: string;
+//   firstName: string;
+//   lastName: string;
+//   nickName: string;
+//   phoneNumber: string;
+//   email: string;
+//   role: string[];
+//   avatar: string;
+//   background: string;
+//   gender: boolean;
+//   address: string;
+//   job: string;
+//   hobbies: string[];
+//   bio: string;
+//   point: number;
+//   relationShip: string;
+//   birthDay: Date;
+//   attendDate: Date;
+//   flag: boolean;
+//   friendIds: String[];
+//   bestFriendIds: String[];
+//   blockedIds: String[];
+//   createAt: Date;
+//   createBy: String;
+// }
+
+// export interface CommentResponseDTO {
+//   _id: string;
+//   userId: String;
+//   content: string;
+//   createdTime: Date;
+//   parentId?: String;
+//   replies?: CommentResponseDTO[];
+//   createBy: String;
+//   createAt: Date;
+// }
+
+// export interface PostResponseDTO {
+//   _id: string;
+//   content: string;
+//   media?: String[];
+//   url?: string;
+//   createdAt: Date;
+//   author: UserResponseDTO;
+//   shares: String[];
+//   likes: String[];
+//   comments: CommentResponseDTO[];
+//   location?: string;
+//   privacy: {
+//     type: string;
+//     allowedUsers?: String[];
+//   };
+//   likedIds: String[];
+//   flag: boolean;
+// }
 
 export default function Home() {
-  const posts = usePosts();
+  const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
+  const [posts, setPosts] = useState<PostResponseDTO[]>([]);
+
+  useEffect(() => {
+    const loadPosts = async () => {
+      try {
+        const data = await fetchPosts();
+        setPosts(data);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    loadPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchPostsData = async () => {
+      const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
+      setPostsData(detailedPosts);
+    };
+
+    if (posts.length > 0) {
+      fetchPostsData();
+    }
+  }, [posts]);
+
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
-  const [filteredPosts, setFilteredPosts] = useState([]); // Khởi tạo là mảng rỗng
+  const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]); // Khởi tạo là mảng rỗng
   const [currentUser, setCurrentUser] = useState(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const user = localStorage.getItem("user") || "{}";
     if (user) {
       setCurrentUser(JSON.parse(user));
     }
-    console.log("post", posts);
-
-    if (posts.length > 0) {
-      setLoading(false);
-    }
-  }, [posts]);
+  }, []);
 
   useEffect(() => {
-    const sortedPosts = [...posts]; // Sắp xếp bài viết nếu có
+    const sortedPosts = [...postsData]; // Sắp xếp bài viết nếu có
     if (selectedFilter === "Mới nhất") {
       sortedPosts.sort(
         (a, b) =>
@@ -44,7 +122,7 @@ export default function Home() {
       sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
     setFilteredPosts(sortedPosts);
-  }, [selectedFilter, posts]);
+  }, [selectedFilter, postsData]);
 
   return (
     <div className="background-light800_dark400 mt-7 flex w-full pt-20">
@@ -75,7 +153,7 @@ export default function Home() {
           </div>
         </div>
         <div className="background-light800_dark400 flex w-full flex-col gap-6">
-          {filteredPosts.length === 0 ? ( // Kiểm tra chiều dài của filteredPosts
+          {filteredPosts.length === 0 ? (
             <NoResult
               title="No Result"
               description="No articles found"
@@ -86,20 +164,14 @@ export default function Home() {
             filteredPosts.map((post) => (
               <PostsCard
                 key={post._id}
-                postId={post.postId}
-                author={
-                  post.author || {
-                    _id: "unknown",
-                    fullname: "Unknown",
-                    username: "unknown",
-                  }
-                } // Thay đổi author thành object IUser
+                postId={post._id}
+                author={post.author}
                 content={post.content}
                 media={post.media}
                 createdAt={post.createdAt}
-                likes={post.likes || []} // Mảng chứa IUser
-                comments={post.comments || []} // Mảng chứa IComment
-                shares={post.shares || []} // Mảng chứa IUser
+                likes={post.likes || []}
+                comments={post.comments || []}
+                shares={post.shares || []}
                 location={post.location}
                 privacy={post.privacy}
               />

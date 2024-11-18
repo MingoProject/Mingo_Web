@@ -4,19 +4,50 @@ import Image from "next/image";
 import PostsCard from "@/components/cards/PostsCard";
 import NoResult from "@/components/shared/NoResult";
 import OpenCreatePost from "../OpenCreatePost";
-import usePosts from "@/hooks/usePosts";
 import RenderFriend from "./RenderFriend";
 import picturesData from "../../../fakeData/PicturesData";
 import FilterPost from "../FilterPost";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import fetchDetailedPosts from "@/hooks/usePosts";
+import { getMyPosts } from "@/lib/services/user.service";
 
-const RenderContentPage = ({ activeTab }: any) => {
-  const posts = usePosts();
+const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
+  const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("all");
+  const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
+
+  useEffect(() => {
+    const myPosts = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const data = await getMyPosts(userId);
+        setPosts(data.userPosts);
+        console.log("myposts", data.userPosts);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    myPosts();
+  }, []);
+
+  useEffect(() => {
+    const fetchPostsData = async () => {
+      if (posts && posts.length > 0) {
+        // Ensure post is defined before checking length
+        const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
+        setPostsData(detailedPosts);
+      }
+    };
+
+    fetchPostsData();
+  }, [posts]);
+
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
-  const [filteredPosts, setFilteredPosts] = useState(posts);
+  const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
+
   useEffect(() => {
-    const sortedPosts = [...posts]; // Sắp xếp bài viết nếu có
+    const sortedPosts = [...postsData];
     if (selectedFilter === "Mới nhất") {
       sortedPosts.sort(
         (a, b) =>
@@ -31,7 +62,10 @@ const RenderContentPage = ({ activeTab }: any) => {
       sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
     setFilteredPosts(sortedPosts);
-  }, [selectedFilter, posts]);
+  }, [selectedFilter, postsData]);
+
+  // if (loading) return <div className="mt-96">Loading...</div>;
+  // if (error) return <div className="mt-96">Error: {error}</div>;
 
   switch (activeTab) {
     case "posts":
@@ -61,7 +95,6 @@ const RenderContentPage = ({ activeTab }: any) => {
           <div className="w-full lg:w-7/12">
             <OpenCreatePost />
             <div className="my-2 flex items-center">
-              {/* <hr className="background-light700_dark300 h-px w-full border-0" /> */}
               <div className="ml-auto flex shrink-0 items-center pl-4">
                 <p className="text-dark100_light500 mr-2">Filter: </p>
                 <FilterPost
@@ -71,7 +104,7 @@ const RenderContentPage = ({ activeTab }: any) => {
               </div>
             </div>
             <div className="background-light700_dark400  flex w-full flex-col gap-6">
-              {filteredPosts.length === 0 ? ( // Kiểm tra chiều dài của filteredPosts
+              {filteredPosts.length === 0 ? (
                 <NoResult
                   title="No Result"
                   description="No articles found"
@@ -82,20 +115,14 @@ const RenderContentPage = ({ activeTab }: any) => {
                 filteredPosts.map((post) => (
                   <PostsCard
                     key={post._id}
-                    postId={post.postId}
-                    author={
-                      post.author || {
-                        _id: "unknown",
-                        fullname: "Unknown",
-                        username: "unknown",
-                      }
-                    } // Thay đổi author thành object IUser
+                    postId={post._id}
+                    author={post.author}
                     content={post.content}
                     media={post.media}
                     createdAt={post.createdAt}
-                    likes={post.likes || []} // Mảng chứa IUser
-                    comments={post.comments || []} // Mảng chứa IComment
-                    shares={post.shares || []} // Mảng chứa IUser
+                    likes={post.likes || []}
+                    comments={post.comments || []}
+                    shares={post.shares || []}
                     location={post.location}
                     privacy={post.privacy}
                   />
@@ -135,8 +162,8 @@ const RenderContentPage = ({ activeTab }: any) => {
                 All
               </button>
               <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "recently" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
-                onClick={() => setActiveTabFriend("recently")}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
+                onClick={() => setActiveTabFriend("bestfriend")}
               >
                 Recent
               </button>
