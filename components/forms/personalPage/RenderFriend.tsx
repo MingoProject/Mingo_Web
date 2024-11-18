@@ -1,8 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import fakeFriends from "../../../fakeData/FriendsData";
 
 import { Icon } from "@iconify/react";
 import Image from "next/image";
+import { UserResponseDTO } from "@/dtos/UserDTO";
+import { getMyFriends } from "@/lib/services/user.service";
 
 const FriendList = ({ friends }: any) => (
   <div className="grid grid-cols-2 gap-4">
@@ -14,11 +16,14 @@ const FriendList = ({ friends }: any) => (
         <Image
           width={80}
           height={80}
-          src={friend.image}
-          alt={friend.name}
+          src={
+            friend?.avatar ||
+            "/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
+          }
+          alt={friend.lastName}
           className="mb-2 size-20 rounded-full object-cover"
         />
-        <div className="mb-1 ml-2 font-bold">{friend.name}</div>
+        <div className="mb-1 ml-2 font-bold">{friend.lastName}</div>
         <Icon
           icon="mdi:dots-horizontal"
           className="text-dark100_light500 ml-auto size-6"
@@ -29,19 +34,31 @@ const FriendList = ({ friends }: any) => (
 );
 
 const RenderFriend = ({ activeTabFriend }: any) => {
+  const [friends, setFriends] = useState<UserResponseDTO[]>([]);
+
+  useEffect(() => {
+    const myFriends = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const data = await getMyFriends(userId);
+        setFriends(data);
+        console.log(data);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    myFriends();
+  }, []);
   const getFriendsList = () => {
     switch (activeTabFriend) {
       case "all":
+        return friends;
+      case "bestfriend":
         return fakeFriends;
-      case "recently":
-        // Implement logic for recently friends if needed
-        return fakeFriends; // Replace with filtered recently friends
       case "followed":
-        // Implement logic for followed friends if needed
-        return fakeFriends; // Replace with filtered followed friends
+        return fakeFriends;
       case "blocked":
-        // Implement logic for blocked friends if needed
-        return fakeFriends; // Replace with filtered blocked friends
+        return fakeFriends;
       default:
         return [];
     }

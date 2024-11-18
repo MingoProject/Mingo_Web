@@ -1,20 +1,13 @@
-"use client"; // Nếu bạn đang sử dụng Next.js
+"use client";
 
 import React, { useState } from "react";
-import { Icon } from "@iconify/react"; // Nếu bạn sử dụng biểu tượng từ iconify
+import { register } from "@/lib/services/user.service"; // Import the service function
 
-const FloatingLabelInput = ({ id, label, type, value, setValue }) => {
+const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
   const [isFocused, setIsFocused] = useState(false);
 
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    if (value === "") {
-      setIsFocused(false);
-    }
-  };
+  const handleFocus = () => setIsFocused(true);
+  const handleBlur = () => value === "" && setIsFocused(false);
 
   return (
     <div className="relative mb-6">
@@ -28,7 +21,7 @@ const FloatingLabelInput = ({ id, label, type, value, setValue }) => {
         className={`text-dark100_light500 w-full border-b-2 bg-transparent p-2 transition-all duration-200 focus:outline-none ${
           isFocused || value ? "pt-5" : "pt-2"
         }`}
-        placeholder=" " // Add a placeholder for the space to avoid collapsing
+        placeholder=" "
         required
       />
       <label
@@ -54,57 +47,36 @@ const SignUp = () => {
   const [gender, setGender] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [errorMessage, setErrorMessage] = useState(""); // State for error messages
-  const [successMessage, setSuccessMessage] = useState(""); // State for success messages
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: any) => {
     e.preventDefault();
 
-    // Kiểm tra đơn giản (có thể mở rộng)
     if (password !== confirmPassword) {
-      setErrorMessage("Mật khẩu không khớp!");
+      setErrorMessage("Passwords do not match!");
       return;
     }
 
     setErrorMessage("");
 
     const userData = {
-      username,
-      fullname: fullName,
-      numberphone: phoneNumber,
+      firstName: username,
+      lastName: fullName,
+      nickName: "",
+      phoneNumber,
       email,
-      birthday,
-      gender,
       password,
-      confirmPassword,
-      avatar: null, // Thay đổi thành null
-      background: null, // Thay đổi thành null
-      address: null, // Thay đổi thành null
-      job: null, // Thay đổi thành null
-      hobbies: [], // Mảng rỗng
-      bio: null, // Thay đổi thành null
-      nickName: null, // Thay đổi thành null
-      friends: [], // Mảng rỗng
-      bestFriends: [], // Mảng rỗng
-      following: [], // Mảng rỗng
-      block: [], // Mảng rỗng
-      isAdmin: false,
+      rePassword: confirmPassword,
+      gender: gender === "male",
+      birthDay: new Date(birthday),
     };
 
     try {
-      const response = await fetch("/api/auth/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(userData),
-      });
+      const newUser = await register(userData);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        setSuccessMessage("Đăng ký thành công! Vui lòng đăng nhập.");
-        // Làm sạch biểu mẫu nếu cần
+      if (newUser) {
+        setSuccessMessage("Registration successful! Please log in.");
         setUsername("");
         setFullName("");
         setEmail("");
@@ -114,11 +86,11 @@ const SignUp = () => {
         setPassword("");
         setConfirmPassword("");
       } else {
-        setErrorMessage(data.message || "Đăng ký thất bại!");
+        setErrorMessage("Registration failed!");
       }
-    } catch (error) {
-      console.error("Lỗi trong quá trình đăng ký:", error);
-      setErrorMessage("Đã xảy ra lỗi. Vui lòng thử lại sau.");
+    } catch (error: any) {
+      console.error("Error during registration:", error);
+      setErrorMessage(error.message || "An unexpected error occurred.");
     }
   };
 
@@ -139,7 +111,6 @@ const SignUp = () => {
         )}
 
         <form className="mt-[20px]" onSubmit={handleSubmit}>
-          {/* Username Input */}
           <FloatingLabelInput
             id="username"
             label="Username"
@@ -147,8 +118,6 @@ const SignUp = () => {
             value={username}
             setValue={setUsername}
           />
-
-          {/* Full Name Input */}
           <FloatingLabelInput
             id="fullName"
             label="Full Name"
@@ -156,8 +125,6 @@ const SignUp = () => {
             value={fullName}
             setValue={setFullName}
           />
-
-          {/* Email Input */}
           <FloatingLabelInput
             id="email"
             label="Email"
@@ -165,8 +132,6 @@ const SignUp = () => {
             value={email}
             setValue={setEmail}
           />
-
-          {/* Phone Number Input */}
           <FloatingLabelInput
             id="phoneNumber"
             label="Phone Number"
@@ -175,7 +140,6 @@ const SignUp = () => {
             setValue={setPhoneNumber}
           />
 
-          {/* Birthday and Gender Inputs */}
           <div className="mb-6 flex justify-between">
             <div className="mr-2 w-full">
               <label
@@ -217,29 +181,23 @@ const SignUp = () => {
             </div>
           </div>
 
-          {/* Password and Confirm Password Inputs */}
           <div className="mb-6 flex justify-between">
-            <div className="mr-2 w-full">
-              <FloatingLabelInput
-                id="password"
-                label="Password"
-                type="password"
-                value={password}
-                setValue={setPassword}
-              />
-            </div>
-            <div className="ml-2 w-full">
-              <FloatingLabelInput
-                id="confirmPassword"
-                label="Confirm Password"
-                type="password"
-                value={confirmPassword}
-                setValue={setConfirmPassword}
-              />
-            </div>
+            <FloatingLabelInput
+              id="password"
+              label="Password"
+              type="password"
+              value={password}
+              setValue={setPassword}
+            />
+            <FloatingLabelInput
+              id="confirmPassword"
+              label="Confirm Password"
+              type="password"
+              value={confirmPassword}
+              setValue={setConfirmPassword}
+            />
           </div>
 
-          {/* Sign Up Button */}
           <button
             type="submit"
             className="w-full rounded-lg bg-primary-100 py-2 text-white transition duration-200"
@@ -247,23 +205,6 @@ const SignUp = () => {
             Sign Up
           </button>
         </form>
-        <div className="mt-4 flex items-center justify-between">
-          <hr className="grow border-gray-300" />
-          <span className="mx-2 text-gray-500">or</span>
-          <hr className="grow border-gray-300" />
-        </div>
-        <div className="mt-4 flex justify-center">
-          <button className="text-dark100_light500 background-light800_dark400 flex w-32 items-center justify-center rounded-lg p-2 transition duration-200 hover:bg-gray-300">
-            <Icon icon="logos:google-icon" className="mr-2" />
-            Google
-          </button>
-          <button className="text-dark100_light500 background-light800_dark400 ml-2 flex w-32 items-center justify-center rounded-lg p-2 transition duration-200 hover:bg-gray-300">
-            <Icon icon="logos:facebook" className="mr-2 " />
-            Facebook
-          </button>
-        </div>
-
-        {/* Sign In Link */}
         <div className="mt-5 text-center">
           <p className="text-dark100_light500 text-sm">
             Already have an account?{" "}

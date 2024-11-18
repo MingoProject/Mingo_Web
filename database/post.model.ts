@@ -1,47 +1,50 @@
-// Tệp post.model.ts
-import mongoose, { Schema, model, Document, models } from "mongoose";
+import { Schema, models, model, Document } from "mongoose";
+import { IAudit, AuditSchema } from "./audit.model";
 
-// Định nghĩa interface cho Post
-interface IPost extends Document {
-  content: string; // Nội dung: Văn bản chính của bài viết
-  media?: mongoose.Schema.Types.ObjectId[]; // Các tệp phương tiện liên quan
-  url?: string; // Liên kết: URL dẫn đến một trang web khác
-  createdAt: Date; // Thời gian đăng: Ngày và giờ bài viết được tạo
-  author: mongoose.Schema.Types.ObjectId; // Người đăng: ID của người đã đăng bài viết
-  shares: mongoose.Schema.Types.ObjectId[]; // Danh sách người dùng đã chia sẻ
-  likes: mongoose.Schema.Types.ObjectId[]; // Danh sách người dùng đã thích
-  comments: mongoose.Schema.Types.ObjectId[]; // Danh sách bình luận liên quan
-  location?: string; // Địa điểm: Vị trí địa lý liên quan
-  tags?: mongoose.Schema.Types.ObjectId[]; // Tag: Các tài khoản hoặc trang được gán
+export interface IPost extends Document, IAudit {
+  content: string;
+  media?: Schema.Types.ObjectId[];
+  url?: string;
+  createdAt: Date;
+  author: Schema.Types.ObjectId;
+  shares: Schema.Types.ObjectId[];
+  likes: Schema.Types.ObjectId[];
+  comments: Schema.Types.ObjectId[];
+  location?: string;
+  tags?: Schema.Types.ObjectId[];
   privacy: {
-    type: string; // Cài đặt ai có thể xem bài viết
-    allowedUsers?: mongoose.Schema.Types.ObjectId[]; // Danh sách người dùng được phép xem
+    type: string;
+    allowedUsers?: Schema.Types.ObjectId[];
   };
+  likedIds: Schema.Types.ObjectId[];
+  flag: boolean;
 }
 
-// Định nghĩa PostSchema
 const PostSchema = new Schema<IPost>({
-  content: { type: String, required: true }, // Nội dung bài viết
-  media: [{ type: mongoose.Schema.Types.ObjectId, ref: "Media" }], // Các tệp phương tiện
-  url: { type: String }, // Liên kết
-  createdAt: { type: Date, default: Date.now }, // Thời gian đăng
-  author: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // Người đăng
-  shares: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Danh sách người dùng đã chia sẻ
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Danh sách người dùng đã thích
-  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }], // Danh sách bình luận liên quan
-  location: { type: String }, // Địa điểm
-  // tags: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Các tài khoản hoặc trang được gán
+  content: { type: String, required: true },
+  media: [{ type: Schema.Types.ObjectId, ref: "Media" }],
+  url: { type: String },
+  createdAt: { type: Date, default: Date.now },
+  author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  shares: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  likes: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  comments: [{ type: Schema.Types.ObjectId, ref: "Comment" }],
+  location: { type: String },
+  tags: [{ type: Schema.Types.ObjectId, ref: "User" }],
   privacy: {
     type: {
       type: String,
       enum: ["public", "friends", "private"],
       default: "public",
-    }, // Quyền riêng tư
-    allowedUsers: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }], // Danh sách người dùng được phép xem
+    },
+    allowedUsers: [{ type: Schema.Types.ObjectId, ref: "User" }],
   },
+  likedIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  flag: { type: Boolean, required: true, default: true },
 });
 
-// Tạo model cho Post
+PostSchema.add(AuditSchema);
+
 const Post = models.Post || model<IPost>("Post", PostSchema);
 
 export default Post;

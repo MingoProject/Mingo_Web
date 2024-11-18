@@ -2,8 +2,8 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
+import { login } from "@/lib/services/user.service";
 
-// FloatingLabelInput component
 const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
   const [isFocused, setIsFocused] = useState(false);
 
@@ -46,41 +46,33 @@ const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
   );
 };
 
-// SignIn component
 const SignIn = () => {
-  const [username, setUsername] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter(); // Đảm bảo rằng useRouter được sử dụng trong component React
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: any) => {
     e.preventDefault();
-    setError(""); // Reset error message
+
+    const userData = { phoneNumber, password };
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ username, password }),
-      });
+      const user = await login(userData);
 
-      const data = await response.json();
-
-      if (!response.ok) {
-        throw new Error(data.message || "Thông tin đăng nhập không hợp lệ");
+      if (user) {
+        localStorage.setItem("token", user.token);
+        const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
+        const userId = decodedToken?.id;
+        localStorage.setItem("userId", userId); // Lưu token vào localStorage
+        router.push("/"); // Điều hướng sau khi đăng nhập thành công
+      } else {
+        setErrorMessage("Đăng nhập không thành công!");
       }
-
-      console.log("Đăng nhập thành công", data);
-      // Lưu token vào local storage
-      localStorage.setItem("token", data.token);
-      localStorage.setItem("user", JSON.stringify(data.data));
-      console.log("data: ", data.data);
-      // Điều hướng về trang chính
-      router.push("/");
-    } catch (err: any) {
-      setError(err.message);
+    } catch (error: any) {
+      console.error("Lỗi đăng nhập:", error);
+      setErrorMessage(error.message || "Có lỗi xảy ra.");
     }
   };
 
@@ -98,8 +90,8 @@ const SignIn = () => {
             id="username"
             label="Tên đăng nhập hoặc Email"
             type="text"
-            value={username}
-            setValue={setUsername}
+            value={phoneNumber}
+            setValue={setPhoneNumber}
           />
           <FloatingLabelInput
             id="password"
@@ -151,7 +143,6 @@ const SignIn = () => {
   );
 };
 
-// Xuất component SignIn
 export default function Page() {
   return <SignIn />;
 }

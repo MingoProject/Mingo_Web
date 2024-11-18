@@ -1,9 +1,9 @@
 "use client";
 import Image from "next/image";
 import { useEffect, useState } from "react";
-import router from "next/router";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import InfomationUser from "@/components/forms/personalPage/InfomationUser";
+import { getMyProfile } from "@/lib/services/user.service";
 
 const mockUserData = {
   _id: "6718b362124dc3d07eb0fc1d",
@@ -45,16 +45,31 @@ const mockUserData = {
 
 function Page() {
   const [activeTab, setActiveTab] = useState("posts");
-  const [userInfo, setUserInfo] = useState(null);
+  const [profile, setProfile] = useState<any>(null); // Adjust type according to your profile structure
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
   useEffect(() => {
-    const user = JSON.parse(localStorage.getItem("user") || "{}"); // Assume user data is stored in localStorage
-    if (user) {
-      setUserInfo(user);
-    } else {
-      // Redirect to login if no user info is found
-      router.push("/auth/sign-in");
-    }
+    const fetchProfile = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        console.log(userId);
+        const profileData = await getMyProfile(userId);
+        console.log(profileData.userProfile);
+        setProfile(profileData.userProfile);
+      } catch (err) {
+        setError("Failed to fetch profile");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
   }, []);
+
+  if (loading) return <div className="mt-96">Loading...</div>;
+  if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
     <div className="background-light700_dark400 h-full pt-20">
@@ -63,11 +78,11 @@ function Page() {
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Personal page
           </div>
-          <div className="ml-[20%]">
+          <div className="ml-[20%] hidden lg:block">
             <span className="text-dark100_light500 text-[36px]">Hello,</span>
             <div>
               <h2 className="ml-5 text-[38px] text-primary-100">
-                I&#39;m Huỳnh
+                I&#39;m {profile?.lastName}
               </h2>
             </div>
           </div>
@@ -85,7 +100,7 @@ function Page() {
       <div className="mt-[100px] flex">
         <div className="ml-[10%]  size-[200px] overflow-hidden rounded-full">
           <Image
-            src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
+            src={profile?.avatar}
             alt="Avatar"
             width={200}
             height={200}
@@ -94,25 +109,22 @@ function Page() {
         </div>
         <div className="ml-[5%]">
           <h1 className="text-dark100_light500 text-[25px]">
-            {userInfo?.fullname}{" "}
-            {mockUserData.nickName && <span> ({mockUserData.nickName})</span>}
+            {profile?.firstName} {profile?.lastName}
+            {profile?.nickName && <span> ({mockUserData.nickName})</span>}
           </h1>
           <div className="mt-[30px]">
             <span className="text-dark100_light500">
               ರ ‿ ರ. иɢυуєи тнι инυ нυуин
             </span>
-            <h6 className="text-dark100_light500">
-              My name is Huynh, I’m studying university of Information
-              Technology, hahahahahhahahahahahahahah
-            </h6>
+            <h6 className="text-dark100_light500">{profile?.bio}</h6>
           </div>
         </div>
       </div>
       <div>
         <InfomationUser
-          job={mockUserData.job}
-          hobbies={mockUserData.hobbies}
-          address={mockUserData.address}
+          job={profile?.job}
+          hobbies={profile?.hobbies}
+          address={profile?.address}
         />
       </div>
       <div className="m-10 mx-[20%] mb-5 flex justify-around">

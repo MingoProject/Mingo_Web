@@ -1,19 +1,18 @@
 import mongoose, { Schema, model, Document, models } from "mongoose";
+import { IAudit, AuditSchema } from "./audit.model";
 
-// Định nghĩa interface cho Media
-interface IMedia extends Document {
-  url: string; // URL của tệp phương tiện
-  type: "image" | "video"; // Loại phương tiện: hình ảnh hoặc video
-  caption?: string; // Chú thích cho phương tiện
-  createdAt: Date; // Thời gian tạo
-  author: mongoose.Schema.Types.ObjectId; // ID của người đăng
-  postId: mongoose.Schema.Types.ObjectId; // ID của bài viết liên quan
-  likes: mongoose.Schema.Types.ObjectId[]; // Danh sách người dùng đã thích
-  comments: mongoose.Schema.Types.ObjectId[]; // Danh sách bình luận liên quan
-  shares: mongoose.Schema.Types.ObjectId[]; // Danh sách người dùng đã chia sẻ
+export interface IMedia extends Document, IAudit {
+  url: string;
+  type: "image" | "video";
+  caption?: string;
+  createdAt: Date;
+  author: mongoose.Schema.Types.ObjectId;
+  postId: mongoose.Schema.Types.ObjectId;
+  likes: mongoose.Schema.Types.ObjectId[];
+  comments: mongoose.Schema.Types.ObjectId[];
+  shares: mongoose.Schema.Types.ObjectId[];
 }
 
-// Định nghĩa MediaSchema
 const MediaSchema = new Schema<IMedia>({
   url: {
     type: String,
@@ -34,7 +33,7 @@ const MediaSchema = new Schema<IMedia>({
   },
   author: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "User", // Liên kết với model User
+    ref: "User",
     required: true,
   },
   postId: {
@@ -47,7 +46,8 @@ const MediaSchema = new Schema<IMedia>({
   shares: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
 });
 
-// Tạo model cho Media
+MediaSchema.add(AuditSchema);
+
 const Media = models.Media || model<IMedia>("Media", MediaSchema);
 
 export default Media;

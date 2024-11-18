@@ -5,50 +5,24 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DetailPost from "../forms/post/DetailPost";
-
-interface IMedia {
-  _id: string;
-  url: string;
-  type: "image" | "video";
-  caption?: string;
-  createdAt: Date;
-  author: string;
-  postId: string;
-  likes: string[];
-  comments: string[];
-  shares: string[];
-}
-
-interface IUser {
-  _id: string;
-  username: string;
-  fullname: string;
-  avatar?: string;
-}
-
-interface IComment {
-  commentId: string;
-  postId: string;
-  author: IUser; // Thay đổi author thành IUser
-  content: string;
-  createdAt: Date;
-  likes: IUser[]; // Likes của comment
-}
+import { IUser } from "@/database/user.model";
+import { IMedia } from "@/database/media.model";
+import { IComment } from "@/database/comment.model";
 
 const PostsCard = ({
   postId,
-  author, // IUser object
+  author,
   content,
   media,
   createdAt,
-  likes, // IUser array
-  comments, // IComment array
-  shares, // IUser array
+  likes,
+  comments,
+  shares,
   location,
   privacy,
 }: {
   postId: string;
-  author: IUser; // Thay đổi author thành object IUser
+  author: IUser;
   content: string;
   media: IMedia[];
   createdAt: Date;
@@ -70,15 +44,23 @@ const PostsCard = ({
     <div className="background-light700_dark300 h-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
         <Image
-          src={author.avatar || "/assets/images/default-avatar.jpg"} // Default avatar
+          src={
+            author?.avatar ? author.avatar : "/assets/images/default-avatar.jpg"
+          }
+          alt="Avatar"
+          width={45}
+          height={45}
+        />
+        {/* <Image
+          src={"/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"}
           alt="Avatar"
           width={45}
           height={45}
           className="size-12 rounded-full object-cover"
-        />
+        /> */}
         <div>
           <p className="text-dark100_light500 ml-3 text-base">
-            {author.fullname}
+            {author?.firstName ? author.firstName : ""}
           </p>
           <span className="text-dark100_light500 ml-3 text-sm">
             {getTimestamp(createdAt)}
@@ -88,7 +70,7 @@ const PostsCard = ({
       <div className="ml-4 mt-5">
         <p className="text-dark100_light500">{content}</p>
       </div>
-      {media && media.length > 0 && (
+      {/* {media && media.length > 0 && (
         <div className="mx-5 mt-3 flex h-[400px] justify-around">
           <Swiper
             spaceBetween={10}
@@ -117,7 +99,7 @@ const PostsCard = ({
             ))}
           </Swiper>
         </div>
-      )}
+      )} */}
       <div className="mx-10 my-5">
         <div className="text-dark100_light500 flex items-center justify-between">
           <div className="flex items-center space-x-2">
@@ -181,7 +163,7 @@ const PostsCard = ({
             </div>
           ))}
         </div> */}
-        {isModalOpen && (
+        {/* {isModalOpen && (
           <DetailPost
             postId={postId}
             author={author}
@@ -193,7 +175,7 @@ const PostsCard = ({
             shares={shares}
             onClose={closeModal}
           />
-        )}
+        )} */}
       </div>
     </div>
   );
