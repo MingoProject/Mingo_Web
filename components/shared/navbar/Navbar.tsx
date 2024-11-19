@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 
 import Image from "next/image";
@@ -31,6 +31,8 @@ import Favorite from "@/components/home/Favorite";
 import { PostYouLike } from "@/lib/data/data";
 import Save from "@/components/home/Save";
 import Search from "../search/Search";
+import { PostYouLikeDTO } from "@/dtos/PostDTO";
+import { getPostsLikedByUser } from "@/lib/services/setting.service";
 export const notifications = [
   {
     id: 1,
@@ -75,6 +77,7 @@ export const notifications = [
     createdAt: "2024-09-27T15:30:00Z",
   },
 ];
+const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -83,6 +86,12 @@ const Navbar = () => {
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSave, setIsSave] = useState(false);
+  // State for handling the right drawer/modal
+  const [isDrawerOpen, setDrawerOpen] = useState(false);
+  const [activeDrawer, setActiveDrawer] = useState(""); // To track if 'search' or 'notifications' is active
+  const [currentUser, setCurrentUser] = useState(null);
+  const [listLikePosts, setListLikePosts] = useState<PostYouLikeDTO[]>([]);
+  const [_id, set_Id] = useState("673850a5f6813181d7c1ac8f");
 
   const handleIsSetting = () => {
     setIsSetting(true);
@@ -112,9 +121,14 @@ const Navbar = () => {
     setIsSave(false);
   };
 
-  // State for handling the right drawer/modal
-  const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [activeDrawer, setActiveDrawer] = useState(""); // To track if 'search' or 'notifications' is active
+  useEffect(() => {
+    const user = localStorage.getItem("user");
+    if (user) {
+      const parsedUser = JSON.parse(user);
+      setCurrentUser(parsedUser);
+      set_Id(parsedUser.id); // Lưu ID người dùng
+    }
+  }, []);
 
   const toggleDrawer = (drawerType: any) => {
     // Open or close the drawer and set the active drawer type
@@ -131,6 +145,29 @@ const Navbar = () => {
     setDrawerOpen(false);
     setActiveDrawer("");
   };
+
+  useEffect(() => {
+    if (!isFavorite) return; // Chỉ fetch nếu isFavorite === true
+
+    let isMounted = true; // Cờ kiểm tra xem component còn được mount không
+
+    const fetchPostsData = async () => {
+      try {
+        const listPost = await getPostsLikedByUser(_id);
+        if (isMounted) {
+          setListLikePosts(listPost);
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPostsData();
+
+    return () => {
+      isMounted = false; // Cleanup: Đánh dấu là component đã unmount
+    };
+  }, [isFavorite, _id]); // Theo dõi isFavorite và _id
 
   return (
     <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
@@ -291,7 +328,9 @@ const Navbar = () => {
         </div>
         {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
         {isSetting && <Setting onClose={closeSetting} />}
-        {isFavorite && <Favorite posts={PostYouLike} onClose={closeFavorite} />}
+        {isFavorite && (
+          <Favorite post={listLikePosts} onClose={closeFavorite} />
+        )}
         {isSave && <Save posts={PostYouLike} onClose={closeSave} />}
       </div>
 
