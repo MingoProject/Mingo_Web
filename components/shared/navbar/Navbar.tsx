@@ -32,7 +32,10 @@ import { PostYouLike } from "@/lib/data/data";
 import Save from "@/components/home/Save";
 import Search from "../search/Search";
 import { PostYouLikeDTO } from "@/dtos/PostDTO";
-import { getPostsLikedByUser } from "@/lib/services/setting.service";
+import {
+  getPostsLikedByUser,
+  getPostsSavedByUser,
+} from "@/lib/services/setting.service";
 export const notifications = [
   {
     id: 1,
@@ -86,12 +89,13 @@ const Navbar = () => {
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  // State for handling the right drawer/modal
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState(""); // To track if 'search' or 'notifications' is active
   const [currentUser, setCurrentUser] = useState(null);
   const [listLikePosts, setListLikePosts] = useState<PostYouLikeDTO[]>([]);
+  const [listSavePosts, setListSavePosts] = useState<PostYouLikeDTO[]>([]);
   const [_id, set_Id] = useState("673850a5f6813181d7c1ac8f");
+  const [_idSave, set_IdSave] = useState("67288b99e8eb3213e354e778");
 
   const handleIsSetting = () => {
     setIsSetting(true);
@@ -168,6 +172,29 @@ const Navbar = () => {
       isMounted = false; // Cleanup: Đánh dấu là component đã unmount
     };
   }, [isFavorite, _id]); // Theo dõi isFavorite và _id
+
+  useEffect(() => {
+    if (!isSave) return; // Only fetch if isSave is true
+
+    let isMounted = true; // Flag to check if the component is still mounted
+
+    const fetchPostsData = async () => {
+      try {
+        const listPost = await getPostsSavedByUser(_idSave); // Fetch saved posts
+        if (isMounted) {
+          setListSavePosts(listPost); // Set saved posts if component is still mounted
+        }
+      } catch (error) {
+        console.error("Error fetching posts:", error);
+      }
+    };
+
+    fetchPostsData();
+
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
+  }, [isSave, _idSave]); // Depend on isSave and _idSave
 
   return (
     <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
@@ -331,7 +358,7 @@ const Navbar = () => {
         {isFavorite && (
           <Favorite post={listLikePosts} onClose={closeFavorite} />
         )}
-        {isSave && <Save posts={PostYouLike} onClose={closeSave} />}
+        {isSave && <Save post={listSavePosts} onClose={closeSave} />}
       </div>
 
       {isDrawerOpen && (

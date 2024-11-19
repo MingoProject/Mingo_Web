@@ -20,3 +20,22 @@ export async function getPostsLikedByUser(
     throw error;
   }
 }
+
+export async function getPostsSavedByUser(
+  userId: string
+): Promise<PostYouLikeDTO[]> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/post/get-list-save?userId=${userId}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching posts save by user");
+    }
+    const data = await response.json();
+    // console.log(data); // Debug nếu cần kiểm tra dữ liệu trả về
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts save by user:", error);
+    throw error;
+  }
+}
