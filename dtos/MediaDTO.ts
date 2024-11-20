@@ -4,10 +4,9 @@ export interface MediaCreateDTO {
   url: string;
   type: "image" | "video";
   caption?: string;
-  author: Schema.Types.ObjectId;
-  postId: Schema.Types.ObjectId;
+  // author: Schema.Types.ObjectId;
+  // postId: Schema.Types.ObjectId;
 }
-
 export interface MediaResponseDTO {
   _id: string;
   url: string;
@@ -15,7 +14,7 @@ export interface MediaResponseDTO {
   caption?: string;
   createdAt: Date;
   author: Schema.Types.ObjectId;
-  postId: Schema.Types.ObjectId;
+  // postId: Schema.Types.ObjectId;
   likes: Schema.Types.ObjectId[];
   comments: Schema.Types.ObjectId[];
   shares: Schema.Types.ObjectId[];

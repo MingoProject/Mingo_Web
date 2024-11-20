@@ -2,7 +2,7 @@ import { Schema } from "mongoose";
 
 export interface PostCreateDTO {
   content: string;
-  media?: Schema.Types.ObjectId[];
+  media?: string[];
   url?: string;
   location?: string;
   privacy?: {
@@ -14,7 +14,7 @@ export interface PostCreateDTO {
 export interface PostResponseDTO {
   _id: string;
   content: string;
-  media?: Schema.Types.ObjectId[];
+  media?: string[];
   url?: string;
   createdAt: Date;
   author: Schema.Types.ObjectId;

@@ -1,3 +1,4 @@
+"use client";
 import React, { useState } from "react";
 import Image from "next/image";
 import { getTimestamp } from "@/lib/utils";
@@ -8,6 +9,8 @@ import DetailPost from "../forms/post/DetailPost";
 import { IUser } from "@/database/user.model";
 import { IMedia } from "@/database/media.model";
 import { IComment } from "@/database/comment.model";
+
+import { CldImage } from "next-cloudinary";
 
 const PostsCard = ({
   postId,
@@ -70,7 +73,7 @@ const PostsCard = ({
       <div className="ml-4 mt-5">
         <p className="text-dark100_light500">{content}</p>
       </div>
-      {/* {media && media.length > 0 && (
+      {media && media.length > 0 && (
         <div className="mx-5 mt-3 flex h-[400px] justify-around">
           <Swiper
             spaceBetween={10}
@@ -79,15 +82,18 @@ const PostsCard = ({
             pagination={{ clickable: true }}
             className="h-[400px] w-[300px]"
           >
-            {media.map((item, index) => (
-              <SwiperSlide key={item._id}>
+            {media.map((item) => (
+              <SwiperSlide key={item.url}>
                 {item.type === "image" ? (
-                  <Image
-                    src={item.url}
-                    alt={`Image ${index + 1}`}
-                    width={250}
-                    height={250}
-                    className="h-[400px] w-auto object-cover"
+                  <CldImage
+                    src="media_folder/ravh8obj3hxq7ebhb47h" // Use this sample image or upload your own via the Media Explorer
+                    width="500" // Transform the image: auto-crop to square aspect_ratio
+                    height="500"
+                    alt=""
+                    crop={{
+                      type: "auto",
+                      source: true,
+                    }}
                   />
                 ) : (
                   <video width={250} height={250} controls>
@@ -99,7 +105,7 @@ const PostsCard = ({
             ))}
           </Swiper>
         </div>
-      )} */}
+      )}
       <div className="mx-10 my-5">
         <div className="text-dark100_light500 flex items-center justify-between">
           <div className="flex items-center space-x-2">

@@ -3,7 +3,7 @@ import fakeFriends from "../../../fakeData/FriendsData";
 import Image from "next/image";
 import PostsCard from "@/components/cards/PostsCard";
 import NoResult from "@/components/shared/NoResult";
-import OpenCreatePost from "../OpenCreatePost";
+import OpenCreatePost from "../post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";
 import picturesData from "../../../fakeData/PicturesData";
 import FilterPost from "../FilterPost";
