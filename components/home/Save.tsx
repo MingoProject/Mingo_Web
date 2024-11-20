@@ -3,6 +3,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { format } from "date-fns";
 import React from "react";
 import PostYouSaveCard from "../cards/PostYouSaveCard";
+import { PostYouLikeDTO } from "@/dtos/PostDTO";
 
 interface PostYouLike {
   id: number;
@@ -20,10 +21,10 @@ interface PostYouLike {
 
 interface FavoritePose {
   onClose: () => void;
-  posts: PostYouLike[];
+  post: PostYouLikeDTO[];
 }
 
-const Save = ({ onClose, posts }: FavoritePose) => {
+const Save = ({ onClose, post }: FavoritePose) => {
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center">
       {/* Background mờ - khi nhấn vào nền mờ thì đóng component */}
@@ -44,15 +45,18 @@ const Save = ({ onClose, posts }: FavoritePose) => {
               className="mb-2 cursor-pointer"
             />
           </div>
-          {posts.map((item) => (
-            <div key={item.id} className="px-4">
+          {post.map((item) => (
+            <div key={item._id} className="px-4">
               <div className="flex w-full flex-col  py-2">
                 <p className="text-sm ">
                   {format(item.created_at, "dd-MM-yyyy")}
                 </p>
                 <div>
                   {item.posts.map((it) => (
-                    <PostYouSaveCard key={it.id} postYouLike={it} />
+                    <PostYouSaveCard
+                      key={`${item._id}-${it._id}`}
+                      postYouLike={it}
+                    />
                   ))}
                 </div>
               </div>

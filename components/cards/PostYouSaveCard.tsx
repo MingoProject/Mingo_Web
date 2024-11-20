@@ -3,10 +3,10 @@ import Image from "next/image";
 import { format } from "date-fns";
 
 interface PostYouLike {
-  id: number;
-  postContent: string;
-  posterAva: string;
+  _id: string;
+  content: string;
   posterName: string;
+  posterAva: string;
   like_at: Date;
 }
 
@@ -15,11 +15,14 @@ const PostYouSaveCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
     <div className="mt-4  flex items-center justify-between text-xs ">
       <div className="flex w-full items-start gap-4 border-b border-gray-200 pb-3">
         <Image
-          src={postYouLike.posterAva}
+          src={
+            postYouLike.posterAva ||
+            "https://i.pinimg.com/236x/3d/22/e2/3d22e2269593b9169e7d74fe222dbab0.jpg"
+          } // Relative path with leading slash
           alt="Avatar"
-          width={60}
+          width={40}
           height={50}
-          className="rounded-md"
+          className="rounded-full"
         />
         <div className="flex w-full flex-col gap-1 overflow-hidden">
           {/* <div className="overflow-hidden text-ellipsis pr-3">
@@ -29,7 +32,7 @@ const PostYouSaveCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
           </div> */}
           <div className="max-h-10 w-full overflow-hidden">
             <span className="line-clamp-2 w-full text-xs">
-              {postYouLike.postContent}
+              {postYouLike.content}
             </span>
           </div>
 
