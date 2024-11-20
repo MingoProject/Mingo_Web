@@ -1,6 +1,11 @@
-import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { Button } from "../ui/button";
+import Image from "next/image";
+import { Button } from "../../ui/button";
+import { Icon } from "@iconify/react";
+import { createMedia } from "@/lib/services/media.service"; // Import hàm API
+import { createPost } from "@/lib/services/post.service"; // Import hàm API
+import { MediaCreateDTO } from "@/dtos/MediaDTO";
+import { PostCreateDTO } from "@/dtos/PostDTO";
 
 const CreatePost = ({ onClose }: any) => {
   const [privacy, setPrivacy] = useState("public");
@@ -9,15 +14,7 @@ const CreatePost = ({ onClose }: any) => {
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [currentUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    const user = localStorage.getItem("user") || "{}"; // Giả sử bạn lưu thông tin người dùng dưới dạng JSON trong localStorage
-    console.log("user", user);
-    if (user) {
-      setCurrentUser(JSON.parse(user)); // Chuyển đổi từ chuỗi JSON về đối tượng
-    }
-  }, []);
+  const [currentUser, setCurrentUser] = useState<any>(null);
 
   const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
@@ -25,7 +22,7 @@ const CreatePost = ({ onClose }: any) => {
 
   const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setMedia(files);
+    setMedia(files); // Giữ các file gốc
   };
 
   const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,47 +38,52 @@ const CreatePost = ({ onClose }: any) => {
     setLoading(true);
     setError("");
 
-    const mediaFiles = media.map((file) => ({
-      url: URL.createObjectURL(file),
-      type: file.type.startsWith("image") ? "image" : "video",
-      caption: "",
-    }));
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setError("Authentication is required");
+      setLoading(false);
+      return;
+    }
 
-    const postData = {
-      content,
-      mediaFiles,
-      location,
-      privacy: { type: privacy, allowedUsers: [] },
-      author: currentUser, // Thêm thông tin tác giả từ currentUser
-    };
-
-    console.log("Post data:", postData); // Log dữ liệu post
+    const jwtToken = token.startsWith("Bearer ") ? token.split(" ")[1] : token;
 
     try {
-      const response = await fetch("/api/post", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(postData),
-      });
+      let mediaIds: string[] = [];
+      // Upload media nếu có
+      if (media.length > 0) {
+        const mediaUploadPromises = media.map(async (file) => {
+          const formData = new FormData();
+          formData.append("url", file); // Đặt tên phù hợp với backend
+          formData.append(
+            "type",
+            file.type.includes("image") ? "image" : "video"
+          );
+          formData.append("caption", ""); // Caption mặc định
 
-      if (!response.ok) {
-        throw new Error("Failed to create post");
+          const uploadedMedia = await createMedia(formData, jwtToken);
+          return uploadedMedia._id;
+        });
+        
+
+        mediaIds = await Promise.all(mediaUploadPromises);
       }
 
-      const result = await response.json();
-      console.log("Post created:", result);
+      // Tạo post
+      const postPayload: PostCreateDTO = {
+        content,
+        media: mediaIds,
+        location,
+        privacy: {
+          type: privacy,
+        },
+      };
 
-      // Reset form
-      setContent("");
-      setMedia([]);
-      setLocation("");
-      setPrivacy("public");
+      await createPost(postPayload, jwtToken);
+      alert("Post created successfully!");
       onClose();
-    } catch (error) {
-      console.error("Error creating post:", error);
-      setError("Error creating post. Please try again.");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "Error creating post");
     } finally {
       setLoading(false);
     }
@@ -93,13 +95,17 @@ const CreatePost = ({ onClose }: any) => {
         className="fixed inset-0 z-40 bg-black opacity-50"
         onClick={onClose}
       />
-
-      <div className=" fixed inset-0 z-50 flex items-center justify-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center">
         <div className="background-light700_dark300 w-1/2 rounded-lg py-6 shadow-md">
-          <div>
+          <div className="flex">
             <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
               Tạo bài viết
             </div>
+            <Icon
+              icon="ic:round-close"
+              className="text-dark100_light500 ml-auto"
+              onClick={onClose}
+            />
           </div>
           <div className="my-7 mb-4 flex items-center px-6">
             <Image
@@ -109,7 +115,7 @@ const CreatePost = ({ onClose }: any) => {
               alt="Avatar"
               className="mr-2 size-10 rounded-full"
             />
-            <div className="">
+            <div>
               <span className="text-dark100_light500">
                 {currentUser?.fullname}
               </span>
@@ -118,7 +124,7 @@ const CreatePost = ({ onClose }: any) => {
                   id="privacy"
                   value={privacy}
                   onChange={handlePrivacyChange}
-                  className="background-light800_dark400 rounded-lg px-3 py-2 text-[#D9D9D9]"
+                  className="background-light800_dark400 rounded-lg px-3 py-2 text-border-color"
                 >
                   <option value="public">Public</option>
                   <option value="friends">Friends</option>
@@ -145,13 +151,13 @@ const CreatePost = ({ onClose }: any) => {
                   accept="image/*, video/*"
                   multiple
                   onChange={handleMediaChange}
-                  className=" p-2"
+                  className="p-2"
                 />
               </div>
             </div>
             <div className="flex items-center">
               <span className="text-dark100_light500">Thêm vị trí</span>
-              <div className="mb-4  ml-auto">
+              <div className="mb-4 ml-auto">
                 <input
                   type="text"
                   placeholder="Location"
@@ -160,10 +166,6 @@ const CreatePost = ({ onClose }: any) => {
                   className="w-full rounded border border-gray-300 p-2"
                 />
               </div>
-            </div>
-            <div className="flex items-center">
-              <span className="text-dark100_light500"> Gắn thẻ</span>
-              <div className="mb-4 ml-auto"></div>
             </div>
 
             {error && <p className="text-red-500">{error}</p>}

@@ -3,69 +3,12 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/PostsCard";
-import OpenCreatePost from "@/components/forms/OpenCreatePost";
+import OpenCreatePost from "@/components/forms/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
 import Hashtag from "@/components/forms/home/Hashtag";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-
-// export interface UserResponseDTO {
-//   _id: string;
-//   firstName: string;
-//   lastName: string;
-//   nickName: string;
-//   phoneNumber: string;
-//   email: string;
-//   role: string[];
-//   avatar: string;
-//   background: string;
-//   gender: boolean;
-//   address: string;
-//   job: string;
-//   hobbies: string[];
-//   bio: string;
-//   point: number;
-//   relationShip: string;
-//   birthDay: Date;
-//   attendDate: Date;
-//   flag: boolean;
-//   friendIds: String[];
-//   bestFriendIds: String[];
-//   blockedIds: String[];
-//   createAt: Date;
-//   createBy: String;
-// }
-
-// export interface CommentResponseDTO {
-//   _id: string;
-//   userId: String;
-//   content: string;
-//   createdTime: Date;
-//   parentId?: String;
-//   replies?: CommentResponseDTO[];
-//   createBy: String;
-//   createAt: Date;
-// }
-
-// export interface PostResponseDTO {
-//   _id: string;
-//   content: string;
-//   media?: String[];
-//   url?: string;
-//   createdAt: Date;
-//   author: UserResponseDTO;
-//   shares: String[];
-//   likes: String[];
-//   comments: CommentResponseDTO[];
-//   location?: string;
-//   privacy: {
-//     type: string;
-//     allowedUsers?: String[];
-//   };
-//   likedIds: String[];
-//   flag: boolean;
-// }
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
@@ -86,6 +29,7 @@ export default function Home() {
   useEffect(() => {
     const fetchPostsData = async () => {
       const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
+      console.log(detailedPosts);
       setPostsData(detailedPosts);
     };
 

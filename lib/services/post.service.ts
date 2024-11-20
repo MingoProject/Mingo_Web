@@ -1,5 +1,6 @@
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import { PostResponseDTO } from "@/dtos/PostDTO";
+import { MediaResponseDTO } from "@/dtos/MediaDTO";
+import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { UserResponseDTO } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -53,6 +54,106 @@ export async function getAuthorByPostId(
     return data;
   } catch (error) {
     console.error("Failed to fetch author by postId:", error);
+    throw error;
+  }
+}
+
+export async function createPost(
+  params: PostCreateDTO,
+  token: string
+): Promise<PostResponseDTO> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/create-post`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating media");
+    }
+
+    const data: PostResponseDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to create media:", error);
+    throw error;
+  }
+}
+
+export async function getMediasByPostId(
+  postId: String
+): Promise<MediaResponseDTO[]> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/post/get-medias?postId=${postId}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching medias by postId");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch medias by postId:", error);
+    throw error;
+  }
+}
+
+export async function likePost(postId: string, token: string) {
+  try {
+    if (!postId || !token) {
+      throw new Error("Post ID and token are required");
+    }
+
+    const response = await fetch(`${BASE_URL}/post/like?postId=${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error liking post");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to like post:", error);
+    throw error;
+  }
+}
+
+export async function dislikePost(postId: string, token: string) {
+  try {
+    if (!postId || !token) {
+      throw new Error("Post ID and token are required");
+    }
+
+    const response = await fetch(`${BASE_URL}/post/dislike?postId=${postId}`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error liking post");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to like post:", error);
     throw error;
   }
 }
