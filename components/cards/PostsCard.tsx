@@ -68,11 +68,7 @@ const PostsCard = ({
       const token = localStorage.getItem("token");
       if (token) {
         const res = await likePost(postId, token);
-        if (res?.success) {
-          setIsLiked(!isLiked); // Cập nhật trạng thái
-        } else {
-          console.error("Error liking post", res?.message);
-        }
+        setIsLiked(!isLiked); // Cập nhật trạng thái
       } else {
         console.warn("User is not authenticated");
       }
@@ -86,11 +82,8 @@ const PostsCard = ({
       const token = localStorage.getItem("token");
       if (token) {
         const res = await dislikePost(postId, token);
-        if (res?.success) {
-          setIsLiked(!isLiked); // Cập nhật trạng thái
-        } else {
-          console.error("Error liking post", res?.message);
-        }
+
+        setIsLiked(!isLiked);
       } else {
         console.warn("User is not authenticated");
       }

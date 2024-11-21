@@ -289,7 +289,7 @@ const Navbar = () => {
                       className="rounded-full"
                     />
                     <p className="text-ellipsis whitespace-nowrap  text-base font-normal">
-                      Xem trang cá nhân
+                      Personal page
                     </p>
                   </div>
                 </Link>
@@ -305,7 +305,7 @@ const Navbar = () => {
                     className="text-dark100_light500"
                   />
                   <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Cài đặt
+                    Setting
                   </p>
                 </div>
               </MenubarItem>
@@ -321,7 +321,7 @@ const Navbar = () => {
                     className="text-dark100_light500"
                   />
                   <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Bài viết đã lưu
+                    Saved posts
                   </p>
                 </div>
               </MenubarItem>
@@ -337,14 +337,14 @@ const Navbar = () => {
                     className="text-dark100_light500"
                   />
                   <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Bài viết đã thích
+                    Liked posts
                   </p>
                 </div>
               </MenubarItem>
               <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
                 {" "}
                 <Button className="h-[30px] w-full bg-primary-100 text-center text-base text-white">
-                  Đăng xuất
+                  Logout
                 </Button>
               </MenubarItem>
             </MenubarContent>
