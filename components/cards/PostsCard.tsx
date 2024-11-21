@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getTimestamp } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -9,8 +9,12 @@ import DetailPost from "../forms/post/DetailPost";
 import { IUser } from "@/database/user.model";
 import { IMedia } from "@/database/media.model";
 import { IComment } from "@/database/comment.model";
+import jwt from "jsonwebtoken";
 
 import { CldImage } from "next-cloudinary";
+import { dislikePost, likePost } from "@/lib/services/post.service";
+
+const SECRET_KEY = process.env.JWT_SECRET!;
 
 const PostsCard = ({
   postId,
@@ -38,10 +42,72 @@ const PostsCard = ({
     allowedUsers?: IUser[];
   };
 }) => {
+  const [isLiked, setIsLiked] = useState(false);
+  const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        console.log("userId", userId);
+        console.log("likes", likes);
+        const isUserLiked = likes.some((like) => like._id === userId);
+        setIsLiked(isUserLiked);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    }
+  }, [likes]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const handleLikePost = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const res = await likePost(postId, token);
+        if (res?.success) {
+          setIsLiked(!isLiked); // Cập nhật trạng thái
+        } else {
+          console.error("Error liking post", res?.message);
+        }
+      } else {
+        console.warn("User is not authenticated");
+      }
+    } catch (error) {
+      console.error("Error in handleLikePost:", error);
+    }
+  };
+
+  const handleDislikePost = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const res = await dislikePost(postId, token);
+        if (res?.success) {
+          setIsLiked(!isLiked); // Cập nhật trạng thái
+        } else {
+          console.error("Error liking post", res?.message);
+        }
+      } else {
+        console.warn("User is not authenticated");
+      }
+    } catch (error) {
+      console.error("Error in handleLikePost:", error);
+    }
+  };
+
+  const toggleLike = () => {
+    if (isLiked) {
+      handleDislikePost();
+      setNumberOfLikes(likes.length - 1);
+    } else {
+      handleLikePost();
+      setNumberOfLikes(likes.length + 1);
+    }
+  };
 
   return (
     <div className="background-light700_dark300 h-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
@@ -109,8 +175,14 @@ const PostsCard = ({
       <div className="mx-10 my-5">
         <div className="text-dark100_light500 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Icon icon="ic:baseline-favorite-border" />
-            <span>{likes.length} Likes</span>
+            <Icon
+              onClick={toggleLike}
+              icon={
+                isLiked ? "ic:baseline-favorite" : "ic:baseline-favorite-border"
+              }
+              className={isLiked ? "text-primary-100" : "text-gray-500"}
+            />
+            <span>{numberOfLikes} Likes</span>
           </div>
           <div className="flex items-center space-x-2" onClick={openModal}>
             <Icon icon="mingcute:message-4-line" />
