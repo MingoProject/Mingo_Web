@@ -114,7 +114,7 @@ export async function likePost(postId: string, token: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     });
 
@@ -141,7 +141,7 @@ export async function dislikePost(postId: string, token: string) {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
+        Authorization: `${token}`,
       },
     });
 
@@ -154,6 +154,23 @@ export async function dislikePost(postId: string, token: string) {
     return data;
   } catch (error) {
     console.error("Failed to like post:", error);
+    throw error;
+  }
+}
+
+export async function getLikesByPostId(
+  postId: String
+): Promise<CommentResponseDTO[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-likes?postId=${postId}`);
+    if (!response.ok) {
+      throw new Error("Error fetching likes by postId");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch likes by postId:", error);
     throw error;
   }
 }
