@@ -61,7 +61,7 @@ const RightSide = () => {
       default:
         return (
           <>
-            <div className="h-10 w-full border-b border-gray-200 px-8">
+            <div className="h-[43px] w-full border-b border-gray-200 px-8">
               <p className="text-lg">Chi tiết</p>
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
