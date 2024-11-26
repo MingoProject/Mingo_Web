@@ -1,62 +1,28 @@
 "use client";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import InfomationUser from "@/components/forms/personalPage/InfomationUser";
-import { getMyProfile } from "@/lib/services/user.service";
-
-const mockUserData = {
-  _id: "6718b362124dc3d07eb0fc1d",
-  username: "123",
-  fullname: "Huỳnh Nguyễn Thị Như",
-  numberphone: "0348775966",
-  email: "huynh@gmail.com",
-  birthday: "2024-10-22T00:00:00.000+00:00",
-  gender: "female",
-  password: "$2a$10$.DclnSpDCcXEjR0p0F8FS.dtH70nrWuQPVxPFH7Le.iYS..72YJl2",
-  avatar: "https://randomuser.me/api/portraits/women/75.jpg", // link ảnh giả
-  background: "https://source.unsplash.com/random/800x600", // link ảnh nền giả
-  address: {
-    street: "456 Le Duan",
-    district: "District 1",
-    city: "Ho Chi Minh City",
-    country: "Vietnam",
-  },
-
-  job: {
-    title: "Data Analyst",
-    company: "Tech Solutions",
-    location: "Ho Chi Minh City",
-  },
-  hobbies: [
-    { title: "Reading", icon: "solar:book-2-broken" }, // Cập nhật với icon
-    { title: "Cooking", icon: "game-icons:rice-cooker" },
-    { title: "Yoga", icon: "iconoir:yoga" },
-  ],
-  bio: "A tech enthusiast who loves data and coding.",
-  nickName: "Huỳnh Huỳnh",
-  friends: ["6718b362124dc3d07eb0fc2a", "6718b362124dc3d07eb0fc3b"], // giả định danh sách bạn bè
-  bestFriends: ["6718b362124dc3d07eb0fc2a"], // giả định danh sách bạn thân
-  following: ["6718b362124dc3d07eb0fc4c", "6718b362124dc3d07eb0fc5d"], // giả định danh sách theo dõi
-  block: ["6718b362124dc3d07eb0fc6e"], // giả định danh sách chặn
-  isAdmin: false,
-  userId: "1b95baed-bfca-4e51-b32c-16478884edad",
-};
+import { getMyProfile, uploadAvatar } from "@/lib/services/user.service";
 
 function Page() {
   const [activeTab, setActiveTab] = useState("posts");
-  const [profile, setProfile] = useState<any>(null); // Adjust type according to your profile structure
+  const [profile, setProfile] = useState<any>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
 
+  const avatarMenuRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch profile information from the server
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         const userId = localStorage.getItem("userId");
-        console.log(userId);
-        const profileData = await getMyProfile(userId);
-        console.log(profileData.userProfile);
-        setProfile(profileData.userProfile);
+        if (userId) {
+          const profileData = await getMyProfile(userId);
+          setProfile(profileData.userProfile);
+        }
       } catch (err) {
         setError("Failed to fetch profile");
         console.error(err);
@@ -68,58 +34,157 @@ function Page() {
     fetchProfile();
   }, []);
 
+  // Close the avatar menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        avatarMenuRef.current &&
+        !avatarMenuRef.current.contains(e.target as Node)
+      ) {
+        setAvatarMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  // eslint-disable-next-line no-undef
+  const handleAvatarClick = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent event propagation
+    setAvatarMenuOpen(true);
+  };
+
+  // Upload new avatar
+  const uploadUserAvatar = async (file: File) => {
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        const response = await uploadAvatar(formData, token);
+        if (response?.status) {
+          setProfile((prevProfile: any) => ({
+            ...prevProfile,
+            avatar: response?.avatarUrl,
+          }));
+        }
+      }
+    } catch (err) {
+      setError("Failed to upload avatar");
+      console.error("Error uploading avatar:", err);
+    }
+  };
+
+  // Handle file input change (for uploading a new avatar)
+  const handleFileChange = async (
+    // eslint-disable-next-line no-undef
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const file = event.target.files?.[0];
+    if (file) {
+      await uploadUserAvatar(file);
+    }
+  };
+
+  const handleTabClick = (tab: string) => {
+    setActiveTab(tab);
+  };
+
   if (loading) return <div className="mt-96">Loading...</div>;
   if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
     <div className="background-light700_dark400 h-full pt-20">
-      <div className="flex">
+      {/* Header Section */}
+      <div className="mx-[5%] flex">
         <div>
-          <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
+          <div className="absolute left-0 flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Personal page
           </div>
-          <div className="ml-[20%] hidden lg:block">
+          <div className="ml-[20%] mt-10 hidden lg:block">
             <span className="text-dark100_light500 text-[36px]">Hello,</span>
-            <div>
-              <h2 className="ml-5 text-[38px] text-primary-100">
-                I&#39;m {profile?.lastName}
-              </h2>
-            </div>
+            <h2 className="ml-5 text-[38px] text-primary-100">
+              I&apos;m {profile?.lastName}
+            </h2>
           </div>
         </div>
-        <div className="absolute right-0 mr-[5%] h-[274px] w-[70%] overflow-hidden">
+        <div className="right-0 h-[274px] w-full overflow-hidden">
           <Image
-            src="/assets/images/5e7aa00965e1d68e7cb1d58d2281498b.jpg"
-            alt="Avatar"
+            src={
+              profile?.background
+                ? profile.background
+                : "/assets/images/5e7aa00965e1d68e7cb1d58d2281498b.jpg"
+            }
+            alt="Background"
             width={966}
             height={274}
             className="size-full rounded-lg object-cover object-right"
           />
         </div>
       </div>
-      <div className="mt-[100px] flex">
-        <div className="ml-[10%]  size-[200px] overflow-hidden rounded-full">
+
+      {/* Profile Info Section */}
+      <div className="mt-[30px] flex">
+        <div className="ml-[10%] size-[200px] overflow-hidden rounded-full">
           <Image
-            src={profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"}
+            onClick={handleAvatarClick}
+            src={profile?.avatar || "/assets/images/capy.jpg"}
             alt="Avatar"
             width={200}
             height={200}
             className="rounded-full object-cover"
           />
         </div>
+
         <div className="ml-[5%]">
           <h1 className="text-dark100_light500 text-[25px]">
             {profile?.firstName} {profile?.lastName}
-            {profile?.nickName && <span> ({mockUserData.nickName})</span>}
+            {profile?.nickName && <span> ({profile?.nickName})</span>}
           </h1>
           <div className="mt-[30px]">
             <span className="text-dark100_light500">
-              ರ ‿ ರ. иɢυуєи тнι инυ нυуин
+              {profile?.bio || "Bio not provided"}
             </span>
-            <h6 className="text-dark100_light500">{profile?.bio}</h6>
           </div>
         </div>
       </div>
+
+      {/* Avatar Menu */}
+      {avatarMenuOpen && (
+        <div
+          ref={avatarMenuRef}
+          className="absolute z-10 ml-[20%] rounded-lg border border-gray-300 bg-white shadow-lg"
+        >
+          <button
+            onClick={() => console.log("View Avatar")}
+            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
+          >
+            View Avatar
+          </button>
+          <button
+            onClick={() => document.getElementById("avatarInput")?.click()}
+            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
+          >
+            Change Avatar
+          </button>
+          <input
+            id="avatarInput"
+            type="file"
+            accept="image/*"
+            style={{ display: "none" }} // ẩn input
+            onChange={handleFileChange} // xử lý thay đổi file
+          />
+        </div>
+      )}
+
+      {/* User Information Section */}
       <div>
         <InfomationUser
           job={profile?.job}
@@ -127,6 +192,8 @@ function Page() {
           address={profile?.address}
         />
       </div>
+
+      {/* Tabs Navigation */}
       <div className="m-10 mx-[20%] mb-5 flex justify-around">
         <span
           className={`cursor-pointer ${
@@ -134,7 +201,7 @@ function Page() {
               ? "border-b-2 border-primary-100 font-medium text-primary-100"
               : "text-dark100_light500"
           }`}
-          onClick={() => setActiveTab("posts")}
+          onClick={() => handleTabClick("posts")}
         >
           Posts
         </span>
@@ -144,7 +211,7 @@ function Page() {
               ? "border-b-2 border-primary-100 font-medium text-primary-100"
               : "text-dark100_light500"
           }`}
-          onClick={() => setActiveTab("friends")}
+          onClick={() => handleTabClick("friends")}
         >
           Friends
         </span>
@@ -154,7 +221,7 @@ function Page() {
               ? "border-b-2 border-primary-100 font-medium text-primary-100"
               : "text-dark100_light500"
           }`}
-          onClick={() => setActiveTab("photos")}
+          onClick={() => handleTabClick("photos")}
         >
           Pictures
         </span>
@@ -164,15 +231,18 @@ function Page() {
               ? "border-b-2 border-primary-100 font-medium text-primary-100"
               : "text-dark100_light500"
           }`}
-          onClick={() => setActiveTab("videos")}
+          onClick={() => handleTabClick("videos")}
         >
           Videos
         </span>
       </div>
-      <div className="mx-[100px] my-5">
+
+      {/* Content Section */}
+      <div className="mx-[5%] my-5">
         <RenderContentPage activeTab={activeTab} />
-      </div>{" "}
+      </div>
     </div>
   );
 }
+
 export default Page;

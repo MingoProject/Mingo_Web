@@ -119,3 +119,24 @@ export async function getMyFriends(id: string | null) {
     throw error;
   }
 }
+
+export async function uploadAvatar(formData: any, token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/upload-avatar`, {
+      method: "POST",
+      headers: {
+        Authorization: `${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Error upload avatar");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to upload avatar", err);
+  }
+}

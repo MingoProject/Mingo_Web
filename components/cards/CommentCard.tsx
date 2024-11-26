@@ -125,7 +125,9 @@ const CommentCard = ({ comment, setCommentsData, postId }: any) => {
             <div className="flex">
               <button
                 className={`hover:underline ${
-                  isLiked ? "font-bold text-blue-500" : "text-dark100_light500"
+                  isLiked
+                    ? "font-bold text-primary-100"
+                    : "text-dark100_light500"
                 }`}
                 onClick={toggleLike}
               >

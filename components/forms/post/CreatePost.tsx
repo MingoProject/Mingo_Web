@@ -1,36 +1,34 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
-import { createMedia } from "@/lib/services/media.service"; // Import hàm API
-import { createPost } from "@/lib/services/post.service"; // Import hàm API
-import { MediaCreateDTO } from "@/dtos/MediaDTO";
+import { createMedia } from "@/lib/services/media.service";
+import { createPost } from "@/lib/services/post.service";
+import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 
 const CreatePost = ({ onClose }: any) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
-  const [media, setMedia] = useState<File[]>([]);
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [files, setFiles] = useState<File[]>([]);
+  const [captions, setCaptions] = useState<string[]>([]);
 
-  const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setContent(e.target.value);
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
+    setFiles(selectedFiles);
+    setCaptions(selectedFiles.map(() => "")); // Reset captions
   };
 
-  const handleMediaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = Array.from(e.target.files || []);
-    setMedia(files); // Giữ các file gốc
-  };
-
-  const handleLocationChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setLocation(e.target.value);
-  };
-
-  const handlePrivacyChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setPrivacy(e.target.value);
+  const handleCaptionChange = (index: number, value: string) => {
+    setCaptions((prev) => {
+      const updated = [...prev];
+      updated[index] = value;
+      return updated;
+    });
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -45,27 +43,19 @@ const CreatePost = ({ onClose }: any) => {
       return;
     }
 
-    const jwtToken = token.startsWith("Bearer ") ? token.split(" ")[1] : token;
-
     try {
       let mediaIds: string[] = [];
+
       // Upload media nếu có
-      if (media.length > 0) {
-        const mediaUploadPromises = media.map(async (file) => {
-          const formData = new FormData();
-          formData.append("url", file); // Đặt tên phù hợp với backend
-          formData.append(
-            "type",
-            file.type.includes("image") ? "image" : "video"
-          );
-          formData.append("caption", ""); // Caption mặc định
-
-          const uploadedMedia = await createMedia(formData, jwtToken);
-          return uploadedMedia._id;
+      if (files.length > 0) {
+        const uploadPromises = files.map(async (file, index) => {
+          const caption = captions[index];
+          const uploadedMedia = await createMedia(file, caption, token);
+          console.log(uploadedMedia);
+          return uploadedMedia.media._id;
         });
-        
 
-        mediaIds = await Promise.all(mediaUploadPromises);
+        mediaIds = await Promise.all(uploadPromises);
       }
 
       // Tạo post
@@ -78,7 +68,7 @@ const CreatePost = ({ onClose }: any) => {
         },
       };
 
-      await createPost(postPayload, jwtToken);
+      await createPost(postPayload, token);
       alert("Post created successfully!");
       onClose();
     } catch (err: any) {
@@ -123,7 +113,7 @@ const CreatePost = ({ onClose }: any) => {
                 <select
                   id="privacy"
                   value={privacy}
-                  onChange={handlePrivacyChange}
+                  onChange={(e) => setPrivacy(e.target.value)}
                   className="background-light800_dark400 rounded-lg px-3 py-2 text-border-color"
                 >
                   <option value="public">Public</option>
@@ -138,22 +128,38 @@ const CreatePost = ({ onClose }: any) => {
             <div className="mb-4">
               <textarea
                 value={content}
-                onChange={handleContentChange}
+                onChange={(e) => setContent(e.target.value)}
                 placeholder="What's on your mind?"
                 className="text-dark100_light500 h-24 w-full bg-transparent p-2"
               />
             </div>
-            <div className="flex items-center">
-              <span className="text-dark100_light500">Thêm ảnh/video</span>
-              <div className="mb-4 ml-auto">
-                <input
-                  type="file"
-                  accept="image/*, video/*"
-                  multiple
-                  onChange={handleMediaChange}
-                  className="p-2"
-                />
-              </div>
+            <div>
+              <label
+                htmlFor="file"
+                className="block text-sm font-medium text-gray-700"
+              >
+                Select Media
+              </label>
+              <input
+                type="file"
+                id="file"
+                accept="image/*,video/*"
+                multiple
+                onChange={handleFileChange}
+                className="mt-1 block w-full"
+              />
+              {files.map((file, index) => (
+                <div key={index} className="mt-2">
+                  <p className="text-sm">{file.name}</p>
+                  <input
+                    type="text"
+                    placeholder="Caption"
+                    value={captions[index]}
+                    onChange={(e) => handleCaptionChange(index, e.target.value)}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                  />
+                </div>
+              ))}
             </div>
             <div className="flex items-center">
               <span className="text-dark100_light500">Thêm vị trí</span>
@@ -162,7 +168,7 @@ const CreatePost = ({ onClose }: any) => {
                   type="text"
                   placeholder="Location"
                   value={location}
-                  onChange={handleLocationChange}
+                  onChange={(e) => setLocation(e.target.value)}
                   className="w-full rounded border border-gray-300 p-2"
                 />
               </div>
