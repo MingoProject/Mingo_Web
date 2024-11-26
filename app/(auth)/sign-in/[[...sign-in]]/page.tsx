@@ -50,7 +50,7 @@ const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const router = useRouter(); // Đảm bảo rằng useRouter được sử dụng trong component React
+  const router = useRouter();
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleSubmit = async (e: any) => {
@@ -65,8 +65,8 @@ const SignIn = () => {
         localStorage.setItem("token", user.token);
         const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
         const userId = decodedToken?.id;
-        localStorage.setItem("userId", userId); // Lưu token vào localStorage
-        router.push("/"); // Điều hướng sau khi đăng nhập thành công
+        localStorage.setItem("userId", userId);
+        router.push("/");
       } else {
         setErrorMessage("Đăng nhập không thành công!");
       }
