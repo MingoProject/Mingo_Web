@@ -100,7 +100,7 @@ function Page() {
       <div className="mt-[100px] flex">
         <div className="ml-[10%]  size-[200px] overflow-hidden rounded-full">
           <Image
-            src={profile?.avatar}
+            src={profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"}
             alt="Avatar"
             width={200}
             height={200}

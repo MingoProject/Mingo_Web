@@ -9,12 +9,8 @@ import DetailPost from "../forms/post/DetailPost";
 import { IUser } from "@/database/user.model";
 import { IMedia } from "@/database/media.model";
 import { IComment } from "@/database/comment.model";
-import jwt from "jsonwebtoken";
-
 import { CldImage } from "next-cloudinary";
 import { dislikePost, likePost } from "@/lib/services/post.service";
-
-const SECRET_KEY = process.env.JWT_SECRET!;
 
 const PostsCard = ({
   postId,
@@ -33,9 +29,9 @@ const PostsCard = ({
   content: string;
   media: IMedia[];
   createdAt: Date;
-  likes: IUser[]; // Likes là một mảng chứa đối tượng IUser
-  comments: IComment[]; // Comments là một mảng IComment
-  shares: IUser[]; // Shares là một mảng chứa đối tượng IUser
+  likes: IUser[];
+  comments: IComment[];
+  shares: IUser[];
   location?: string;
   privacy: {
     type: string;
@@ -67,8 +63,8 @@ const PostsCard = ({
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        const res = await likePost(postId, token);
-        setIsLiked(!isLiked); // Cập nhật trạng thái
+        await likePost(postId, token);
+        setIsLiked(!isLiked);
       } else {
         console.warn("User is not authenticated");
       }
@@ -81,7 +77,7 @@ const PostsCard = ({
     try {
       const token = localStorage.getItem("token");
       if (token) {
-        const res = await dislikePost(postId, token);
+        await dislikePost(postId, token);
 
         setIsLiked(!isLiked);
       } else {
@@ -106,12 +102,11 @@ const PostsCard = ({
     <div className="background-light700_dark300 h-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
         <Image
-          src={
-            author?.avatar ? author.avatar : "/assets/images/default-avatar.jpg"
-          }
+          src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
           alt="Avatar"
           width={45}
           height={45}
+          className="size-11 rounded-full"
         />
         {/* <Image
           src={"/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"}
@@ -173,22 +168,29 @@ const PostsCard = ({
               icon={
                 isLiked ? "ic:baseline-favorite" : "ic:baseline-favorite-border"
               }
-              className={isLiked ? "text-primary-100" : "text-gray-500"}
+              className={isLiked ? "text-primary-100" : "text-dark100_light500"}
             />
-            <span>{numberOfLikes} Likes</span>
+            <span className="text-dark100_light500">{numberOfLikes} Likes</span>
           </div>
           <div className="flex items-center space-x-2" onClick={openModal}>
-            <Icon icon="mingcute:message-4-line" />
-            <span>{comments.length} Comments</span>
+            <Icon
+              icon="mingcute:message-4-line"
+              className="text-dark100_light500"
+            />
+            <span className="text-dark100_light500">
+              {comments.length} Comments
+            </span>
           </div>
           <div className="flex items-center space-x-2">
-            <Icon icon="mdi:share-outline" />
-            <span>{shares.length} Shares</span>
+            <Icon icon="mdi:share-outline" className="text-dark100_light500" />
+            <span className="text-dark100_light500">
+              {shares.length} Shares
+            </span>
           </div>
         </div>
         <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
         <div className="text-dark100_light500 my-3">
-          <span>Viết bình luận</span>
+          <span className="text-dark100_light500">Viết bình luận</span>
           <div className="mx-[1%] pl-4 pt-2">
             <div className="flex" onClick={openModal}>
               <div className="size-[40px] overflow-hidden rounded-full">
@@ -202,39 +204,14 @@ const PostsCard = ({
               </div>
               <input
                 type="text"
-                placeholder="    Share something..."
-                className="background-light600_dark200 ml-3 h-[40px] w-full rounded-full text-base"
+                placeholder="    Write a comment..."
+                className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full text-base"
                 readOnly
               />
             </div>
           </div>
         </div>
-        {/* Render Comments */}
-        {/* <div className="mt-4">
-          {comments.map((comment) => (
-            <div
-              key={comment.commentId}
-              className="mb-2 flex items-start space-x-2"
-            >
-              <Image
-                src={
-                  comment.author.avatar || "/assets/images/default-avatar.jpg"
-                }
-                alt="Avatar"
-                width={30}
-                height={30}
-                className="rounded-full"
-              />
-              <div className="flex flex-col">
-                <p className="text-dark100_light500 font-semibold">
-                  {comment.author.fullname}
-                </p>
-                <p className="text-dark100_light500">{comment.content}</p>
-              </div>
-            </div>
-          ))}
-        </div> */}
-        {/* {isModalOpen && (
+        {isModalOpen && (
           <DetailPost
             postId={postId}
             author={author}
@@ -244,9 +221,10 @@ const PostsCard = ({
             likes={likes}
             comments={comments}
             shares={shares}
+            privacy={privacy}
             onClose={closeModal}
           />
-        )} */}
+        )}
       </div>
     </div>
   );

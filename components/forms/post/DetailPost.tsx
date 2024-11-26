@@ -1,73 +1,113 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Icon } from "@iconify/react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-
-interface IMedia {
-  _id: string;
-  url: string;
-  type: "image" | "video";
-}
-
-interface IUser {
-  _id: string;
-  username: string;
-  fullname: string;
-  avatar?: string;
-}
-
-interface IComment {
-  commentId: string;
-  postId: string;
-  author: string;
-  content: string;
-  createdAt: Date;
-  likes: string[];
-}
+import { IUser } from "@/database/user.model";
+import { IMedia } from "@/database/media.model";
+import { IComment } from "@/database/comment.model";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import fetchDetailedComments from "@/hooks/useComments";
+import { createComment } from "@/lib/services/comment.service";
+import Action from "./Action";
+import CommentCard from "@/components/cards/CommentCard";
 
 interface DetailPostProps {
   postId: string;
   author: IUser;
-  avatar?: string;
   content: string;
   media: IMedia[];
+  createdAt: Date;
   likes: IUser[];
   comments: IComment[];
   shares: IUser[];
-  createdAt: Date;
+  location?: string;
+  privacy: {
+    type: string;
+    allowedUsers?: IUser[];
+  };
   onClose: () => void;
 }
 
 const DetailPost = ({
   postId,
   author,
-  avatar,
   content,
   media,
+  createdAt,
   likes,
   comments,
   shares,
-  createdAt,
+  location,
+  privacy,
   onClose,
 }: DetailPostProps) => {
+  const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
+  const [newComment, setNewComment] = useState<string>("");
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setNewComment(e.target.value);
+  };
+
+  useEffect(() => {
+    const fetchCommentsData = async () => {
+      const detailedPosts = await fetchDetailedComments(comments);
+
+      setCommentsData(detailedPosts);
+    };
+
+    if (comments.length > 0) {
+      fetchCommentsData();
+    }
+  }, [comments]);
+
+  const handleAddComment = async () => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+
+    if (!token) {
+      console.error("User is not authenticated");
+      return;
+    }
+
+    if (!newComment.trim()) {
+      console.warn("Comment cannot be empty");
+      return;
+    }
+
+    try {
+      const newCommentData = await createComment(
+        { content: newComment },
+        token,
+        postId
+      );
+
+      setCommentsData((prev) => [newCommentData, ...prev]);
+      setNewComment("");
+    } catch (error) {
+      console.error("Failed to add comment:", error);
+    }
+  };
+
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
         <div className="p-4">
-          {/* Header */}
           <div className="ml-4 mt-3 flex items-center">
             <Image
-              src={avatar || "/assets/images/default-avatar.jpg"} // Default avatar
+              src={
+                author?.avatar
+                  ? author.avatar
+                  : "/assets/images/default-avatar.jpg"
+              }
               alt="Avatar"
               width={45}
               height={45}
-              className="rounded-full object-cover"
+              className="size-11 rounded-full object-cover"
             />
             <div>
               <p className="text-dark100_light500 ml-3 text-base">
-                {author.fullname}
+                {author?.firstName ? author.firstName : ""}
               </p>
               <span className="text-dark100_light500 ml-3 text-sm">
                 {getTimestamp(createdAt)}
@@ -75,12 +115,10 @@ const DetailPost = ({
             </div>
           </div>
 
-          {/* Content */}
           <div className="ml-4 mt-5">
             <p className="text-dark100_light500">{content}</p>
           </div>
 
-          {/* Media (Images/Video) */}
           {media && media.length > 0 && (
             <div className="mt-3 flex h-[400px] w-full justify-around">
               <Swiper spaceBetween={10} slidesPerView={1}>
@@ -106,48 +144,34 @@ const DetailPost = ({
             </div>
           )}
 
-          {/* Likes, Comments, Shares */}
           <div className="mx-10 my-5">
-            <div className="text-dark100_light500 flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Icon icon="ic:baseline-favorite-border" />
-                <span>{likes.length} Likes</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Icon icon="mingcute:message-4-line" />
-                <span>{comments.length} Comments</span>
-              </div>
-              <div className="flex items-center space-x-2">
-                <Icon icon="mdi:share-outline" />
-                <span>{shares.length} Shares</span>
-              </div>
-            </div>
+            <Action
+              likes={likes}
+              postId={postId}
+              comments={comments}
+              shares={shares}
+            />
             <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
-            {/* Render Comments */}
             <div className="my-4">
-              {comments.length > 0 ? (
-                comments.map((cmt) => (
-                  <div key={cmt.commentId} className="mb-3 flex items-start">
-                    <Image
-                      src={avatar || "/assets/images/default-avatar.jpg"} // Avatar for comments
-                      alt={cmt.author}
-                      width={40}
-                      height={40}
-                      className="rounded-full object-cover"
+              {commentsData.length > 0 ? (
+                commentsData.map((comment) => (
+                  <div
+                    key={comment._id}
+                    className="group mb-3 flex items-start"
+                  >
+                    <CommentCard
+                      comment={comment}
+                      setCommentsData={setCommentsData}
+                      postId={postId}
                     />
-                    <div className="ml-3">
-                      <p className="font-bold">{cmt.author}</p>
-                      <p>{cmt.content}</p>
-                    </div>
                   </div>
                 ))
               ) : (
-                <p>No comments yet.</p>
+                <p className="text-dark100_light500">No comments yet.</p>
               )}
             </div>
 
-            {/* Comment Input */}
             <div className="flex">
               <div className="size-[40px] overflow-hidden rounded-full">
                 <Image
@@ -160,13 +184,20 @@ const DetailPost = ({
               </div>
               <input
                 type="text"
-                placeholder="    Write a comment..."
-                className="background-light600_dark200 ml-3 h-[40px] w-full rounded-full text-base"
+                placeholder="Write a comment..."
+                className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full pl-3 text-base"
+                value={newComment}
+                onChange={handleInputChange}
               />
+              <button
+                onClick={handleAddComment}
+                className="rounded-full bg-primary-100 p-2 px-5 text-white"
+              >
+                Đăng
+              </button>
             </div>
           </div>
 
-          {/* Close Button */}
           <button
             onClick={onClose}
             className="mt-5 w-full text-center text-primary-100"
