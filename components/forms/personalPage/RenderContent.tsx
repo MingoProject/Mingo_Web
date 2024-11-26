@@ -70,7 +70,7 @@ const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
   switch (activeTab) {
     case "posts":
       return (
-        <div className="mx-[15%] flex pt-6">
+        <div className="mx-[2%] flex pt-6 lg:mx-[15%]">
           <div className="hidden w-5/12 pt-6 lg:block">
             <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
               Friends

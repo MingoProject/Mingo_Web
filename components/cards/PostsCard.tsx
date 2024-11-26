@@ -11,6 +11,7 @@ import { IMedia } from "@/database/media.model";
 import { IComment } from "@/database/comment.model";
 import { CldImage } from "next-cloudinary";
 import { dislikePost, likePost } from "@/lib/services/post.service";
+import { time } from "console";
 
 const PostsCard = ({
   postId,
@@ -99,7 +100,7 @@ const PostsCard = ({
   };
 
   return (
-    <div className="background-light700_dark300 h-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
+    <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
         <Image
           src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
@@ -108,13 +109,6 @@ const PostsCard = ({
           height={45}
           className="size-11 rounded-full"
         />
-        {/* <Image
-          src={"/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"}
-          alt="Avatar"
-          width={45}
-          height={45}
-          className="size-12 rounded-full object-cover"
-        /> */}
         <div>
           <p className="text-dark100_light500 ml-3 text-base">
             {author?.firstName ? author.firstName : ""}
@@ -128,19 +122,19 @@ const PostsCard = ({
         <p className="text-dark100_light500">{content}</p>
       </div>
       {media && media.length > 0 && (
-        <div className="mx-5 mt-3 flex h-[400px] justify-around">
+        <div className="mx-5 mt-3 flex h-auto justify-around">
           <Swiper
             spaceBetween={10}
             slidesPerView={1}
             navigation
             pagination={{ clickable: true }}
-            className="h-[400px] w-[300px]"
+            className="h-auto w-[300px]"
           >
             {media.map((item) => (
               <SwiperSlide key={item.url}>
                 {item.type === "image" ? (
                   <CldImage
-                    src="media_folder/ravh8obj3hxq7ebhb47h" // Use this sample image or upload your own via the Media Explorer
+                    src={item.url} // Use this sample image or upload your own via the Media Explorer
                     width="500" // Transform the image: auto-crop to square aspect_ratio
                     height="500"
                     alt=""
@@ -170,22 +164,33 @@ const PostsCard = ({
               }
               className={isLiked ? "text-primary-100" : "text-dark100_light500"}
             />
-            <span className="text-dark100_light500">{numberOfLikes} Likes</span>
+            <div className="flex">
+              <span className="text-dark100_light500">{numberOfLikes}</span>
+              <p className="text-dark100_light500 ml-1 hidden md:block">
+                Likes
+              </p>
+            </div>
           </div>
           <div className="flex items-center space-x-2" onClick={openModal}>
             <Icon
               icon="mingcute:message-4-line"
               className="text-dark100_light500"
             />
-            <span className="text-dark100_light500">
-              {comments.length} Comments
-            </span>
+            <div className="flex">
+              <span className="text-dark100_light500">{comments.length}</span>
+              <p className="text-dark100_light500 ml-1 hidden md:block">
+                Comments
+              </p>
+            </div>
           </div>
           <div className="flex items-center space-x-2">
             <Icon icon="mdi:share-outline" className="text-dark100_light500" />
-            <span className="text-dark100_light500">
-              {shares.length} Shares
-            </span>
+            <div className="flex">
+              <span className="text-dark100_light500">{shares.length}</span>
+              <p className="text-dark100_light500 ml-1 hidden md:block">
+                Shares
+              </p>
+            </div>
           </div>
         </div>
         <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
