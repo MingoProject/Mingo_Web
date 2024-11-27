@@ -1,31 +1,31 @@
 import { Schema, models, model, Document } from "mongoose";
 import { IAudit, AuditSchema } from "./audit.model";
 export interface IUser extends Document, IAudit {
-  firstName: string;
-  lastName: string;
-  nickName: string;
+  firstName: string; //
+  lastName: string; //
+  nickName: string; //
   phoneNumber: string;
   email: string;
   password: string;
   roles: string[];
-  avatar: string;
-  avatarPublicId: string;
-  background: string;
-  backgroundPublicId: string;
+  avatar: string; //
+  avatarPublicId: string; //
+  background: string; //
+  backgroundPublicId: string; //
   gender: boolean;
-  address: string;
-  job: string;
-  hobbies: string[];
-  bio: string;
+  address: string; //
+  job: string; //
+  hobbies: string[]; //
+  bio: string; //
   //   point: number;
-  relationShip: string;
-  birthDay: Date;
-  attendDate: Date;
+  relationShip: string; //
+  birthDay: Date; //
+  attendDate: Date; //
   flag: boolean;
-  friendIds: Schema.Types.ObjectId[];
-  followingIds: Schema.Types.ObjectId[];
-  bestFriendIds: Schema.Types.ObjectId[];
-  blockedIds: Schema.Types.ObjectId[];
+  friendIds: Schema.Types.ObjectId[]; //
+  followingIds: Schema.Types.ObjectId[]; //
+  bestFriendIds: Schema.Types.ObjectId[]; //
+  blockedIds: Schema.Types.ObjectId[]; //
 }
 
 const UserSchema = new Schema<IUser>({
