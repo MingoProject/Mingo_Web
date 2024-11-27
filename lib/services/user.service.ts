@@ -1,4 +1,10 @@
-import { UserResponseDTO, UserRegisterDTO, UserLoginDTO } from "@/dtos/UserDTO";
+import {
+  UserResponseDTO,
+  UserRegisterDTO,
+  UserLoginDTO,
+  UpdateUserBioDTO,
+  UpdateUserDTO,
+} from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -138,5 +144,73 @@ export async function uploadAvatar(formData: any, token: string | null) {
     return data;
   } catch (err) {
     console.error("Failed to upload avatar", err);
+  }
+}
+
+export async function uploadBackground(formData: any, token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/upload-background`, {
+      method: "POST",
+      headers: {
+        Authorization: `${token}`,
+      },
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error("Error upload background");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to upload background", err);
+  }
+}
+
+export async function updateUserBio(
+  params: UpdateUserBioDTO,
+  token: string | null
+) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/update-bio`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error update bio");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to update bio", err);
+  }
+}
+
+export async function updateInfo(params: UpdateUserDTO, token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/update`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      throw new Error("Error update bio");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to update bio", err);
   }
 }
