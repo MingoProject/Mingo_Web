@@ -1,31 +1,33 @@
 import { Schema, models, model, Document } from "mongoose";
 import { IAudit, AuditSchema } from "./audit.model";
+
 export interface IUser extends Document, IAudit {
-  firstName: string; //
-  lastName: string; //
-  nickName: string; //
+  firstName: string;
+  lastName: string;
+  nickName: string;
   phoneNumber: string;
   email: string;
   password: string;
   roles: string[];
-  avatar: string; //
-  avatarPublicId: string; //
-  background: string; //
-  backgroundPublicId: string; //
+  avatar: string;
+  avatarPublicId: string;
+  background: string;
+  backgroundPublicId: string;
   gender: boolean;
-  address: string; //
-  job: string; //
-  hobbies: string[]; //
-  bio: string; //
-  //   point: number;
-  relationShip: string; //
-  birthDay: Date; //
-  attendDate: Date; //
+  address: string;
+  job: string;
+  hobbies: string[];
+  bio: string;
+  relationShip: string;
+  birthDay: Date;
+  attendDate: Date;
   flag: boolean;
-  friendIds: Schema.Types.ObjectId[]; //
-  followingIds: Schema.Types.ObjectId[]; //
-  bestFriendIds: Schema.Types.ObjectId[]; //
-  blockedIds: Schema.Types.ObjectId[]; //
+  friendIds: Schema.Types.ObjectId[];
+  followingIds: Schema.Types.ObjectId[];
+  followerIds: Schema.Types.ObjectId[];
+  bestFriendIds: Schema.Types.ObjectId[];
+  blockedIds: Schema.Types.ObjectId[];
+  postIds: Schema.Types.ObjectId[];
 }
 
 const UserSchema = new Schema<IUser>({
@@ -45,15 +47,16 @@ const UserSchema = new Schema<IUser>({
   job: { type: String, required: false },
   hobbies: { type: [String], required: false },
   bio: { type: String, required: false },
-  //   point: { type: Number, required: false, default: 0 },
   relationShip: { type: String, required: false },
   birthDay: { type: Date, required: false },
   attendDate: { type: Date, required: true },
   flag: { type: Boolean, required: true, default: true },
-  friendIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
-  followingIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
-  bestFriendIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
-  blockedIds: [{ type: [Schema.Types.ObjectId], ref: "User" }],
+  friendIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  followingIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  followerIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  bestFriendIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  blockedIds: [{ type: Schema.Types.ObjectId, ref: "User" }],
+  postIds: [{ type: Schema.Types.ObjectId, ref: "Post" }],
 });
 
 UserSchema.add(AuditSchema);

@@ -1,40 +1,37 @@
-"use client";
+"use client"; // Đặt directive này ở đầu file để chuyển thành Client Component.
+
+import { useParams } from "next/navigation"; // Thay thế next/router bằng next/navigation
 import { useEffect, useState } from "react";
-import RenderContentPage from "@/components/forms/personalPage/RenderContent";
-import InfomationUser from "@/components/forms/personalPage/InfomationUser";
 import { getMyProfile } from "@/lib/services/user.service";
 import Background from "@/components/forms/personalPage/Background";
 import Avatar from "@/components/forms/personalPage/Avatar";
-import Tab from "@/components/forms/personalPage/Tab";
 import Bio from "@/components/forms/personalPage/Bio";
+import InfomationUser from "@/components/forms/personalPage/InfomationUser";
+import Tab from "@/components/forms/personalPage/Tab";
+import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 
-function Page() {
-  const [activeTab, setActiveTab] = useState("posts");
+const ProfilePage = () => {
+  const { id } = useParams(); // Lấy id từ URL
   const [profile, setProfile] = useState<any>(null);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("posts");
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-          const profileData = await getMyProfile(userId);
-          setProfile(profileData.userProfile);
+        if (id) {
+          const data = await getMyProfile(id);
+          console.log("profile", data);
+          setProfile(data.userProfile);
         }
-      } catch (err) {
-        setError("Failed to fetch profile");
-        console.error(err);
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching profile:", error);
       }
     };
 
     fetchProfile();
-  }, []);
+  }, [id]);
 
-  if (loading) return <div className="mt-96">Loading...</div>;
-  if (error) return <div className="mt-96">Error: {error}</div>;
+  if (!profile) return <div>Loading...</div>;
 
   return (
     <div className="background-light700_dark400 h-full pt-20">
@@ -77,6 +74,6 @@ function Page() {
       </div>
     </div>
   );
-}
+};
 
-export default Page;
+export default ProfilePage;

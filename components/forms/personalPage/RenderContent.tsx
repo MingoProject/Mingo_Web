@@ -5,16 +5,29 @@ import PostsCard from "@/components/cards/PostsCard";
 import NoResult from "@/components/shared/NoResult";
 import OpenCreatePost from "../post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";
-import picturesData from "../../../fakeData/PicturesData";
 import FilterPost from "../FilterPost";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { getMyPosts } from "@/lib/services/user.service";
+import Images from "./Images";
+import Videos from "./Videos";
 
 const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("all");
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
+  const [userId, setUserId] = useState<string>("");
+
+  useEffect(() => {
+    try {
+      const storedUserId = localStorage.getItem("userId");
+      if (storedUserId) {
+        setUserId(storedUserId); // Chỉ gọi setUserId nếu giá trị không phải null
+      }
+    } catch (error) {
+      console.error("Error loading userId:", error);
+    }
+  }, []);
 
   useEffect(() => {
     const myPosts = async () => {
@@ -162,19 +175,19 @@ const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
                 All
               </button>
               <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
+                className={`w-32 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
                 onClick={() => setActiveTabFriend("bestfriend")}
               >
-                Recent
+                Best Friend
               </button>
               <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
+                className={`w-24 rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
                 onClick={() => setActiveTabFriend("followed")}
               >
                 Following
               </button>
               <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
+                className={`w-24 rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
                 onClick={() => setActiveTabFriend("blocked")}
               >
                 Blocked
@@ -188,51 +201,9 @@ const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
         </div>
       );
     case "photos":
-      return (
-        <div className="flex justify-center ">
-          <div>
-            <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Pictures
-            </div>
-            <div className="mx-[10%] mt-10 flex flex-wrap gap-4">
-              {picturesData.map((image, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <Image
-                    width={140}
-                    height={140}
-                    src={image}
-                    alt={`Picture ${index + 1}`}
-                    className="mb-2 size-36 rounded-sm object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
+      return <Images userId={userId} />;
     case "videos":
-      return (
-        <div className="flex justify-center ">
-          <div>
-            <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Pictures
-            </div>
-            <div className="mx-[10%] mt-10 flex flex-wrap gap-4">
-              {picturesData.map((image, index) => (
-                <div key={index} className="flex flex-col items-center">
-                  <Image
-                    width={140}
-                    height={140}
-                    src={image}
-                    alt={`Picture ${index + 1}`}
-                    className="mb-2 size-36 rounded-sm object-cover"
-                  />
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
+      return <Videos userId={userId} />;
     default:
       return <div>Chọn một mục để hiển thị nội dung</div>;
   }

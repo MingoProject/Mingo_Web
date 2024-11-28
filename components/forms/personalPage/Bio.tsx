@@ -58,8 +58,8 @@ const Bio = ({ profile, setProfile }: any) => {
               </h2>
               <textarea
                 className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-                value={bio} // Gán giá trị từ state bio
-                onChange={handleChange} // Cập nhật giá trị khi người dùng thay đổi
+                value={bio}
+                onChange={handleChange}
                 rows={4}
               />
             </div>
