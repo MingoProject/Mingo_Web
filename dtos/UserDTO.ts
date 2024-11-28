@@ -15,6 +15,7 @@ export interface UserLoginDTO {
   phoneNumber: string;
   password: string;
 }
+
 export interface AuthenticationDTO {
   message: string;
   token: string;
@@ -41,8 +42,11 @@ export interface UserResponseDTO {
   attendDate: Date;
   flag: boolean;
   friendIds: Schema.Types.ObjectId[];
+  followingIds: Schema.Types.ObjectId[];
+  followerIds: Schema.Types.ObjectId[];
   bestFriendIds: Schema.Types.ObjectId[];
   blockedIds: Schema.Types.ObjectId[];
+  postIds: Schema.Types.ObjectId[];
   createAt: Date;
   createBy: Schema.Types.ObjectId;
 }
@@ -55,7 +59,6 @@ export interface UpdateUserDTO {
   address: string;
   job: string;
   hobbies: string[];
-  // bio: string;
   relationShip: string;
   birthDay: Date;
 }

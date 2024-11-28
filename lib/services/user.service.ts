@@ -126,6 +126,56 @@ export async function getMyFriends(id: string | null) {
   }
 }
 
+export async function getMyBffs(id: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/get-my-bffs?userId=${id}`);
+
+    if (!response.ok) {
+      throw new Error("Error fetching bffs");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch bffs:", error);
+    throw error;
+  }
+}
+
+export async function getMyFollowings(id: string | null) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-my-followings?userId=${id}`
+    );
+
+    if (!response.ok) {
+      throw new Error("Error fetching followings");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch followings:", error);
+    throw error;
+  }
+}
+
+export async function getMyBlocks(id: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/get-my-blocks?userId=${id}`);
+
+    if (!response.ok) {
+      throw new Error("Error fetching blocks");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch blocks:", error);
+    throw error;
+  }
+}
+
 export async function uploadAvatar(formData: any, token: string | null) {
   try {
     const response = await fetch(`${BASE_URL}/user/upload-avatar`, {
@@ -212,5 +262,37 @@ export async function updateInfo(params: UpdateUserDTO, token: string | null) {
     return data;
   } catch (err) {
     console.error("Failed to update bio", err);
+  }
+}
+
+export async function getMyImages(id: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/get-my-images?userId=${id}`);
+
+    if (!response.ok) {
+      throw new Error("Error fetching images");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch images:", error);
+    throw error;
+  }
+}
+
+export async function getMyVideos(id: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/user/get-my-videos?userId=${id}`);
+
+    if (!response.ok) {
+      throw new Error("Error fetching videos");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch videos:", error);
+    throw error;
   }
 }

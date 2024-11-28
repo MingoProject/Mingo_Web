@@ -84,7 +84,6 @@ const UpdateInformation = ({
     setFormValues({ ...formValues, [name]: value });
   };
 
-  // Xử lý thay đổi sở thích
   const handleHobbyToggle = (hobby: string) => {
     setSelectedHobbies((prev: any) =>
       prev.includes(hobby)
@@ -93,7 +92,6 @@ const UpdateInformation = ({
     );
   };
 
-  // Xử lý lưu thông tin
   const handleSave = async () => {
     try {
       const token = localStorage.getItem("token");

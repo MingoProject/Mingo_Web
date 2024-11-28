@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import fakeFriends from "../../../fakeData/FriendsData";
 
 import { Icon } from "@iconify/react";
 import Image from "next/image";
 import { UserResponseDTO } from "@/dtos/UserDTO";
-import { getMyFriends } from "@/lib/services/user.service";
+import {
+  getMyBffs,
+  getMyBlocks,
+  getMyFollowings,
+  getMyFriends,
+} from "@/lib/services/user.service";
+import Link from "next/link";
 
 const FriendList = ({ friends }: any) => (
   <div className="grid grid-cols-2 gap-4">
@@ -13,16 +18,19 @@ const FriendList = ({ friends }: any) => (
         key={index}
         className="text-dark100_light500 flex w-3/5 items-center"
       >
-        <Image
-          width={80}
-          height={80}
-          src={
-            friend?.avatar ||
-            "/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
-          }
-          alt={friend.lastName}
-          className="mb-2 size-20 rounded-full object-cover"
-        />
+        <Link href={`/profile/${friend._id}`}>
+          <Image
+            width={80}
+            height={80}
+            src={
+              friend?.avatar ||
+              "/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
+            }
+            alt={friend.lastName}
+            className="mb-2 size-20 rounded-full object-cover"
+          />
+        </Link>
+
         <div className="mb-1 ml-2 font-bold">{friend.lastName}</div>
         <Icon
           icon="mdi:dots-horizontal"
@@ -35,6 +43,9 @@ const FriendList = ({ friends }: any) => (
 
 const RenderFriend = ({ activeTabFriend }: any) => {
   const [friends, setFriends] = useState<UserResponseDTO[]>([]);
+  const [bffs, setBffs] = useState<UserResponseDTO[]>([]);
+  const [followings, setFollowings] = useState<UserResponseDTO[]>([]);
+  const [blocks, setBlocks] = useState<UserResponseDTO[]>([]);
 
   useEffect(() => {
     const myFriends = async () => {
@@ -42,23 +53,61 @@ const RenderFriend = ({ activeTabFriend }: any) => {
         const userId = localStorage.getItem("userId");
         const data = await getMyFriends(userId);
         setFriends(data);
-        console.log(data);
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myFriends();
   }, []);
+
+  useEffect(() => {
+    const myBffs = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const data = await getMyBffs(userId);
+        setBffs(data);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    myBffs();
+  }, []);
+
+  useEffect(() => {
+    const myFollowings = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const data = await getMyFollowings(userId);
+        setFollowings(data);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    myFollowings();
+  }, []);
+
+  useEffect(() => {
+    const myBlocks = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        const data = await getMyBlocks(userId);
+        setBlocks(data);
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    myBlocks();
+  }, []);
   const getFriendsList = () => {
     switch (activeTabFriend) {
       case "all":
         return friends;
       case "bestfriend":
-        return fakeFriends;
+        return bffs;
       case "followed":
-        return fakeFriends;
+        return followings;
       case "blocked":
-        return fakeFriends;
+        return blocks;
       default:
         return [];
     }
