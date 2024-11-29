@@ -20,7 +20,7 @@ const Images = ({ userId }: any) => {
   }, [userId]);
 
   return (
-    <div className="flex justify-center ">
+    <div className="flex ">
       <div>
         <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
           Pictures
