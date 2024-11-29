@@ -174,3 +174,26 @@ export async function getLikesByPostId(
     throw error;
   }
 }
+
+export async function deletePost(postId: string, token: string | null) {
+  try {
+    const response = await fetch(`${BASE_URL}/post/delete?postId=${postId}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error deleting post");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete post:", error);
+    throw error;
+  }
+}

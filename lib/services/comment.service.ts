@@ -125,7 +125,7 @@ export async function deleteComment(
       throw new Error(errorData.message || "Error deleting comment");
     }
 
-    const data: CommentResponseDTO = await response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to delete comment:", error);

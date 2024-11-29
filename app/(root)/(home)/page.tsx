@@ -9,10 +9,34 @@ import Hashtag from "@/components/forms/home/Hashtag";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { PostResponseDTO } from "@/dtos/PostDTO";
+import { getMyProfile } from "@/lib/services/user.service";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const profileData = await getMyProfile(userId);
+          setProfile(profileData.userProfile);
+        }
+      } catch (err) {
+        setError("Failed to fetch profile");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   useEffect(() => {
     const loadPosts = async () => {
@@ -40,15 +64,7 @@ export default function Home() {
 
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
-  const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]); // Khởi tạo là mảng rỗng
-  const [currentUser, setCurrentUser] = useState(null);
-
-  useEffect(() => {
-    const user = localStorage.getItem("user") || "{}";
-    if (user) {
-      setCurrentUser(JSON.parse(user));
-    }
-  }, []);
+  const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
     const sortedPosts = [...postsData]; // Sắp xếp bài viết nếu có
@@ -68,21 +84,32 @@ export default function Home() {
     setFilteredPosts(sortedPosts);
   }, [selectedFilter, postsData]);
 
+  if (loading) return <div className="mt-96">Loading...</div>;
+  if (error) return <div className="mt-96">Error: {error}</div>;
+
   return (
     <div className="background-light800_dark400 mt-7 flex w-full pt-20">
       <div className="background-light800_dark400 hidden w-2/5 pl-[2%] lg:block">
-        <h1 className="text-dark100_light500 text-2xl">Hello Huỳnh,</h1>
-        <h2 className="text-primary-100">How are you today?</h2>
-        <div className="mt-3 flex items-center">
-          <Image
-            src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
-            alt="Avatar"
-            width={45}
-            height={45}
-            className="rounded-full object-cover"
-          />
-          <p className="text-dark100_light500 ml-3 text-xl">Huỳnh</p>
-        </div>
+        {profile && (
+          <>
+            <h1 className="text-dark100_light500 text-2xl">
+              Hello {profile.lastName},
+            </h1>
+            <h2 className="text-primary-100">How are you today?</h2>
+            <div className="mt-3 flex items-center">
+              <Image
+                src={profile?.avatar || "/assets/images/capy.jpg"}
+                alt="Avatar"
+                width={45}
+                height={45}
+                className="size-16 rounded-full object-cover"
+              />
+              <p className="text-dark100_light500 ml-3 text-xl">
+                {profile.firstName} {profile.lastName}
+              </p>
+            </div>
+          </>
+        )}
       </div>
 
       <div className="background-light800_dark400 w-[700px] justify-center px-3">

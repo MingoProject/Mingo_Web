@@ -28,7 +28,6 @@ import { Button } from "@/components/ui/button";
 import ViewProfile from "@/components/home/ViewProfile";
 import Setting from "@/components/home/Setting";
 import Favorite from "@/components/home/Favorite";
-import { PostYouLike } from "@/lib/data/data";
 import Save from "@/components/home/Save";
 import Search from "../search/Search";
 import { PostYouLikeDTO } from "@/dtos/PostDTO";
@@ -36,6 +35,7 @@ import {
   getPostsLikedByUser,
   getPostsSavedByUser,
 } from "@/lib/services/setting.service";
+import { getMyProfile } from "@/lib/services/user.service";
 export const notifications = [
   {
     id: 1,
@@ -80,7 +80,6 @@ export const notifications = [
     createdAt: "2024-09-27T15:30:00Z",
   },
 ];
-const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 const Navbar = () => {
   const pathname = usePathname();
@@ -90,12 +89,33 @@ const Navbar = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSave, setIsSave] = useState(false);
   const [isDrawerOpen, setDrawerOpen] = useState(false);
-  const [activeDrawer, setActiveDrawer] = useState(""); // To track if 'search' or 'notifications' is active
-  const [currentUser, setCurrentUser] = useState(null);
+  const [activeDrawer, setActiveDrawer] = useState("");
   const [listLikePosts, setListLikePosts] = useState<PostYouLikeDTO[]>([]);
   const [listSavePosts, setListSavePosts] = useState<PostYouLikeDTO[]>([]);
-  const [_id, set_Id] = useState("673850a5f6813181d7c1ac8f");
-  const [_idSave, set_IdSave] = useState("67288b99e8eb3213e354e778");
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const [profile, setProfile] = useState<any>(null);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const profileData = await getMyProfile(userId);
+          console.log(profileData);
+          setProfile(profileData.userProfile);
+        }
+      } catch (err) {
+        setError("Failed to fetch profile");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
 
   const handleIsSetting = () => {
     setIsSetting(true);
@@ -125,15 +145,6 @@ const Navbar = () => {
     setIsSave(false);
   };
 
-  useEffect(() => {
-    const user = localStorage.getItem("user");
-    if (user) {
-      const parsedUser = JSON.parse(user);
-      setCurrentUser(parsedUser);
-      set_Id(parsedUser.id); // Lưu ID người dùng
-    }
-  }, []);
-
   const toggleDrawer = (drawerType: any) => {
     // Open or close the drawer and set the active drawer type
     if (activeDrawer === drawerType) {
@@ -151,13 +162,13 @@ const Navbar = () => {
   };
 
   useEffect(() => {
-    if (!isFavorite) return; // Chỉ fetch nếu isFavorite === true
+    if (!isFavorite || !profile?._id) return; // Ensure profile and _id are available
 
-    let isMounted = true; // Cờ kiểm tra xem component còn được mount không
+    let isMounted = true; // Flag to check if the component is still mounted
 
     const fetchPostsData = async () => {
       try {
-        const listPost = await getPostsLikedByUser(_id);
+        const listPost = await getPostsLikedByUser(profile._id);
         if (isMounted) {
           setListLikePosts(listPost);
         }
@@ -169,18 +180,18 @@ const Navbar = () => {
     fetchPostsData();
 
     return () => {
-      isMounted = false; // Cleanup: Đánh dấu là component đã unmount
+      isMounted = false; // Cleanup: Mark the component as unmounted
     };
-  }, [isFavorite, _id]); // Theo dõi isFavorite và _id
+  }, [isFavorite, profile?._id]); // Safely access profile._id
 
   useEffect(() => {
-    if (!isSave) return; // Only fetch if isSave is true
+    if (!isSave || !profile?._id) return; // Ensure profile and _id are available
 
     let isMounted = true; // Flag to check if the component is still mounted
 
     const fetchPostsData = async () => {
       try {
-        const listPost = await getPostsSavedByUser(_idSave); // Fetch saved posts
+        const listPost = await getPostsSavedByUser(profile._id); // Fetch saved posts
         if (isMounted) {
           setListSavePosts(listPost); // Set saved posts if component is still mounted
         }
@@ -194,7 +205,10 @@ const Navbar = () => {
     return () => {
       isMounted = false; // Cleanup: Mark the component as unmounted
     };
-  }, [isSave, _idSave]); // Depend on isSave and _idSave
+  }, [isSave, profile?._id]); // Safely access profile._id
+
+  if (loading) return <div className="mt-96">Loading...</div>;
+  if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
     <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
@@ -262,103 +276,113 @@ const Navbar = () => {
       {/* Right side options */}
       <div className="flex-between w-auto">
         <Theme />
-        <Link href="/" className="mr-3 text-primary-100 ">
-          <p className="hidden md:block">Huỳnh Nguyễn</p>
-        </Link>
-        <Menubar className="relative border-none bg-transparent   shadow-none focus:outline-none">
-          <MenubarMenu>
-            <MenubarTrigger>
-              {" "}
-              <Image
-                src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
-                alt="Avatar"
-                width={30}
-                height={30}
-                className="rounded-full"
-              />
-            </MenubarTrigger>
-            <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">
-              <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
-                <Link href="/personal-page" className="">
-                  <div className="flex items-center gap-2">
-                    <Image
-                      src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
-                      alt="Avatar"
-                      width={30}
-                      height={30}
-                      className="rounded-full"
-                    />
-                    <p className="text-ellipsis whitespace-nowrap  text-base font-normal">
-                      Personal page
-                    </p>
-                  </div>
-                </Link>
-              </MenubarItem>
-              <MenubarItem
-                onClick={handleIsSetting}
-                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
-              >
-                {" "}
-                <div className="flex items-center gap-2">
-                  <FontAwesomeIcon
-                    icon={faGear}
-                    className="text-dark100_light500"
+        {profile ? (
+          <>
+            <Link href="/" className="mr-3 text-primary-100 ">
+              <p className="hidden md:block">
+                {profile.firstName} {profile.lastName}
+              </p>
+            </Link>
+            <Menubar className="relative border-none bg-transparent   shadow-none focus:outline-none">
+              <MenubarMenu>
+                <MenubarTrigger>
+                  {" "}
+                  <Image
+                    src={profile?.avatar || "/assets/images/capy.jpg"}
+                    alt="Avatar"
+                    width={30}
+                    height={30}
+                    className="size-7 rounded-full object-cover"
                   />
-                  <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Setting
-                  </p>
-                </div>
-              </MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem
-                onClick={handleIsSave}
-                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
-              >
-                {" "}
-                <div className="flex items-center gap-2">
-                  <FontAwesomeIcon
-                    icon={faFloppyDisk}
-                    className="text-dark100_light500"
-                  />
-                  <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Saved posts
-                  </p>
-                </div>
-              </MenubarItem>
-              <MenubarSeparator />
-              <MenubarItem
-                onClick={handleIsFavorite}
-                className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
-              >
-                {" "}
-                <div className="flex items-center gap-2 ">
-                  <FontAwesomeIcon
-                    icon={faHeart}
-                    className="text-dark100_light500"
-                  />
-                  <p className="text-ellipsis whitespace-nowrap  text-base">
-                    Liked posts
-                  </p>
-                </div>
-              </MenubarItem>
-              <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
-                {" "}
-                <Button className="h-[30px] w-full bg-primary-100 text-center text-base text-white">
-                  Logout
-                </Button>
-              </MenubarItem>
-            </MenubarContent>
-          </MenubarMenu>
-        </Menubar>
-        <div className="flex w-auto  sm:hidden">
-          <MobileNav />
-        </div>
-        {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
-        {isSetting && <Setting onClose={closeSetting} />}
-        {isFavorite && (
-          <Favorite post={listLikePosts} onClose={closeFavorite} />
+                </MenubarTrigger>
+                <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">
+                  <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
+                    <Link href="/personal-page" className="">
+                      <div className="flex items-center gap-2">
+                        <Image
+                          src={profile?.avatar || "/assets/images/capy.jpg"}
+                          alt="Avatar"
+                          width={30}
+                          height={30}
+                          className="rounded-full"
+                        />
+                        <p className="text-ellipsis whitespace-nowrap  text-base font-normal">
+                          Personal page
+                        </p>
+                      </div>
+                    </Link>
+                  </MenubarItem>
+                  <MenubarItem
+                    onClick={handleIsSetting}
+                    className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+                  >
+                    {" "}
+                    <div className="flex items-center gap-2">
+                      <FontAwesomeIcon
+                        icon={faGear}
+                        className="text-dark100_light500"
+                      />
+                      <p className="text-ellipsis whitespace-nowrap  text-base">
+                        Setting
+                      </p>
+                    </div>
+                  </MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem
+                    onClick={handleIsSave}
+                    className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+                  >
+                    {" "}
+                    <div className="flex items-center gap-2">
+                      <FontAwesomeIcon
+                        icon={faFloppyDisk}
+                        className="text-dark100_light500"
+                      />
+                      <p className="text-ellipsis whitespace-nowrap  text-base">
+                        Saved posts
+                      </p>
+                    </div>
+                  </MenubarItem>
+                  <MenubarSeparator />
+                  <MenubarItem
+                    onClick={handleIsFavorite}
+                    className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20"
+                  >
+                    {" "}
+                    <div className="flex items-center gap-2 ">
+                      <FontAwesomeIcon
+                        icon={faHeart}
+                        className="text-dark100_light500"
+                      />
+                      <p className="text-ellipsis whitespace-nowrap  text-base">
+                        Liked posts
+                      </p>
+                    </div>
+                  </MenubarItem>
+                  <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
+                    {" "}
+                    <Button className="h-[30px] w-full bg-primary-100 text-center text-base text-white">
+                      Logout
+                    </Button>
+                  </MenubarItem>
+                </MenubarContent>
+              </MenubarMenu>
+            </Menubar>
+            <div className="flex w-auto  sm:hidden">
+              <MobileNav />
+            </div>
+            {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
+            {isSetting && <Setting onClose={closeSetting} />}
+            {isFavorite && (
+              <Favorite post={listLikePosts} onClose={closeFavorite} />
+            )}
+            {isSave && <Save post={listSavePosts} onClose={closeSave} />}
+          </>
+        ) : (
+          <Button className="rounded bg-primary-100 px-4 py-2 text-white">
+            Login
+          </Button>
         )}
-        {isSave && <Save post={listSavePosts} onClose={closeSave} />}
       </div>
 
       {isDrawerOpen && (

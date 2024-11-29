@@ -1,11 +1,20 @@
 import { Button } from "@/components/ui/button";
 import { updateUserBio } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 const Bio = ({ profile, setProfile }: any) => {
   const [showEditBio, setShowEditBio] = useState(false);
-  const [bio, setBio] = useState(profile?.bio || ""); // Thêm state để theo dõi giá trị bio
+  const [bio, setBio] = useState(profile?.bio || "");
+  const [me, setMe] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+
+    if (userId && userId === profile._id) {
+      setMe(true);
+    }
+  }, [profile._id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(e.target.value);
@@ -17,7 +26,7 @@ const Bio = ({ profile, setProfile }: any) => {
 
       if (token) {
         const params = {
-          bio, // Gửi giá trị bio đã cập nhật
+          bio,
         };
 
         const response = await updateUserBio(params, token);
@@ -44,11 +53,14 @@ const Bio = ({ profile, setProfile }: any) => {
       <span className="text-dark100_light500">
         {profile?.bio || "Bio not provided"}
       </span>
-      <Icon
-        icon="solar:pen-broken"
-        className="ml-auto text-lg text-primary-100"
-        onClick={() => setShowEditBio(true)}
-      />
+      {me && (
+        <Icon
+          icon="solar:pen-broken"
+          className="ml-auto text-lg text-primary-100"
+          onClick={() => setShowEditBio(true)}
+        />
+      )}
+
       {showEditBio && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-1/2">

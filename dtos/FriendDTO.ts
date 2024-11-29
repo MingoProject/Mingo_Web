@@ -1,8 +1,8 @@
 import { Schema } from "mongoose";
 
 export interface FriendRequestDTO {
-  sender: string;
-  receiver: string;
+  sender: string | null;
+  receiver: string | null;
 }
 
 export interface FriendResponseDTO {

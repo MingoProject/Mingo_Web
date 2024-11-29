@@ -1,17 +1,15 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { getTimestamp } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DetailPost from "../forms/post/DetailPost";
-import { IUser } from "@/database/user.model";
-import { IMedia } from "@/database/media.model";
-import { IComment } from "@/database/comment.model";
 import { CldImage } from "next-cloudinary";
 import { dislikePost, likePost } from "@/lib/services/post.service";
-import { time } from "console";
+import Link from "next/link";
+import PostMenu from "../forms/post/PostMenu";
 
 const PostsCard = ({
   postId,
@@ -26,21 +24,37 @@ const PostsCard = ({
   privacy,
 }: {
   postId: string;
-  author: IUser;
+  author: any;
   content: string;
-  media: IMedia[];
+  media: any[] | undefined;
   createdAt: Date;
-  likes: IUser[];
-  comments: IComment[];
-  shares: IUser[];
+  likes: any[];
+  comments: any[];
+  shares: any[];
   location?: string;
   privacy: {
     type: string;
-    allowedUsers?: IUser[];
+    allowedUsers?: any[];
   };
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
+  const [menuModal, setMenuModal] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        setMenuModal(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -102,20 +116,48 @@ const PostsCard = ({
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
-        <Image
-          src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
-          alt="Avatar"
-          width={45}
-          height={45}
-          className="size-11 rounded-full"
-        />
-        <div>
-          <p className="text-dark100_light500 ml-3 text-base">
-            {author?.firstName ? author.firstName : ""}
-          </p>
-          <span className="text-dark100_light500 ml-3 text-sm">
-            {getTimestamp(createdAt)}
-          </span>
+        <div className="flex items-center">
+          <Link href={`/profile/${author._id}`}>
+            <Image
+              src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
+              alt="Avatar"
+              width={45}
+              height={45}
+              className="size-11 rounded-full"
+            />
+          </Link>
+          <div>
+            <p className="text-dark100_light500 ml-3 text-base">
+              {author?.firstName ? author.firstName : ""}
+            </p>
+            <span className="text-dark100_light500 ml-3 text-sm">
+              {getTimestamp(createdAt)}
+            </span>
+          </div>
+        </div>
+        <div className="ml-auto pb-2 pr-4">
+          <Icon
+            icon="tabler:dots"
+            onClick={() => setMenuModal(true)}
+            className="text-dark100_light500"
+          />
+        </div>
+        <div ref={menuRef}>
+          {menuModal && (
+            <PostMenu
+              postId={postId}
+              author={author}
+              content={content}
+              media={media}
+              createdAt={createdAt}
+              likes={likes || []}
+              comments={comments || []}
+              shares={shares || []}
+              location={location}
+              privacy={privacy}
+              onClose={() => setMenuModal(false)}
+            />
+          )}
         </div>
       </div>
       <div className="ml-4 mt-5">

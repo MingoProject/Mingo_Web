@@ -3,9 +3,6 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import { IUser } from "@/database/user.model";
-import { IMedia } from "@/database/media.model";
-import { IComment } from "@/database/comment.model";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import fetchDetailedComments from "@/hooks/useComments";
 import { createComment } from "@/lib/services/comment.service";
@@ -14,17 +11,17 @@ import CommentCard from "@/components/cards/CommentCard";
 
 interface DetailPostProps {
   postId: string;
-  author: IUser;
+  author: any;
   content: string;
-  media: IMedia[];
+  media: any[] | undefined;
   createdAt: Date;
-  likes: IUser[];
-  comments: IComment[];
-  shares: IUser[];
+  likes: any[];
+  comments: any[];
+  shares: any[];
   location?: string;
   privacy: {
     type: string;
-    allowedUsers?: IUser[];
+    allowedUsers?: any[];
   };
   onClose: () => void;
 }
