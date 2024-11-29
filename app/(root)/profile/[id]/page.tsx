@@ -10,6 +10,7 @@ import InfomationUser from "@/components/forms/personalPage/InfomationUser";
 import Tab from "@/components/forms/personalPage/Tab";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import { checkRelation } from "@/lib/services/relation.service";
+import RelationModal from "@/components/forms/profile/RelationAction";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
@@ -18,6 +19,8 @@ const ProfilePage = () => {
   const [relation, setRelation] = useState<string>("");
   const [relationStatus, setRelationStatus] = useState(false);
 
+  const [isModalOpen, setModalOpen] = useState(false);
+
   useEffect(() => {
     const check = async () => {
       try {
@@ -25,31 +28,37 @@ const ProfilePage = () => {
         if (userId) {
           const res: any = await checkRelation(userId, id);
           if (!res) {
-            setRelation("stranger"); // Người lạ nếu không có mối quan hệ
+            setRelation("stranger");
             setRelationStatus(false);
           } else {
             const { relation, status, sender, receiver } = res;
 
             if (relation === "bff") {
-              setRelation("bff");
+              if (status) {
+                setRelation("bff"); //
+              } else if (userId === sender) {
+                setRelation("senderRequestBff"); //
+              } else if (userId === receiver) {
+                setRelation("receiverRequestBff"); //
+              }
             } else if (relation === "friend") {
               if (status) {
-                setRelation("friend"); // Là bạn
+                setRelation("friend"); //
               } else if (userId === sender) {
-                setRelation("following"); // Đang theo dõi
+                setRelation("following"); //
               } else if (userId === receiver) {
-                setRelation("follower"); // Người theo dõi
+                setRelation("follower"); //
               }
             } else if (relation === "block") {
               if (userId === sender) {
-                setRelation("blocked"); // Bạn đã chặn người khác
+                setRelation("blocked"); //
               } else if (userId === receiver) {
-                setRelation("blockedBy"); // Bị người khác chặn
+                setRelation("blockedBy");
               }
             } else {
-              setRelation("stranger"); // Mặc định là người lạ
+              setRelation("stranger"); //
             }
-            setRelationStatus(status); // Cập nhật trạng thái
+            setRelationStatus(status);
           }
         }
       } catch (error) {
@@ -93,36 +102,53 @@ const ProfilePage = () => {
       </div>
 
       <button
+        onClick={() => setModalOpen(true)}
         className={`ml-[15%] mt-3 rounded-lg px-4 py-2 text-white ${
           relation === "bff"
             ? "bg-yellow-500"
-            : relation === "friend"
-              ? "bg-green-500"
-              : relation === "following"
-                ? "bg-blue-500"
-                : relation === "follower"
-                  ? "bg-purple-500"
-                  : relation === "blocked"
-                    ? "bg-red-500"
-                    : relation === "blockedBy"
-                      ? "bg-gray-500"
-                      : "bg-gray-400"
+            : relation === "senderRequestBff"
+              ? "bg-yellow-300"
+              : relation === "receiverRequestBff"
+                ? "bg-yellow-700"
+                : relation === "friend"
+                  ? "bg-green-500"
+                  : relation === "following"
+                    ? "bg-blue-500"
+                    : relation === "follower"
+                      ? "bg-purple-500"
+                      : relation === "blocked"
+                        ? "bg-red-500"
+                        : relation === "blockedBy"
+                          ? "bg-gray-500"
+                          : "bg-gray-400"
         }`}
       >
         {relation === "bff"
-          ? "Bạn thân"
-          : relation === "friend"
-            ? "Bạn bè"
-            : relation === "following"
-              ? "Đang theo dõi"
-              : relation === "follower"
-                ? "Người theo dõi"
-                : relation === "blocked"
-                  ? "Đã chặn"
-                  : relation === "blockedBy"
-                    ? "Bị chặn"
-                    : "Người lạ"}
+          ? "Best friend"
+          : relation === "senderRequestBff"
+            ? "Sending friend request"
+            : relation === "receiverRequestBff"
+              ? "Friend request"
+              : relation === "friend"
+                ? "Friend"
+                : relation === "following"
+                  ? "Following"
+                  : relation === "follower"
+                    ? "Follower"
+                    : relation === "blocked"
+                      ? "Blocked"
+                      : relation === "blockedBy"
+                        ? "Blocked by"
+                        : "Stranger"}
       </button>
+      {isModalOpen && (
+        <RelationModal
+          relation={relation}
+          onClose={() => setModalOpen(false)}
+          id={id}
+          setRelation={setRelation}
+        />
+      )}
 
       <div>
         <InfomationUser
@@ -138,6 +164,7 @@ const ProfilePage = () => {
           attendDate={profile?.attendDate}
           phoneNumber={profile?.phoneNumber}
           email={profile?.email}
+          _id={profile?._id}
           setProfile={setProfile}
         />
       </div>

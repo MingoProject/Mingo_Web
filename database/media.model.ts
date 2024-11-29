@@ -1,7 +1,7 @@
 import mongoose, { Schema, model, Document, models } from "mongoose";
 import { IAudit, AuditSchema } from "./audit.model";
 
-interface IMedia extends Document, IAudit {
+export interface IMedia extends Document, IAudit {
   url: string;
   type: string;
   caption?: string;

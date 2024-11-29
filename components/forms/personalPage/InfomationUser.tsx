@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { formattedDate } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import UpdateInformation from "./UpdateInformation";
 
 interface InfomationUserProps {
@@ -17,6 +17,7 @@ interface InfomationUserProps {
   attendDate: string;
   phoneNumber: string;
   email: string;
+  _id: string;
   setProfile: any;
 }
 // hobbyIcons.ts
@@ -56,10 +57,20 @@ const InfomationUser = ({
   attendDate,
   phoneNumber,
   email,
+  _id,
   setProfile,
 }: InfomationUserProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
+  const [me, setMe] = useState(false);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+
+    if (userId && userId === _id) {
+      setMe(true);
+    }
+  }, [_id]);
 
   return (
     <div className="mx-[10%] mt-4 rounded-lg border py-4">
@@ -168,11 +179,13 @@ const InfomationUser = ({
         >
           {showDetails ? "Hidden" : "See all"}
         </Button>
-        <Icon
-          icon="solar:pen-broken"
-          className="ml-auto text-2xl text-primary-100"
-          onClick={() => setShowEdit(true)}
-        />
+        {me && (
+          <Icon
+            icon="solar:pen-broken"
+            className="ml-auto text-2xl text-primary-100"
+            onClick={() => setShowEdit(true)}
+          />
+        )}
       </div>
       {showEdit && (
         <UpdateInformation

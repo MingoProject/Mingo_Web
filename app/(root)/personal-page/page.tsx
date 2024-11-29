@@ -66,6 +66,7 @@ function Page() {
           attendDate={profile?.attendDate}
           phoneNumber={profile?.phoneNumber}
           email={profile?.email}
+          _id={profile?._id}
           setProfile={setProfile}
         />
       </div>
