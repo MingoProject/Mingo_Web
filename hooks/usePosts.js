@@ -3,6 +3,7 @@ import {
   getAuthorByPostId,
   getMediasByPostId,
   getLikesByPostId,
+  getTagsByPostId,
 } from "@/lib/services/post.service"; // Import các hàm dịch vụ
 
 const fetchDetailedPosts = async (posts) => {
@@ -18,10 +19,18 @@ const fetchDetailedPosts = async (posts) => {
         const author = await getAuthorByPostId(post._id);
         const media = await getMediasByPostId(post._id);
         const likes = await getLikesByPostId(post._id);
-        return { ...post, comments, author, media, likes };
+        const tags = await getTagsByPostId(post._id);
+        return { ...post, comments, author, media, likes, tags };
       } catch (error) {
         console.error(`Error fetching details for post ${post._id}:`, error);
-        return { ...post, comments: [], author: null, media: [], likes: [] };
+        return {
+          ...post,
+          comments: [],
+          author: null,
+          media: [],
+          likes: [],
+          tags: [],
+        };
       }
     })
   );
