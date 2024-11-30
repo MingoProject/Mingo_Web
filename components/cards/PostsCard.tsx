@@ -22,6 +22,7 @@ const PostsCard = ({
   shares,
   location,
   privacy,
+  profile,
 }: {
   postId: string;
   author: any;
@@ -36,6 +37,7 @@ const PostsCard = ({
     type: string;
     allowedUsers?: any[];
   };
+  profile: any;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
@@ -123,7 +125,7 @@ const PostsCard = ({
               alt="Avatar"
               width={45}
               height={45}
-              className="size-11 rounded-full"
+              className="size-11 rounded-full object-cover"
             />
           </Link>
           <div>
@@ -237,16 +239,18 @@ const PostsCard = ({
         </div>
         <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
         <div className="text-dark100_light500 my-3">
-          <span className="text-dark100_light500">Viết bình luận</span>
+          <span className="text-dark100_light500">Comment</span>
           <div className="mx-[1%] pl-4 pt-2">
             <div className="flex" onClick={openModal}>
-              <div className="size-[40px] overflow-hidden rounded-full">
+              <div className="w-12 overflow-hidden rounded-full">
                 <Image
-                  src="/assets/images/default-avatar.jpg"
+                  src={
+                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
+                  }
                   alt="Avatar"
                   width={40}
                   height={40}
-                  className="rounded-full object-cover"
+                  className="size-10 rounded-full object-cover"
                 />
               </div>
               <input

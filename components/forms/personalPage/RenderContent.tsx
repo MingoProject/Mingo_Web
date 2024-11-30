@@ -12,7 +12,13 @@ import { getMyPosts } from "@/lib/services/user.service";
 import Images from "./Images";
 import Videos from "./Videos";
 
-const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
+const RenderContentPage = ({
+  activeTab,
+  profile,
+}: {
+  activeTab: string;
+  profile: any;
+}) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("all");
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
@@ -138,6 +144,7 @@ const RenderContentPage = ({ activeTab }: { activeTab: string }) => {
                     shares={post.shares || []}
                     location={post.location}
                     privacy={post.privacy}
+                    profile={profile}
                   />
                 ))
               )}

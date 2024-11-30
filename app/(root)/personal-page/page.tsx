@@ -74,7 +74,7 @@ function Page() {
       <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="mx-[5%] my-5">
-        <RenderContentPage activeTab={activeTab} />
+        <RenderContentPage activeTab={activeTab} profile={profile} />
       </div>
     </div>
   );

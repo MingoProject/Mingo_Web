@@ -1,80 +1,85 @@
-// app/components/shared/search/RenderSearch.tsx
 import React, { useEffect, useState } from "react";
-import users from "@/fakeData/UsersData";
-import posts from "@/fakeData/PostsData";
-import { useRouter } from "next/navigation";
-import NoResult from "@/components/shared/NoResult"; // Thêm import cho component NoResult
-import PostsCard from "@/components/cards/PostsCard"; // Giả định bạn đã có component PostsCard
+// import { useRouter } from "next/navigation";
+import NoResult from "@/components/shared/NoResult";
+import PostsCard from "@/components/cards/PostsCard";
 import UserCard from "./UserCard";
+import { fetchUsers } from "@/lib/services/user.service";
+import { fetchPosts } from "@/lib/services/post.service";
+import fetchDetailedPosts from "@/hooks/usePosts";
 
-const RenderSearch = ({ activeTab, query }: any) => {
-  const [results, setResults] = useState<any[]>([]); // Đổi thành mảng đối tượng để lưu thông tin kết quả
-  const router = useRouter();
+const RenderSearch = ({ activeTab, query, profile }: any) => {
+  const [results, setResults] = useState<any[]>([]);
+  // const router = useRouter();
 
   useEffect(() => {
-    if (query) {
-      // Tìm kiếm người dùng và bài viết dựa trên query
-      const userResults = users.filter(
-        (user) =>
-          user.username.toLowerCase().includes(query.toLowerCase()) ||
-          user.fullname.toLowerCase().includes(query.toLowerCase())
-      );
+    const fetchData = async () => {
+      if (query) {
+        try {
+          const users = await fetchUsers();
 
-      const postResults = posts.filter(
-        (post) =>
-          post.content.toLowerCase().includes(query.toLowerCase()) ||
-          userResults.some((user) => user.userId === post.author) // Lấy thông tin tác giả
-      );
+          const userResults = users.filter(
+            (user) =>
+              user.lastName.toLowerCase().includes(query.toLowerCase()) ||
+              user.firstName.toLowerCase().includes(query.toLowerCase())
+          );
 
-      // Kết hợp kết quả người dùng và bài viết dựa trên activeTab
-      const combinedResults =
-        activeTab === "friends"
-          ? userResults.map((user) => ({
-              type: "user",
-              name: user.fullname,
-              username: user.username,
-              avatar: user.avatar,
+          const posts = await fetchPosts();
+          const detailedPosts = await fetchDetailedPosts(posts);
 
-              userId: user.userId, // Thêm userId để sử dụng cho navigation
-            }))
-          : postResults.map((post) => ({
-              type: "post",
-              postId: post.postId,
-              author: {
-                _id: post.author || "unknown",
-                fullname:
-                  users.find((user) => user.userId === post.author)?.fullname ||
-                  "Unknown",
-                username:
-                  users.find((user) => user.userId === post.author)?.username ||
-                  "unknown",
-              },
-              content: post.content,
-              media: post.media,
-              createdAt: post.createdAt,
-              likes: post.likes || [],
-              comments: post.comments || [],
-              shares: post.shares || [],
-              location: post.location,
-              privacy: post.privacy,
-            }));
+          const postResults = detailedPosts.filter(
+            (post) =>
+              post.content.toLowerCase().includes(query.toLowerCase()) ||
+              userResults.some((user) => user._id === post.author._id)
+          );
 
-      setResults(combinedResults);
-    }
+          const combinedResults =
+            activeTab === "friends"
+              ? userResults.map((user) => ({
+                  type: "user",
+                  userId: user._id, // Sử dụng user._id để gán đúng giá trị userId
+                  firstName: user.firstName,
+                  lastName: user.lastName,
+                  avatar: user.avatar,
+                }))
+              : postResults.map((post) => ({
+                  type: "post",
+                  postId: post.postId,
+                  author: {
+                    _id: post.author._id || "unknown",
+                    firstName:
+                      users.find((user) => user._id === post.author._id)
+                        ?.firstName || "Unknown",
+                    lastName:
+                      users.find((user) => user._id === post.author._id)
+                        ?.lastName || "unknown",
+                    avatar:
+                      users.find((user) => user._id === post.author._id)
+                        ?.avatar || "unknown",
+                  },
+                  content: post.content,
+                  media: post.media,
+                  createdAt: post.createdAt,
+                  likes: post.likes || [],
+                  comments: post.comments || [],
+                  shares: post.shares || [],
+                  location: post.location,
+                  privacy: post.privacy,
+                }));
+
+          setResults(combinedResults);
+        } catch (error) {
+          console.error("Error fetching data:", error);
+        }
+      }
+    };
+
+    fetchData();
   }, [query, activeTab]);
-
-  const handleUserClick = (userId: any) => {
-    router.push(`/user/${userId}`); // Điều hướng đến trang người dùng
-  };
-
-  //   const handlePostClick = (postId) => {
-  //     router.push(`/post/${postId}`); // Điều hướng đến trang bài viết
-  //   };
 
   return (
     <div className="background-light700_dark400 flex w-full flex-col gap-6">
-      {activeTab === "posts" ? ( // Kiểm tra nếu tab hiện tại là posts
-        results.length === 0 ? ( // Kiểm tra chiều dài của results
+      {activeTab === "posts" ? (
+        results.length === 0 ? (
           <NoResult
             title="No Result"
             description="No articles found"
@@ -83,42 +88,35 @@ const RenderSearch = ({ activeTab, query }: any) => {
           />
         ) : (
           results
-            .filter((result) => result.type === "post") // Lọc chỉ lấy bài viết
+            .filter((result) => result.type === "post") // Filter posts
             .map((post) => (
               <PostsCard
                 key={post._id}
-                postId={post.postId}
-                author={
-                  post.author || {
-                    _id: "unknown",
-                    fullname: "Unknown",
-                    username: "unknown",
-                  }
-                } // Thay đổi author thành object IUser
+                postId={post._id}
+                author={post.author}
                 content={post.content}
                 media={post.media}
                 createdAt={post.createdAt}
-                likes={post.likes || []} // Mảng chứa IUser
-                comments={post.comments || []} // Mảng chứa IComment
-                shares={post.shares || []} // Mảng chứa IUser
+                likes={post.likes || []}
+                comments={post.comments || []}
+                shares={post.shares || []}
                 location={post.location}
                 privacy={post.privacy}
+                profile={profile}
               />
             ))
         )
       ) : (
-        // Hiển thị kết quả tìm kiếm cho người dùng nếu activeTab là friends
         <div>
           {results
-            .filter((result) => result.type === "user")
+            .filter((result) => result.type === "user") // Filter users
             .map((user) => (
               <UserCard
-                key={user.userId}
+                key={user.userId} // Sử dụng userId đã được ánh xạ đúng
                 userId={user.userId}
-                name={user.name}
-                username={user.username}
+                firstName={user.firstName}
+                lastName={user.lastName}
                 avatar={user.avatar}
-                onClick={handleUserClick}
               />
             ))}
           {results.filter((result) => result.type === "user").length === 0 && (
