@@ -24,7 +24,7 @@ const RenderContentPage = ({
   isMe: boolean;
 }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
-  const [activeTabFriend, setActiveTabFriend] = useState("all");
+  const [activeTabFriend, setActiveTabFriend] = useState("friend");
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   useEffect(() => {
     console.log("meRender", me);
@@ -137,6 +137,7 @@ const RenderContentPage = ({
                     comments={post.comments || []}
                     shares={post.shares || []}
                     location={post.location}
+                    tags={post.tags || []}
                     privacy={post.privacy}
                     profile={profile}
                   />
@@ -170,10 +171,10 @@ const RenderContentPage = ({
           <div className="mt-5">
             <div className="mb-4 flex space-x-4">
               <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "all" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
-                onClick={() => setActiveTabFriend("all")}
+                className={`w-20 rounded-lg p-2 ${activeTabFriend === "friend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
+                onClick={() => setActiveTabFriend("friend")}
               >
-                All
+                Friend
               </button>
               <button
                 className={`w-32 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}

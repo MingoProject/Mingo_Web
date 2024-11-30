@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import { createMedia } from "@/lib/services/media.service";
 import { createPost } from "@/lib/services/post.service";
 import { PostCreateDTO } from "@/dtos/PostDTO";
+import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 
 const CreatePost = ({ onClose, me }: any) => {
   const [privacy, setPrivacy] = useState("public");
@@ -14,11 +15,53 @@ const CreatePost = ({ onClose, me }: any) => {
   const [error, setError] = useState("");
   const [files, setFiles] = useState<File[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
+  const [friends, setFriends] = useState<any[]>([]);
+  const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFriends = async () => {
+      try {
+        const friendsData = await getMyFriends(me._id);
+        const bffsData = await getMyBffs(me._id);
+        const combinedFriends = [...bffsData, ...friendsData];
+
+        const uniqueFriends = combinedFriends.filter(
+          (friend, index, self) =>
+            index === self.findIndex((f) => f._id === friend._id)
+        );
+
+        if (isMounted) {
+          setFriends(uniqueFriends);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchFriends();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [me._id]);
+
+  const toggleTagFriend = (friend: any) => {
+    setTaggedFriends((prev) => {
+      if (prev.some((f) => f._id === friend._id)) {
+        return prev.filter((f) => f._id !== friend._id);
+      } else {
+        return [...prev, friend];
+      }
+    });
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
-    setFiles(selectedFiles);
-    setCaptions(selectedFiles.map(() => ""));
+    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
+    setCaptions((prevCaptions) => [
+      ...prevCaptions,
+      ...selectedFiles.map(() => ""),
+    ]);
   };
 
   const handleCaptionChange = (index: number, value: string) => {
@@ -27,6 +70,11 @@ const CreatePost = ({ onClose, me }: any) => {
       updated[index] = value;
       return updated;
     });
+  };
+
+  const handleDeleteFile = (index: number) => {
+    setFiles((prev) => prev.filter((_, i) => i !== index));
+    setCaptions((prev) => prev.filter((_, i) => i !== index));
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -54,11 +102,13 @@ const CreatePost = ({ onClose, me }: any) => {
 
         mediaIds = await Promise.all(uploadPromises);
       }
+      console.log("tags", taggedFriends);
 
       const postPayload: PostCreateDTO = {
-        content,
+        content: content || "",
         media: mediaIds,
         location,
+        tags: taggedFriends.map((friend) => friend._id),
         privacy: {
           type: privacy,
         },
@@ -73,6 +123,13 @@ const CreatePost = ({ onClose, me }: any) => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleToggleFriendsDropdown = (
+    e: React.MouseEvent<HTMLButtonElement>
+  ) => {
+    e.preventDefault();
+    document.getElementById("friendsDropdown")?.classList.toggle("hidden");
   };
 
   return (
@@ -132,7 +189,7 @@ const CreatePost = ({ onClose, me }: any) => {
             <div>
               <label
                 htmlFor="file"
-                className="block text-sm font-medium text-gray-700"
+                className="block text-sm font-medium text-primary-100"
               >
                 Select Media
               </label>
@@ -142,11 +199,26 @@ const CreatePost = ({ onClose, me }: any) => {
                 accept="image/*,video/*"
                 multiple
                 onChange={handleFileChange}
-                className="mt-1 block w-full"
+                className="text-dark100_light500 mt-1 block w-full"
               />
               {files.map((file, index) => (
-                <div key={index} className="mt-2">
-                  <p className="text-sm">{file.name}</p>
+                <div key={index} className="mt-2 flex items-center space-x-4">
+                  <div className="relative">
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${file.name}`}
+                      width={100}
+                      height={100}
+                      className="size-20 rounded-lg object-cover"
+                    />
+                    <button
+                      type="button"
+                      className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
+                      onClick={() => handleDeleteFile(index)}
+                    >
+                      <Icon icon="ic:round-close" className="text-white" />
+                    </button>
+                  </div>
                   <input
                     type="text"
                     placeholder="Caption"
@@ -158,7 +230,7 @@ const CreatePost = ({ onClose, me }: any) => {
               ))}
             </div>
             <div className="flex items-center">
-              <span className="text-dark100_light500">Thêm vị trí</span>
+              <span className="text-sm text-primary-100">Add location</span>
               <div className="mb-4 ml-auto">
                 <input
                   type="text"
@@ -170,10 +242,83 @@ const CreatePost = ({ onClose, me }: any) => {
               </div>
             </div>
 
+            <div className="text-dark100_light500 flex items-center">
+              <span className="text-sm text-primary-100">Tag friends</span>
+              <div className="relative mb-4 ml-auto">
+                <button
+                  type="button"
+                  className="rounded bg-primary-100 px-4 py-2 text-white"
+                  onClick={handleToggleFriendsDropdown}
+                >
+                  Select Friends
+                </button>
+                <div
+                  id="friendsDropdown"
+                  className="absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg bg-white shadow-lg"
+                >
+                  {friends.map((friend) => (
+                    <div
+                      key={friend._id}
+                      className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
+                      onClick={() => toggleTagFriend(friend)}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={taggedFriends.some(
+                          (f) => f._id === friend._id
+                        )}
+                        readOnly
+                        className="mr-2"
+                      />
+                      <Image
+                        width={40}
+                        height={40}
+                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        alt="Avatar"
+                        className="mr-2 size-10 rounded-full"
+                      />
+                      <span className="">
+                        {friend.firstName} {friend.lastName}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {taggedFriends.length > 0 && (
+              <div className="text-dark100_light500 mt-4">
+                <p className="text-sm text-gray-600">Tagged friends:</p>
+                <div className="flex flex-wrap">
+                  {taggedFriends.map((friend) => (
+                    <div
+                      key={friend._id}
+                      className="m-1 flex items-center rounded-full bg-primary-100 px-3 py-1 text-white"
+                    >
+                      <Image
+                        width={40}
+                        height={40}
+                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        alt="Avatar"
+                        className="mr-2 size-10 rounded-full"
+                      />
+                      {friend.firstName} {friend.lastName}
+                      <button
+                        className="ml-2 text-sm"
+                        onClick={() => toggleTagFriend(friend)}
+                      >
+                        ✖
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {error && <p className="text-red-500">{error}</p>}
             <Button
               type="submit"
-              className="mt-5 w-full rounded bg-primary-100 p-2 text-white"
+              className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
               disabled={loading}
             >
               {loading ? "Creating..." : "Create Post"}

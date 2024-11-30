@@ -100,7 +100,7 @@ const RenderFriend = ({ activeTabFriend }: any) => {
   }, []);
   const getFriendsList = () => {
     switch (activeTabFriend) {
-      case "all":
+      case "friend":
         return friends;
       case "bestfriend":
         return bffs;

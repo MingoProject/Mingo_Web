@@ -197,3 +197,20 @@ export async function deletePost(postId: string, token: string | null) {
     throw error;
   }
 }
+
+export async function getTagsByPostId(
+  postId: String
+): Promise<UserResponseDTO[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-tags?postId=${postId}`);
+    if (!response.ok) {
+      throw new Error("Error fetching tags by postId");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch tags by postId:", error);
+    throw error;
+  }
+}

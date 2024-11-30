@@ -21,6 +21,7 @@ const PostsCard = ({
   comments,
   shares,
   location,
+  tags,
   privacy,
   profile,
 }: {
@@ -33,6 +34,7 @@ const PostsCard = ({
   comments: any[];
   shares: any[];
   location?: string;
+  tags: any[];
   privacy: {
     type: string;
     allowedUsers?: any[];
@@ -131,6 +133,25 @@ const PostsCard = ({
           <div>
             <p className="text-dark100_light500 ml-3 text-base">
               {author?.firstName ? author.firstName : ""}
+              {tags.length > 0 && (
+                <span>
+                  <span className="">{" with "}</span>
+
+                  {tags.map((tag, index) => (
+                    <span key={tag._id}>
+                      {tag.firstName}
+                      {index < tags.length - 1 ? ", " : ""}
+                    </span>
+                  ))}
+                </span>
+              )}
+              {location && (
+                <span>
+                  <span className="">{" - in "}</span>
+
+                  {location}
+                </span>
+              )}
             </p>
             <span className="text-dark100_light500 ml-3 text-sm">
               {getTimestamp(createdAt)}

@@ -144,6 +144,7 @@ export default function Home() {
                 comments={post.comments || []}
                 shares={post.shares || []}
                 location={post.location}
+                tags={post.tags || []}
                 privacy={post.privacy}
                 profile={profile}
               />
