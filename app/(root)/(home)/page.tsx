@@ -145,6 +145,7 @@ export default function Home() {
                 shares={post.shares || []}
                 location={post.location}
                 privacy={post.privacy}
+                profile={profile}
               />
             ))
           )}

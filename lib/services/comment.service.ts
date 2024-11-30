@@ -211,3 +211,34 @@ export async function getLikesByCommentId(
     throw error;
   }
 }
+
+export async function createCommentMedia(
+  params: CreateCommentDTO,
+  token: string,
+  mediaId: string
+): Promise<CommentResponseDTO> {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/comment/create-comment-media?mediaId=${mediaId}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+        body: JSON.stringify(params),
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating comment");
+    }
+
+    const data: CommentResponseDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    throw error;
+  }
+}

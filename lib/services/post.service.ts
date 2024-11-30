@@ -120,7 +120,7 @@ export async function likePost(postId: string, token: string) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Error liking post");
+      throw new Error(errorData.message || "Error like post");
     }
 
     const data = await response.json();
@@ -147,13 +147,13 @@ export async function dislikePost(postId: string, token: string) {
 
     if (!response.ok) {
       const errorData = await response.json();
-      throw new Error(errorData.message || "Error liking post");
+      throw new Error(errorData.message || "Error dislike post");
     }
 
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error("Failed to like post:", error);
+    console.error("Failed to dislike post:", error);
     throw error;
   }
 }

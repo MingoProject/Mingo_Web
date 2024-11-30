@@ -2,16 +2,20 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMyImages } from "@/lib/services/user.service";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
+import fetchDetailedMedias from "@/hooks/useMedias";
+import DetailsImage from "./DetailsImage";
 
 const Images = ({ userId }: any) => {
-  const [images, setImages] = useState<MediaResponseDTO[]>([]);
+  const [images, setImages] = useState<any[]>([]);
+  const [selectedImage, setSelectedImage] = useState<any>(null);
 
   useEffect(() => {
     const getImages = async () => {
       try {
         const data: MediaResponseDTO[] = await getMyImages(userId);
-        setImages(data);
-        console.log("images", data);
+        const detailsImage = await fetchDetailedMedias(data);
+        setImages(detailsImage);
+        console.log("images", detailsImage);
       } catch (error) {
         console.error("Error loading posts:", error);
       }
@@ -29,12 +33,19 @@ const Images = ({ userId }: any) => {
           {images.map((image, index) => (
             <div key={index} className="flex flex-col items-center">
               <Image
+                onClick={() => setSelectedImage(image)}
                 width={140}
                 height={140}
                 src={image?.url}
                 alt={`Picture ${index + 1}`}
                 className="mb-2 size-36 rounded-sm object-cover"
               />
+              {selectedImage && (
+                <DetailsImage
+                  image={selectedImage} // Truyền ảnh được chọn vào modal
+                  onClose={() => setSelectedImage(null)} // Đóng modal
+                />
+              )}
             </div>
           ))}
         </div>
