@@ -297,14 +297,14 @@ const Navbar = () => {
                 </MenubarTrigger>
                 <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">
                   <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
-                    <Link href="/personal-page" className="">
+                    <Link href={`/profile/${profile._id}`} className="">
                       <div className="flex items-center gap-2">
                         <Image
                           src={profile?.avatar || "/assets/images/capy.jpg"}
                           alt="Avatar"
                           width={30}
                           height={30}
-                          className="rounded-full"
+                          className="size-8 rounded-full object-cover"
                         />
                         <p className="text-ellipsis whitespace-nowrap  text-base font-normal">
                           Personal page

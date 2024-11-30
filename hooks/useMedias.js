@@ -1,6 +1,6 @@
 import {
   getCommentsByMediaId,
-  getAuthorByMediaId,
+  // getAuthorByMediaId,
   getLikesByMediaId,
 } from "@/lib/services/media.service";
 
@@ -14,12 +14,12 @@ const fetchDetailedMedias = async (medias) => {
     medias.map(async (media) => {
       try {
         const comments = await getCommentsByMediaId(media._id);
-        const createBy = await getAuthorByMediaId(media._id);
+        // const createBy = await getAuthorByMediaId(media._id);
         const likes = await getLikesByMediaId(media._id);
-        return { ...media, comments, createBy, likes };
+        return { ...media, comments, likes };
       } catch (error) {
         console.error(`Error fetching details for media ${media._id}:`, error);
-        return { ...media, comments: [], createBy: null, likes: [] };
+        return { ...media, comments: [], likes: [] };
       }
     })
   );
