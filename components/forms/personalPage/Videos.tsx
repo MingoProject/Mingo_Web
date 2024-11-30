@@ -1,22 +1,23 @@
 import React, { useEffect, useState } from "react";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { getMyVideos } from "@/lib/services/user.service";
+import DetailsVideo from "./DetailsVideo";
 
-const Videos = ({ userId }: any) => {
+const Videos = ({ me, profile }: any) => {
   const [videos, setVideos] = useState<MediaResponseDTO[]>([]);
+  const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   useEffect(() => {
-    const getImages = async () => {
+    const getVideos = async () => {
       try {
-        const data: MediaResponseDTO[] = await getMyVideos(userId);
+        const data: MediaResponseDTO[] = await getMyVideos(profile._id);
         setVideos(data);
-        console.log("images", data);
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
-    getImages();
-  }, [userId]);
+    getVideos();
+  }, [profile._id]);
 
   return (
     <div className="flex  ">
@@ -27,10 +28,23 @@ const Videos = ({ userId }: any) => {
         <div className="mx-[10%] mt-10 flex flex-wrap gap-4">
           {videos.map((video, index) => (
             <div key={index} className="flex flex-col items-center">
-              <video width={150} height={150} controls>
+              <video
+                width={150}
+                height={150}
+                controls
+                onClick={() => setSelectedVideo(video)}
+              >
                 <source src={video.url} type="video/mp4" />
                 Your browser does not support the video tag.
               </video>
+              {selectedVideo && (
+                <DetailsVideo
+                  video={selectedVideo}
+                  onClose={() => setSelectedVideo(null)}
+                  profile={profile}
+                  me={me}
+                />
+              )}
             </div>
           ))}
         </div>

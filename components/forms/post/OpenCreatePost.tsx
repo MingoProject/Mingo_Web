@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import CreatePost from "./CreatePost";
 
-const OpenCreatePost = () => {
+const OpenCreatePost = ({ me }: any) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const toggleForm = () => {
@@ -20,11 +20,11 @@ const OpenCreatePost = () => {
           <div className="flex">
             <div className="size-[40px] overflow-hidden rounded-full">
               <Image
-                src="/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
+                src={me?.avatar || "/assets/images/capy.jpg"}
                 alt="Avatar"
                 width={40}
                 height={40}
-                className="rounded-full object-cover"
+                className="size-10 rounded-full object-cover"
               />
             </div>
             <input
@@ -62,7 +62,9 @@ const OpenCreatePost = () => {
           </div>
         </div>
       </div>
-      {isFormOpen && <CreatePost onClose={() => setIsFormOpen(false)} />}
+      {isFormOpen && (
+        <CreatePost onClose={() => setIsFormOpen(false)} me={me} />
+      )}
     </>
   );
 };

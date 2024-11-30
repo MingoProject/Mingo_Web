@@ -17,9 +17,40 @@ const ProfilePage = () => {
   const [profile, setProfile] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [relation, setRelation] = useState<string>("");
-  const [relationStatus, setRelationStatus] = useState(false);
+  const [me, setMe] = useState<any>(null);
+  const [isMe, setIsMe] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    try {
+      const userId = localStorage.getItem("userId");
+      if (userId && userId === id) {
+        setIsMe(true);
+      }
+    } catch (error) {
+      console.error("Error fetching profile:", error);
+    }
+  }, [id]);
+
+  useEffect(() => {
+    const getMe = async () => {
+      try {
+        const userId = localStorage.getItem("userId");
+        if (userId) {
+          const me = await getMyProfile(userId);
+          setMe(me.userProfile);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    getMe();
+  }, [id]);
+
+  useEffect(() => {
+    console.log("me", me);
+  }, [me]);
 
   useEffect(() => {
     const check = async () => {
@@ -29,7 +60,7 @@ const ProfilePage = () => {
           const res: any = await checkRelation(userId, id);
           if (!res) {
             setRelation("stranger");
-            setRelationStatus(false);
+            // setRelationStatus(false);
           } else {
             const { relation, status, sender, receiver } = res;
 
@@ -58,7 +89,7 @@ const ProfilePage = () => {
             } else {
               setRelation("stranger"); //
             }
-            setRelationStatus(status);
+            // setRelationStatus(status);
           }
         }
       } catch (error) {
@@ -101,53 +132,57 @@ const ProfilePage = () => {
         </div>
       </div>
 
-      <button
-        onClick={() => setModalOpen(true)}
-        className={`ml-[15%] mt-3 rounded-lg px-4 py-2 text-white ${
-          relation === "bff"
-            ? "bg-yellow-500"
-            : relation === "senderRequestBff"
-              ? "bg-yellow-300"
-              : relation === "receiverRequestBff"
-                ? "bg-yellow-700"
-                : relation === "friend"
-                  ? "bg-green-500"
-                  : relation === "following"
-                    ? "bg-blue-500"
-                    : relation === "follower"
-                      ? "bg-purple-500"
-                      : relation === "blocked"
-                        ? "bg-red-500"
-                        : relation === "blockedBy"
-                          ? "bg-gray-500"
-                          : "bg-gray-400"
-        }`}
-      >
-        {relation === "bff"
-          ? "Best friend"
-          : relation === "senderRequestBff"
-            ? "Sending friend request"
-            : relation === "receiverRequestBff"
-              ? "Friend request"
-              : relation === "friend"
-                ? "Friend"
-                : relation === "following"
-                  ? "Following"
-                  : relation === "follower"
-                    ? "Follower"
-                    : relation === "blocked"
-                      ? "Blocked"
-                      : relation === "blockedBy"
-                        ? "Blocked by"
-                        : "Stranger"}
-      </button>
-      {isModalOpen && (
-        <RelationModal
-          relation={relation}
-          onClose={() => setModalOpen(false)}
-          id={id}
-          setRelation={setRelation}
-        />
+      {!isMe && (
+        <>
+          <button
+            onClick={() => setModalOpen(true)}
+            className={`ml-[13%] mt-3 rounded-lg px-4 py-2 text-white ${
+              relation === "bff"
+                ? "bg-yellow-500"
+                : relation === "senderRequestBff"
+                  ? "bg-yellow-300"
+                  : relation === "receiverRequestBff"
+                    ? "bg-yellow-700"
+                    : relation === "friend"
+                      ? "bg-green-500"
+                      : relation === "following"
+                        ? "bg-blue-500"
+                        : relation === "follower"
+                          ? "bg-purple-500"
+                          : relation === "blocked"
+                            ? "bg-red-500"
+                            : relation === "blockedBy"
+                              ? "bg-gray-500"
+                              : "bg-gray-400"
+            }`}
+          >
+            {relation === "bff"
+              ? "Best friend"
+              : relation === "senderRequestBff"
+                ? "Sending friend request"
+                : relation === "receiverRequestBff"
+                  ? "Friend request"
+                  : relation === "friend"
+                    ? "Friend"
+                    : relation === "following"
+                      ? "Following"
+                      : relation === "follower"
+                        ? "Follower"
+                        : relation === "blocked"
+                          ? "Blocked"
+                          : relation === "blockedBy"
+                            ? "Blocked by"
+                            : "Stranger"}
+          </button>
+          {isModalOpen && (
+            <RelationModal
+              relation={relation}
+              onClose={() => setModalOpen(false)}
+              id={id}
+              setRelation={setRelation}
+            />
+          )}
+        </>
       )}
 
       <div>
@@ -172,7 +207,12 @@ const ProfilePage = () => {
       <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
 
       <div className="mx-[5%] my-5">
-        <RenderContentPage activeTab={activeTab} />
+        <RenderContentPage
+          activeTab={activeTab}
+          profile={profile}
+          me={me}
+          isMe={isMe}
+        />
       </div>
     </div>
   );

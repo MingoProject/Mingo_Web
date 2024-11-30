@@ -15,39 +15,32 @@ import Videos from "./Videos";
 const RenderContentPage = ({
   activeTab,
   profile,
+  me,
+  isMe,
 }: {
   activeTab: string;
   profile: any;
+  me: any;
+  isMe: boolean;
 }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("all");
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
-  const [userId, setUserId] = useState<string>("");
-
   useEffect(() => {
-    try {
-      const storedUserId = localStorage.getItem("userId");
-      if (storedUserId) {
-        setUserId(storedUserId); // Chỉ gọi setUserId nếu giá trị không phải null
-      }
-    } catch (error) {
-      console.error("Error loading userId:", error);
-    }
-  }, []);
+    console.log("meRender", me);
+  }, [me]);
 
   useEffect(() => {
     const myPosts = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        const data = await getMyPosts(userId);
+        const data = await getMyPosts(profile._id);
         setPosts(data.userPosts);
-        console.log("myposts", data.userPosts);
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myPosts();
-  }, []);
+  }, [profile._id]);
 
   useEffect(() => {
     const fetchPostsData = async () => {
@@ -112,7 +105,8 @@ const RenderContentPage = ({
             </ul>
           </div>
           <div className="w-full lg:w-7/12">
-            <OpenCreatePost />
+            {isMe && <OpenCreatePost me={me} />}
+
             <div className="my-2 flex items-center">
               <div className="ml-auto flex shrink-0 items-center pl-4">
                 <p className="text-dark100_light500 mr-2">Filter: </p>
@@ -208,9 +202,9 @@ const RenderContentPage = ({
         </div>
       );
     case "photos":
-      return <Images userId={userId} />;
+      return <Images me={me} profile={profile} />;
     case "videos":
-      return <Videos userId={userId} />;
+      return <Videos me={me} profile={profile} />;
     default:
       return <div>Chọn một mục để hiển thị nội dung</div>;
   }

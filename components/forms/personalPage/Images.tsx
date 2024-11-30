@@ -5,23 +5,25 @@ import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import fetchDetailedMedias from "@/hooks/useMedias";
 import DetailsImage from "./DetailsImage";
 
-const Images = ({ userId }: any) => {
+const Images = ({ me, profile }: any) => {
   const [images, setImages] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<any>(null);
+  useEffect(() => {
+    console.log("meImage", me);
+  }, [me]);
 
   useEffect(() => {
     const getImages = async () => {
       try {
-        const data: MediaResponseDTO[] = await getMyImages(userId);
+        const data: MediaResponseDTO[] = await getMyImages(profile._id);
         const detailsImage = await fetchDetailedMedias(data);
         setImages(detailsImage);
-        console.log("images", detailsImage);
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     getImages();
-  }, [userId]);
+  }, [profile._id]);
 
   return (
     <div className="flex ">
@@ -42,8 +44,10 @@ const Images = ({ userId }: any) => {
               />
               {selectedImage && (
                 <DetailsImage
-                  image={selectedImage} // Truyền ảnh được chọn vào modal
-                  onClose={() => setSelectedImage(null)} // Đóng modal
+                  image={selectedImage}
+                  onClose={() => setSelectedImage(null)}
+                  profile={profile}
+                  me={me}
                 />
               )}
             </div>

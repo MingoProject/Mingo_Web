@@ -4,23 +4,21 @@ import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import { createMedia } from "@/lib/services/media.service";
 import { createPost } from "@/lib/services/post.service";
-import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 
-const CreatePost = ({ onClose }: any) => {
+const CreatePost = ({ onClose, me }: any) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [currentUser, setCurrentUser] = useState<any>(null);
   const [files, setFiles] = useState<File[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
     setFiles(selectedFiles);
-    setCaptions(selectedFiles.map(() => "")); // Reset captions
+    setCaptions(selectedFiles.map(() => ""));
   };
 
   const handleCaptionChange = (index: number, value: string) => {
@@ -46,7 +44,6 @@ const CreatePost = ({ onClose }: any) => {
     try {
       let mediaIds: string[] = [];
 
-      // Upload media nếu có
       if (files.length > 0) {
         const uploadPromises = files.map(async (file, index) => {
           const caption = captions[index];
@@ -58,7 +55,6 @@ const CreatePost = ({ onClose }: any) => {
         mediaIds = await Promise.all(uploadPromises);
       }
 
-      // Tạo post
       const postPayload: PostCreateDTO = {
         content,
         media: mediaIds,
@@ -101,13 +97,13 @@ const CreatePost = ({ onClose }: any) => {
             <Image
               width={40}
               height={40}
-              src={currentUser?.avatar || "/path/to/avatar.jpg"}
+              src={me?.avatar || "/assets/images/capy.jpg"}
               alt="Avatar"
               className="mr-2 size-10 rounded-full"
             />
             <div>
               <span className="text-dark100_light500">
-                {currentUser?.fullname}
+                {me?.firstName} {me?.lastName}
               </span>
               <div>
                 <select

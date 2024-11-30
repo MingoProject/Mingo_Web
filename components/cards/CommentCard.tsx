@@ -5,7 +5,7 @@ import { getTimestamp } from "@/lib/utils";
 import CommentMenu from "../forms/comment/Modal";
 import { dislikeComment, likeComment } from "@/lib/services/comment.service";
 
-const CommentCard = ({ comment, setCommentsData, postId }: any) => {
+const CommentCard = ({ comment, setCommentsData, type }: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(comment.likes.length);
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
@@ -102,7 +102,7 @@ const CommentCard = ({ comment, setCommentsData, postId }: any) => {
 
         <div className="ml-3 flex-1">
           <p className="text-dark100_light500 font-bold">
-            {comment.userId.lastName}
+            {comment.userId.firstName} {comment.userId.lastName}
           </p>
           <div className="flex">
             <p className="text-dark100_light500 inline-block rounded-r-lg rounded-bl-lg border p-2">
@@ -150,7 +150,7 @@ const CommentCard = ({ comment, setCommentsData, postId }: any) => {
               content={comment.content}
               setCommentsData={setCommentsData}
               handleCloseMenu={handleCloseMenu}
-              postId={postId}
+              type={type}
             />
           </div>
         )}

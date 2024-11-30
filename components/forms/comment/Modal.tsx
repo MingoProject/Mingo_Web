@@ -1,4 +1,8 @@
-import { deleteComment, updateComment } from "@/lib/services/comment.service";
+import {
+  deleteComment,
+  deleteCommentMedia,
+  updateComment,
+} from "@/lib/services/comment.service";
 import React, { useState, useEffect, useRef } from "react";
 
 const CommentMenu = ({
@@ -7,7 +11,7 @@ const CommentMenu = ({
   content,
   setCommentsData,
   handleCloseMenu,
-  postId,
+  type,
 }: any) => {
   const [newComment, setNewComment] = useState(content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
@@ -65,12 +69,18 @@ const CommentMenu = ({
     }
   };
 
-  const handleDeleteComment = async (commentId: string, postId: string) => {
+  const handleDeleteComment = async (commentId: string, type: string) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      await deleteComment(commentId, postId, token); // Wait for the deletion
+      if (type === "mediaId") {
+        // Xóa bình luận
+        await deleteCommentMedia(commentId, type, token);
+      } else if (type === "postId") {
+        await deleteComment(commentId, type, token); // Wait for the deletion
+      }
+
       setCommentsData(
         (prev: any) => prev.filter((comment: any) => comment._id !== commentId) // Remove deleted comment from state
       );
@@ -117,7 +127,7 @@ const CommentMenu = ({
             </div>
           )}
           <button
-            onClick={() => handleDeleteComment(commentId, postId)}
+            onClick={() => handleDeleteComment(commentId, type)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
             Xóa

@@ -10,7 +10,7 @@ import ImageAction from "./ImageAction";
 
 // import { getTimestamp } from "@/lib/utils";
 
-const DetailsImage = ({ image, onClose, profile, me }: any) => {
+const DetailsVideo = ({ video, onClose, profile, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
@@ -20,15 +20,15 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
 
   useEffect(() => {
     const fetchCommentsData = async () => {
-      const detailedComments = await fetchDetailedComments(image.comments);
+      const detailedComments = await fetchDetailedComments(video.comments);
 
       setCommentsData(detailedComments);
     };
 
-    if (image.comments.length > 0) {
+    if (video.comments.length > 0) {
       fetchCommentsData();
     }
-  }, [image.comments]);
+  }, [video.comments]);
 
   useEffect(() => {
     console.log(commentsData);
@@ -52,13 +52,13 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
       const newCommentData = await createCommentMedia(
         { content: newComment },
         token,
-        image._id
+        video._id
       );
       const enrichedComment = {
         ...newCommentData,
         userId: {
           _id: me?._id,
-          avatar: me?.avatar || "/assets/images/default-avatar.jpg",
+          avatar: me?.avatar || "/assets/images/capy.jpg",
           firstName: me?.firstName || "Anonymous",
           lastName: me?.lastName || "Anonymous",
           createAt: "Now",
@@ -109,23 +109,20 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
             </div>
             <div className="mt-8 flex w-full items-center justify-center">
               <div className=" mx-auto flex h-64 w-full items-center justify-center">
-                <Image
-                  src={image?.url || "/assets/images/placeholder.jpg"}
-                  alt="Image"
-                  width={300}
-                  height={600}
-                  className="object-cover"
-                />
+                <video width={400} height={400} controls>
+                  <source src={video.url} type="video/mp4" />
+                  Your browser does not support the video tag.
+                </video>
               </div>
             </div>
           </div>
           <div className="w-2/5">
             <div className="mx-10 my-5">
               <ImageAction
-                likes={image.likes}
-                mediaId={image._id}
-                comments={image.comments}
-                shares={image.shares}
+                likes={video.likes}
+                mediaId={video._id}
+                comments={video.comments}
+                shares={video.shares}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
@@ -139,7 +136,7 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
                       <CommentCard
                         comment={comment}
                         setCommentsData={setCommentsData}
-                        mediaId={image._id}
+                        mediaId={video._id}
                       />
                     </div>
                   ))
@@ -185,4 +182,4 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
   );
 };
 
-export default DetailsImage;
+export default DetailsVideo;

@@ -242,3 +242,33 @@ export async function createCommentMedia(
     throw error;
   }
 }
+
+export async function deleteCommentMedia(
+  commentId: string,
+  mediaId: string,
+  token: string
+) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/comment/delete-comment-media?commentId=${commentId}&mediaId=${mediaId}`,
+      {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error deleting comment");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete comment:", error);
+    throw error;
+  }
+}
