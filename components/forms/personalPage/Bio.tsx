@@ -3,18 +3,24 @@ import { updateUserBio } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 
-const Bio = ({ profile, setProfile }: any) => {
+const Bio = ({ profileUser, setProfileUser }: any) => {
   const [showEditBio, setShowEditBio] = useState(false);
-  const [bio, setBio] = useState(profile?.bio || "");
-  const [me, setMe] = useState(false);
+  const [bio, setBio] = useState(profileUser?.bio || "");
+  const [isMe, setIsMe] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const userId = localStorage.getItem("userId");
 
-    if (userId && userId === profile._id) {
-      setMe(true);
+    if (userId && userId === profileUser._id) {
+      if (isMounted) {
+        setIsMe(true);
+      }
     }
-  }, [profile._id]);
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
+  }, [profileUser._id]);
 
   const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setBio(e.target.value);
@@ -32,7 +38,7 @@ const Bio = ({ profile, setProfile }: any) => {
         const response = await updateUserBio(params, token);
 
         if (response?.status) {
-          setProfile((prevProfile: any) => ({
+          setProfileUser((prevProfile: any) => ({
             ...prevProfile,
             bio: response?.newProfile.bio,
           }));
@@ -51,9 +57,9 @@ const Bio = ({ profile, setProfile }: any) => {
   return (
     <div className="mt-[30px]">
       <span className="text-dark100_light500">
-        {profile?.bio || "Bio not provided"}
+        {profileUser?.bio || "Bio not provided"}
       </span>
-      {me && (
+      {isMe && (
         <Icon
           icon="solar:pen-broken"
           className="ml-auto text-lg text-primary-100"

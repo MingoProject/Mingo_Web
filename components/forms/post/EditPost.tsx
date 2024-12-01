@@ -2,28 +2,36 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
+import { editPost, getPostByPostId } from "@/lib/services/post.service";
 import { createMedia } from "@/lib/services/media.service";
-import { createPost } from "@/lib/services/post.service";
-import { PostCreateDTO } from "@/dtos/PostDTO";
+import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 
-const CreatePost = ({ onClose, me }: any) => {
+const EditPost = ({
+  postId,
+  onClose,
+}: {
+  postId: string;
+  onClose: () => void;
+}) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [files, setFiles] = useState<File[]>([]);
+  const [existingMedia, setExistingMedia] = useState<any[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
+  const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
     const fetchFriends = async () => {
       try {
-        const friendsData = await getMyFriends(me._id);
-        const bffsData = await getMyBffs(me._id);
+        const friendsData = await getMyFriends(profile._id);
+        const bffsData = await getMyBffs(profile._id);
         const combinedFriends = [...bffsData, ...friendsData];
 
         const uniqueFriends = combinedFriends.filter(
@@ -43,7 +51,31 @@ const CreatePost = ({ onClose, me }: any) => {
     return () => {
       isMounted = false;
     };
-  }, [me._id]);
+  }, [profile._id]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchPostDetails = async () => {
+      try {
+        const post = await getPostByPostId(postId); // Fetch existing post data
+        if (isMounted) {
+          setContent(post.content || "");
+          setLocation(post.location || "");
+          setPrivacy(post.privacy.type || "public");
+          setTaggedFriends(post.tags || []);
+          setExistingMedia(post.media || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch post details", err);
+        setError("Failed to load post details");
+      }
+    };
+
+    fetchPostDetails();
+    return () => {
+      isMounted = false;
+    };
+  }, [postId]);
 
   const toggleTagFriend = (friend: any) => {
     setTaggedFriends((prev) => {
@@ -90,21 +122,20 @@ const CreatePost = ({ onClose, me }: any) => {
     }
 
     try {
-      let mediaIds: string[] = [];
+      let mediaIds: string[] = existingMedia.map((media) => media._id);
 
       if (files.length > 0) {
         const uploadPromises = files.map(async (file, index) => {
           const caption = captions[index];
           const uploadedMedia = await createMedia(file, caption, token);
-          console.log(uploadedMedia);
           return uploadedMedia.media._id;
         });
 
-        mediaIds = await Promise.all(uploadPromises);
+        const newMediaIds = await Promise.all(uploadPromises);
+        mediaIds = [...mediaIds, ...newMediaIds];
       }
-      console.log("tags", taggedFriends);
 
-      const postPayload: PostCreateDTO = {
+      const postPayload = {
         content: content || "",
         media: mediaIds,
         location,
@@ -114,12 +145,12 @@ const CreatePost = ({ onClose, me }: any) => {
         },
       };
 
-      await createPost(postPayload, token);
-      alert("Post created successfully!");
+      await editPost(postPayload, postId, token);
+      alert("Post updated successfully!");
       onClose();
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Error creating post");
+      setError(err.message || "Error updating post");
     } finally {
       setLoading(false);
     }
@@ -142,7 +173,7 @@ const CreatePost = ({ onClose, me }: any) => {
         <div className="background-light700_dark300 w-1/2 rounded-lg py-6 shadow-md">
           <div className="flex pr-5">
             <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Create post
+              Edit post
             </div>
             <Icon
               icon="ic:round-close"
@@ -154,13 +185,13 @@ const CreatePost = ({ onClose, me }: any) => {
             <Image
               width={40}
               height={40}
-              src={me?.avatar || "/assets/images/capy.jpg"}
+              src={profile?.avatar || "/assets/images/capy.jpg"}
               alt="Avatar"
               className="mr-2 size-10 rounded-full"
             />
             <div>
               <span className="text-dark100_light500">
-                {me?.firstName} {me?.lastName}
+                {profile?.firstName} {profile?.lastName}
               </span>
               <div>
                 <select
@@ -183,15 +214,15 @@ const CreatePost = ({ onClose, me }: any) => {
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="What's on your mind?"
-                className="text-dark100_light500 h-24 w-full bg-transparent p-2"
+                className="text-dark100_light500 h-16 w-full bg-transparent p-2"
               />
             </div>
-            <div>
+            <div className="h-44 overflow-y-scroll">
               <label
                 htmlFor="file"
-                className="block text-sm font-medium text-primary-100"
+                className="block  text-sm font-medium text-primary-100"
               >
-                Select Media
+                Select media
               </label>
               <input
                 type="file"
@@ -201,6 +232,55 @@ const CreatePost = ({ onClose, me }: any) => {
                 onChange={handleFileChange}
                 className="text-dark100_light500 mt-1 block w-full"
               />
+              {/* Hiển thị các media có sẵn */}
+              {existingMedia.length > 0 && (
+                <div className="">
+                  {existingMedia.map((media, index) => (
+                    <>
+                      <div
+                        key={index}
+                        className="mt-2 flex items-center space-x-4"
+                      >
+                        <div className="relative">
+                          <Image
+                            src={media.url}
+                            alt={`Existing Media ${index + 1}`}
+                            width={100}
+                            height={100}
+                            className="size-20 rounded-lg object-cover"
+                          />
+                          <button
+                            type="button"
+                            className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
+                            onClick={() =>
+                              setExistingMedia((prev) =>
+                                prev.filter((_, i) => i !== index)
+                              )
+                            }
+                          >
+                            <Icon
+                              icon="ic:round-close"
+                              className="text-white"
+                            />
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          placeholder="Caption"
+                          value={media.caption}
+                          onChange={(e) =>
+                            handleCaptionChange(index, e.target.value)
+                          }
+                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                        />
+                      </div>
+                    </>
+                  ))}
+                </div>
+              )}
+
+              {/* Thêm media mới */}
+
               {files.map((file, index) => (
                 <div key={index} className="mt-2 flex items-center space-x-4">
                   <div className="relative">
@@ -229,6 +309,7 @@ const CreatePost = ({ onClose, me }: any) => {
                 </div>
               ))}
             </div>
+
             <div className="flex items-center">
               <span className="text-sm text-primary-100">Add location</span>
               <div className="mb-4 ml-auto">
@@ -330,4 +411,4 @@ const CreatePost = ({ onClose, me }: any) => {
   );
 };
 
-export default CreatePost;
+export default EditPost;

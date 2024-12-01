@@ -16,7 +16,7 @@ interface InfomationUserProps {
   attendDate: string;
   phoneNumber: string;
   email: string;
-  setProfile: any;
+  setProfileUser: any;
   onClose: () => void;
 }
 
@@ -57,7 +57,7 @@ const UpdateInformation = ({
   attendDate,
   phoneNumber,
   email,
-  setProfile,
+  setProfileUser,
   onClose,
 }: InfomationUserProps) => {
   const [formValues, setFormValues] = useState({
@@ -112,7 +112,7 @@ const UpdateInformation = ({
         const response = await updateInfo(params, token);
 
         if (response?.status) {
-          setProfile((prevProfile: any) => ({
+          setProfileUser((prevProfile: any) => ({
             ...prevProfile,
             firstName: response?.newProfile.firstName,
             lastName: response?.newProfile.lastName,

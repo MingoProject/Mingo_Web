@@ -85,6 +85,34 @@ export async function createPost(
   }
 }
 
+export async function editPost(
+  params: PostCreateDTO,
+  postId: string,
+  token: string
+): Promise<PostResponseDTO> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/update?postId=${postId}`, {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating media");
+    }
+
+    const data: PostResponseDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to create media:", error);
+    throw error;
+  }
+}
+
 export async function getMediasByPostId(
   postId: String
 ): Promise<MediaResponseDTO[]> {
@@ -211,6 +239,21 @@ export async function getTagsByPostId(
     return data;
   } catch (error) {
     console.error("Failed to fetch tags by postId:", error);
+    throw error;
+  }
+}
+
+export async function getPostByPostId(postId: String) {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-post?postId=${postId}`);
+    if (!response.ok) {
+      throw new Error("Error fetching post by postId");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch post by postId:", error);
     throw error;
   }
 }

@@ -48,55 +48,79 @@ const RenderFriend = ({ activeTabFriend }: any) => {
   const [blocks, setBlocks] = useState<UserResponseDTO[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const myFriends = async () => {
       try {
         const userId = localStorage.getItem("userId");
         const data = await getMyFriends(userId);
-        setFriends(data);
+        if (isMounted) {
+          setFriends(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myFriends();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const myBffs = async () => {
       try {
         const userId = localStorage.getItem("userId");
         const data = await getMyBffs(userId);
-        setBffs(data);
+        if (isMounted) {
+          setBffs(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myBffs();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const myFollowings = async () => {
       try {
         const userId = localStorage.getItem("userId");
         const data = await getMyFollowings(userId);
-        setFollowings(data);
+        if (isMounted) {
+          setFollowings(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myFollowings();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const myBlocks = async () => {
       try {
         const userId = localStorage.getItem("userId");
         const data = await getMyBlocks(userId);
-        setBlocks(data);
+        if (isMounted) {
+          setBlocks(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myBlocks();
+    return () => {
+      isMounted = false;
+    };
   }, []);
   const getFriendsList = () => {
     switch (activeTabFriend) {

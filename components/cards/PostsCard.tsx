@@ -23,7 +23,7 @@ const PostsCard = ({
   location,
   tags,
   privacy,
-  profile,
+  profileUser,
 }: {
   postId: string;
   author: any;
@@ -39,7 +39,7 @@ const PostsCard = ({
     type: string;
     allowedUsers?: any[];
   };
-  profile: any;
+  profileUser: any;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
@@ -146,11 +146,14 @@ const PostsCard = ({
                 </span>
               )}
               {location && (
-                <span>
-                  <span className="">{" - in "}</span>
+                <div className="flex">
+                  <Icon icon="mi:location" className="" />
+                  <span>
+                    <span className="">{" - "}</span>
 
-                  {location}
-                </span>
+                    {location}
+                  </span>
+                </div>
               )}
             </p>
             <span className="text-dark100_light500 ml-3 text-sm">
@@ -266,7 +269,9 @@ const PostsCard = ({
               <div className="w-12 overflow-hidden rounded-full">
                 <Image
                   src={
-                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
+                    profileUser?.avatar
+                      ? profileUser.avatar
+                      : "/assets/images/capy.jpg"
                   }
                   alt="Avatar"
                   width={40}

@@ -11,13 +11,14 @@ import Tab from "@/components/forms/personalPage/Tab";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import { checkRelation } from "@/lib/services/relation.service";
 import RelationModal from "@/components/forms/profile/RelationAction";
+import { useAuth } from "@/context/AuthContext";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
-  const [profile, setProfile] = useState<any>(null);
+  const [profileUser, setProfileUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [relation, setRelation] = useState<string>("");
-  const [me, setMe] = useState<any>(null);
+  const { profile } = useAuth();
   const [isMe, setIsMe] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
@@ -32,25 +33,6 @@ const ProfilePage = () => {
       console.error("Error fetching profile:", error);
     }
   }, [id]);
-
-  useEffect(() => {
-    const getMe = async () => {
-      try {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-          const me = await getMyProfile(userId);
-          setMe(me.userProfile);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
-      }
-    };
-    getMe();
-  }, [id]);
-
-  useEffect(() => {
-    console.log("me", me);
-  }, [me]);
 
   useEffect(() => {
     const check = async () => {
@@ -104,7 +86,7 @@ const ProfilePage = () => {
       try {
         if (id) {
           const data = await getMyProfile(id);
-          setProfile(data.userProfile);
+          setProfileUser(data.userProfile);
         }
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -114,21 +96,21 @@ const ProfilePage = () => {
     fetchProfile();
   }, [id]);
 
-  if (!profile) return <div>Loading...</div>;
+  if (!profileUser) return <div>Loading...</div>;
 
   return (
     <div className="background-light700_dark400 h-full pt-20">
-      <Background profile={profile} setProfile={setProfile} />
+      <Background profileUser={profileUser} setProfileUser={setProfileUser} />
 
       <div className="mt-[30px] flex">
-        <Avatar profile={profile} setProfile={setProfile} />
+        <Avatar profileUser={profileUser} setProfileUser={setProfileUser} />
 
         <div className="ml-[5%]">
           <h1 className="text-dark100_light500 text-[25px]">
-            {profile?.firstName} {profile?.lastName}
-            {profile?.nickName && <span> ({profile?.nickName})</span>}
+            {profileUser?.firstName} {profileUser?.lastName}
+            {profileUser?.nickName && <span> ({profileUser?.nickName})</span>}
           </h1>
-          <Bio profile={profile} setProfile={setProfile} />
+          <Bio profileUser={profileUser} setProfileUser={setProfileUser} />
         </div>
       </div>
 
@@ -187,20 +169,20 @@ const ProfilePage = () => {
 
       <div>
         <InfomationUser
-          firstName={profile?.firstName}
-          lastName={profile?.lastName}
-          nickName={profile?.nickName}
-          gender={profile?.gender}
-          job={profile?.job}
-          hobbies={profile?.hobbies}
-          address={profile?.address}
-          relationShip={profile?.relationShip}
-          birthDay={profile?.birthDay}
-          attendDate={profile?.attendDate}
-          phoneNumber={profile?.phoneNumber}
-          email={profile?.email}
-          _id={profile?._id}
-          setProfile={setProfile}
+          firstName={profileUser?.firstName}
+          lastName={profileUser?.lastName}
+          nickName={profileUser?.nickName}
+          gender={profileUser?.gender}
+          job={profileUser?.job}
+          hobbies={profileUser?.hobbies}
+          address={profileUser?.address}
+          relationShip={profileUser?.relationShip}
+          birthDay={profileUser?.birthDay}
+          attendDate={profileUser?.attendDate}
+          phoneNumber={profileUser?.phoneNumber}
+          email={profileUser?.email}
+          _id={profileUser?._id}
+          setProfileUser={setProfileUser}
         />
       </div>
 
@@ -209,8 +191,8 @@ const ProfilePage = () => {
       <div className="mx-[5%] my-5">
         <RenderContentPage
           activeTab={activeTab}
-          profile={profile}
-          me={me}
+          profileUser={profileUser}
+          me={profile}
           isMe={isMe}
         />
       </div>

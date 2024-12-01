@@ -14,44 +14,54 @@ import Videos from "./Videos";
 
 const RenderContentPage = ({
   activeTab,
-  profile,
+  profileUser,
   me,
   isMe,
 }: {
   activeTab: string;
-  profile: any;
+  profileUser: any;
   me: any;
   isMe: boolean;
 }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("friend");
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
-  useEffect(() => {
-    console.log("meRender", me);
-  }, [me]);
 
   useEffect(() => {
+    let isMounted = true;
     const myPosts = async () => {
       try {
-        const data = await getMyPosts(profile._id);
-        setPosts(data.userPosts);
+        const data = await getMyPosts(profileUser._id);
+        if (isMounted) {
+          setPosts(data.userPosts);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     myPosts();
-  }, [profile._id]);
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
+  }, [profileUser._id]);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPostsData = async () => {
       if (posts && posts.length > 0) {
         // Ensure post is defined before checking length
         const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
-        setPostsData(detailedPosts);
+
+        if (isMounted) {
+          setPostsData(detailedPosts);
+        }
       }
     };
 
     fetchPostsData();
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
   }, [posts]);
 
   const [selectedFilter, setSelectedFilter] =
@@ -59,6 +69,7 @@ const RenderContentPage = ({
   const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
+    let isMounted = true;
     const sortedPosts = [...postsData];
     if (selectedFilter === "Mới nhất") {
       sortedPosts.sort(
@@ -73,7 +84,13 @@ const RenderContentPage = ({
     } else if (selectedFilter === "Hot nhất") {
       sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
-    setFilteredPosts(sortedPosts);
+    if (isMounted) {
+      setFilteredPosts(sortedPosts);
+    }
+
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
   }, [selectedFilter, postsData]);
 
   // if (loading) return <div className="mt-96">Loading...</div>;
@@ -139,7 +156,7 @@ const RenderContentPage = ({
                     location={post.location}
                     tags={post.tags || []}
                     privacy={post.privacy}
-                    profile={profile}
+                    profileUser={profileUser}
                   />
                 ))
               )}
@@ -203,9 +220,9 @@ const RenderContentPage = ({
         </div>
       );
     case "photos":
-      return <Images me={me} profile={profile} />;
+      return <Images me={me} profileUser={profileUser} />;
     case "videos":
-      return <Videos me={me} profile={profile} />;
+      return <Videos me={me} profileUser={profileUser} />;
     default:
       return <div>Chọn một mục để hiển thị nội dung</div>;
   }

@@ -18,7 +18,7 @@ interface InfomationUserProps {
   phoneNumber: string;
   email: string;
   _id: string;
-  setProfile: any;
+  setProfileUser: any;
 }
 // hobbyIcons.ts
 export const hobbyIcons: Record<string, string> = {
@@ -58,18 +58,24 @@ const InfomationUser = ({
   phoneNumber,
   email,
   _id,
-  setProfile,
+  setProfileUser,
 }: InfomationUserProps) => {
   const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [me, setMe] = useState(false);
+  const [isMe, setIsMe] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     const userId = localStorage.getItem("userId");
 
     if (userId && userId === _id) {
-      setMe(true);
+      if (isMounted) {
+        setIsMe(true);
+      }
     }
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
   }, [_id]);
 
   return (
@@ -179,7 +185,7 @@ const InfomationUser = ({
         >
           {showDetails ? "Hidden" : "See all"}
         </Button>
-        {me && (
+        {isMe && (
           <Icon
             icon="solar:pen-broken"
             className="ml-auto text-2xl text-primary-100"
@@ -201,7 +207,7 @@ const InfomationUser = ({
           attendDate={attendDate}
           phoneNumber={phoneNumber}
           email={email}
-          setProfile={setProfile}
+          setProfileUser={setProfileUser}
           onClose={() => setShowEdit(false)}
         />
       )}

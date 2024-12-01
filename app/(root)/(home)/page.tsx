@@ -9,57 +9,47 @@ import Hashtag from "@/components/forms/home/Hashtag";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import { getMyProfile } from "@/lib/services/user.service";
+import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-
-  const [profile, setProfile] = useState<any>(null);
+  const { profile } = useAuth();
 
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        const userId = localStorage.getItem("userId");
-        if (userId) {
-          const profileData = await getMyProfile(userId);
-          setProfile(profileData.userProfile);
-        }
-      } catch (err) {
-        setError("Failed to fetch profile");
-        console.error(err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProfile();
-  }, []);
-
-  useEffect(() => {
+    let isMounted = true;
     const loadPosts = async () => {
       try {
         const data = await fetchPosts();
-        setPosts(data);
+        if (isMounted) {
+          setPosts(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     loadPosts();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const fetchPostsData = async () => {
       const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
       console.log(detailedPosts);
-      setPostsData(detailedPosts);
+      if (isMounted) {
+        setPostsData(detailedPosts);
+      }
     };
 
     if (posts.length > 0) {
       fetchPostsData();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [posts]);
 
   const [selectedFilter, setSelectedFilter] =
@@ -67,7 +57,8 @@ export default function Home() {
   const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
-    const sortedPosts = [...postsData]; // Sắp xếp bài viết nếu có
+    let isMounted = true;
+    const sortedPosts = [...postsData];
     if (selectedFilter === "Mới nhất") {
       sortedPosts.sort(
         (a, b) =>
@@ -81,11 +72,14 @@ export default function Home() {
     } else if (selectedFilter === "Hot nhất") {
       sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
-    setFilteredPosts(sortedPosts);
-  }, [selectedFilter, postsData]);
+    if (isMounted) {
+      setFilteredPosts(sortedPosts);
+    }
 
-  if (loading) return <div className="mt-96">Loading...</div>;
-  if (error) return <div className="mt-96">Error: {error}</div>;
+    return () => {
+      isMounted = false;
+    };
+  }, [selectedFilter, postsData]);
 
   return (
     <div className="background-light800_dark400 mt-7 flex w-full pt-20">
@@ -146,7 +140,7 @@ export default function Home() {
                 location={post.location}
                 tags={post.tags || []}
                 privacy={post.privacy}
-                profile={profile}
+                profileUser={profile}
               />
             ))
           )}
