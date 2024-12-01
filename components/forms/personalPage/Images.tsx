@@ -5,7 +5,7 @@ import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import fetchDetailedMedias from "@/hooks/useMedias";
 import DetailsImage from "./DetailsImage";
 
-const Images = ({ me, profile }: any) => {
+const Images = ({ me, profileUser }: any) => {
   const [images, setImages] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<any>(null);
   useEffect(() => {
@@ -13,17 +13,23 @@ const Images = ({ me, profile }: any) => {
   }, [me]);
 
   useEffect(() => {
+    let isMounted = true;
     const getImages = async () => {
       try {
-        const data: MediaResponseDTO[] = await getMyImages(profile._id);
+        const data: MediaResponseDTO[] = await getMyImages(profileUser._id);
         const detailsImage = await fetchDetailedMedias(data);
-        setImages(detailsImage);
+        if (isMounted) {
+          setImages(detailsImage);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     getImages();
-  }, [profile._id]);
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
+  }, [profileUser._id]);
 
   return (
     <div className="flex ">
@@ -46,7 +52,7 @@ const Images = ({ me, profile }: any) => {
                 <DetailsImage
                   image={selectedImage}
                   onClose={() => setSelectedImage(null)}
-                  profile={profile}
+                  profileUser={profileUser}
                   me={me}
                 />
               )}

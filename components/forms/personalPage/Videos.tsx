@@ -3,21 +3,27 @@ import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { getMyVideos } from "@/lib/services/user.service";
 import DetailsVideo from "./DetailsVideo";
 
-const Videos = ({ me, profile }: any) => {
+const Videos = ({ me, profileUser }: any) => {
   const [videos, setVideos] = useState<MediaResponseDTO[]>([]);
   const [selectedVideo, setSelectedVideo] = useState<any>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const getVideos = async () => {
       try {
-        const data: MediaResponseDTO[] = await getMyVideos(profile._id);
-        setVideos(data);
+        const data: MediaResponseDTO[] = await getMyVideos(profileUser._id);
+        if (isMounted) {
+          setVideos(data);
+        }
       } catch (error) {
         console.error("Error loading posts:", error);
       }
     };
     getVideos();
-  }, [profile._id]);
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
+  }, [profileUser._id]);
 
   return (
     <div className="flex  ">
@@ -41,7 +47,7 @@ const Videos = ({ me, profile }: any) => {
                 <DetailsVideo
                   video={selectedVideo}
                   onClose={() => setSelectedVideo(null)}
-                  profile={profile}
+                  profileUser={profileUser}
                   me={me}
                 />
               )}

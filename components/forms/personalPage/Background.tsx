@@ -2,17 +2,20 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { uploadBackground } from "@/lib/services/user.service";
 
-const Background = ({ profile, setProfile }: any) => {
+const Background = ({ profileUser, setProfileUser }: any) => {
   const [backgroundMenuOpen, setBackgroundMenuOpen] = useState(false);
   const backgroundMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const handleClickOutside = (e: MouseEvent) => {
       if (
         backgroundMenuRef.current &&
         !backgroundMenuRef.current.contains(e.target as Node)
       ) {
-        setBackgroundMenuOpen(false);
+        if (isMounted) {
+          setBackgroundMenuOpen(false);
+        }
       }
     };
 
@@ -20,6 +23,7 @@ const Background = ({ profile, setProfile }: any) => {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      isMounted = false;
     };
   }, []);
 
@@ -50,7 +54,7 @@ const Background = ({ profile, setProfile }: any) => {
       if (token) {
         const response = await uploadBackground(formData, token);
         if (response?.status) {
-          setProfile((prevProfile: any) => ({
+          setProfileUser((prevProfile: any) => ({
             ...prevProfile,
             background: response?.result.secure_url,
           }));
@@ -71,7 +75,7 @@ const Background = ({ profile, setProfile }: any) => {
           <div className="ml-[20%] mt-10 hidden lg:block">
             <span className="text-dark100_light500 text-[36px]">Hello,</span>
             <h2 className="ml-5 text-[38px] text-primary-100">
-              I&apos;m {profile?.lastName}
+              I&apos;m {profileUser?.lastName}
             </h2>
           </div>
         </div>
@@ -79,8 +83,8 @@ const Background = ({ profile, setProfile }: any) => {
           <Image
             onClick={handleBackgroundClick}
             src={
-              profile?.background
-                ? profile.background
+              profileUser?.background
+                ? profileUser.background
                 : "/assets/images/5e7aa00965e1d68e7cb1d58d2281498b.jpg"
             }
             alt="Background"

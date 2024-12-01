@@ -10,7 +10,7 @@ import ImageAction from "./ImageAction";
 
 // import { getTimestamp } from "@/lib/utils";
 
-const DetailsVideo = ({ video, onClose, profile, me }: any) => {
+const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
@@ -19,15 +19,20 @@ const DetailsVideo = ({ video, onClose, profile, me }: any) => {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCommentsData = async () => {
       const detailedComments = await fetchDetailedComments(video.comments);
-
-      setCommentsData(detailedComments);
+      if (isMounted) {
+        setCommentsData(detailedComments);
+      }
     };
 
     if (video.comments.length > 0) {
       fetchCommentsData();
     }
+    return () => {
+      isMounted = false; // Cleanup: Mark the component as unmounted
+    };
   }, [video.comments]);
 
   useEffect(() => {
@@ -82,9 +87,9 @@ const DetailsVideo = ({ video, onClose, profile, me }: any) => {
           <div className="w-3/5">
             <div className="ml-4 mt-3 flex items-center">
               <div className="flex items-center">
-                <Link href={`/profile/${profile._id}`}>
+                <Link href={`/profile/${profileUser._id}`}>
                   <Image
-                    src={profile?.avatar || "/assets/images/capy.jpg"}
+                    src={profileUser?.avatar || "/assets/images/capy.jpg"}
                     alt="Avatar"
                     width={45}
                     height={45}
@@ -93,7 +98,7 @@ const DetailsVideo = ({ video, onClose, profile, me }: any) => {
                 </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
-                    {profile?.firstName || ""}
+                    {profileUser?.firstName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
                     {/* {getTimestamp(image.createdAt)} */}

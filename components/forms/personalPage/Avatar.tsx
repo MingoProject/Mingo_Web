@@ -2,18 +2,21 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { uploadAvatar } from "@/lib/services/user.service";
 
-const Avatar = ({ profile, setProfile }: any) => {
+const Avatar = ({ profileUser, setProfileUser }: any) => {
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false);
 
   const avatarMenuRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    let isMounted = true;
     const handleClickOutside = (e: MouseEvent) => {
       if (
         avatarMenuRef.current &&
         !avatarMenuRef.current.contains(e.target as Node)
       ) {
-        setAvatarMenuOpen(false);
+        if (isMounted) {
+          setAvatarMenuOpen(false);
+        }
       }
     };
 
@@ -21,6 +24,7 @@ const Avatar = ({ profile, setProfile }: any) => {
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      isMounted = false;
     };
   }, []);
 
@@ -42,7 +46,7 @@ const Avatar = ({ profile, setProfile }: any) => {
         const response = await uploadAvatar(formData, token);
         if (response?.status) {
           console.log(response?.result.secure_url);
-          setProfile((prevProfile: any) => ({
+          setProfileUser((prevProfile: any) => ({
             ...prevProfile,
             avatar: response?.result.secure_url,
           }));
@@ -69,7 +73,7 @@ const Avatar = ({ profile, setProfile }: any) => {
       <div className="ml-[10%] size-[200px] overflow-hidden rounded-full">
         <Image
           onClick={handleAvatarClick}
-          src={profile?.avatar || "/assets/images/capy.jpg"}
+          src={profileUser?.avatar || "/assets/images/capy.jpg"}
           alt="Avatar"
           width={200}
           height={200}

@@ -10,7 +10,7 @@ import ImageAction from "./ImageAction";
 
 // import { getTimestamp } from "@/lib/utils";
 
-const DetailsImage = ({ image, onClose, profile, me }: any) => {
+const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
@@ -82,9 +82,9 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
           <div className="w-3/5">
             <div className="ml-4 mt-3 flex items-center">
               <div className="flex items-center">
-                <Link href={`/profile/${profile._id}`}>
+                <Link href={`/profile/${profileUser._id}`}>
                   <Image
-                    src={profile?.avatar || "/assets/images/capy.jpg"}
+                    src={profileUser?.avatar || "/assets/images/capy.jpg"}
                     alt="Avatar"
                     width={45}
                     height={45}
@@ -93,7 +93,7 @@ const DetailsImage = ({ image, onClose, profile, me }: any) => {
                 </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
-                    {profile?.firstName || ""}
+                    {profileUser?.firstName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
                     {/* {getTimestamp(image.createdAt)} */}

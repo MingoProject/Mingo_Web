@@ -1,5 +1,6 @@
 import { deletePost } from "@/lib/services/post.service";
 import React, { useEffect, useRef, useState } from "react";
+import EditPost from "./EditPost";
 
 const PostMenu = ({
   postId,
@@ -44,39 +45,9 @@ const PostMenu = ({
     return author === userId;
   };
 
-  const handleOpenEditComment = () => {
+  const handleOpenEditPost = () => {
     setIsEditing(true);
   };
-
-  //   const handleCloseEditComment = () => {
-  //     setIsEditing(false);
-  //   };
-
-  //   const handleEditComment = async (
-  //     commentId: string,
-  //     updatedContent: string
-  //   ) => {
-  //     const token = localStorage.getItem("token");
-  //     if (!token || !updatedContent.trim()) return;
-
-  //     try {
-  //       const updatedComment = await updateComment(
-  //         { content: updatedContent },
-  //         commentId,
-  //         token
-  //       );
-  //       setCommentsData((prev: any) =>
-  //         prev.map((comment: any) =>
-  //           comment._id === commentId
-  //             ? { ...comment, content: updatedComment.content }
-  //             : comment
-  //         )
-  //       );
-  //       handleCloseMenu();
-  //     } catch (error) {
-  //       console.error("Failed to update comment:", error);
-  //     }
-  //   };
 
   const handleDeletePost = async (postId: string) => {
     const token = localStorage.getItem("token");
@@ -98,12 +69,14 @@ const PostMenu = ({
       {isPostOwner(author._id) ? (
         <>
           <button
-            onClick={handleOpenEditComment}
+            onClick={handleOpenEditPost}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
             Sửa
           </button>
-          {isEditing && <div className="absolute mt-20"></div>}
+          {isEditing && (
+            <EditPost postId={postId} onClose={() => setIsEditing(false)} />
+          )}
           <button
             onClick={() => handleDeletePost(postId)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
