@@ -1,8 +1,9 @@
+import { createNotification } from "@/lib/services/notification.service";
 import { dislikePost, likePost } from "@/lib/services/post.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 
-const Action = ({ likes, postId, comments, shares }: any) => {
+const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
 
@@ -23,6 +24,13 @@ const Action = ({ likes, postId, comments, shares }: any) => {
       if (token) {
         await likePost(postId, token);
         setIsLiked(!isLiked);
+        const params = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "like",
+          postId,
+        };
+        await createNotification(params, token);
       } else {
         console.warn("User is not authenticated");
       }

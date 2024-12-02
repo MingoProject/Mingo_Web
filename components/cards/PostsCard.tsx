@@ -10,6 +10,7 @@ import { CldImage } from "next-cloudinary";
 import { dislikePost, likePost } from "@/lib/services/post.service";
 import Link from "next/link";
 import PostMenu from "../forms/post/PostMenu";
+import { createNotification } from "@/lib/services/notification.service";
 
 const PostsCard = ({
   postId,
@@ -90,6 +91,13 @@ const PostsCard = ({
       if (token) {
         await likePost(postId, token);
         setIsLiked(!isLiked);
+        const params = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "like",
+          postId,
+        };
+        await createNotification(params, token);
       } else {
         console.warn("User is not authenticated");
       }

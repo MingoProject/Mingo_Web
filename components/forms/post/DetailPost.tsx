@@ -64,10 +64,6 @@ const DetailPost = ({
     };
   }, [comments]);
 
-  useEffect(() => {
-    console.log("comments", commentsData);
-  });
-
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
     console.log(token);
@@ -178,6 +174,8 @@ const DetailPost = ({
               postId={postId}
               comments={comments}
               shares={shares}
+              author={author}
+              profile={profile}
             />
             <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 

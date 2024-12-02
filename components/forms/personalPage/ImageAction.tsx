@@ -1,8 +1,16 @@
 import { dislikeMedia, likeMedia } from "@/lib/services/media.service";
+import { createNotification } from "@/lib/services/notification.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 
-const ImageAction = ({ likes, mediaId, comments, shares }: any) => {
+const ImageAction = ({
+  likes,
+  mediaId,
+  comments,
+  shares,
+  author,
+  profile,
+}: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
 
@@ -23,6 +31,13 @@ const ImageAction = ({ likes, mediaId, comments, shares }: any) => {
       if (token) {
         await likeMedia(mediaId, token);
         setIsLiked(!isLiked);
+        const params = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "like_media",
+          mediaId,
+        };
+        await createNotification(params, token);
       } else {
         console.warn("User is not authenticated");
       }

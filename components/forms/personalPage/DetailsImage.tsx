@@ -126,6 +126,8 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                 mediaId={image._id}
                 comments={image.comments}
                 shares={image.shares}
+                author={profileUser}
+                profile={me}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
