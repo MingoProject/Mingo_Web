@@ -140,6 +140,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                         comment={comment}
                         setCommentsData={setCommentsData}
                         mediaId={image._id}
+                        profile={me}
                       />
                     </div>
                   ))

@@ -24,54 +24,63 @@ const ProfilePage = () => {
   const [isModalOpen, setModalOpen] = useState(false);
 
   useEffect(() => {
+    let isMounted = true;
     try {
       const userId = localStorage.getItem("userId");
       if (userId && userId === id) {
-        setIsMe(true);
+        if (isMounted) {
+          setIsMe(true);
+        }
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
     }
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   useEffect(() => {
+    let isMounted = true;
     const check = async () => {
       try {
         const userId = localStorage.getItem("userId");
         if (userId) {
           const res: any = await checkRelation(userId, id);
-          if (!res) {
-            setRelation("stranger");
-            // setRelationStatus(false);
-          } else {
-            const { relation, status, sender, receiver } = res;
-
-            if (relation === "bff") {
-              if (status) {
-                setRelation("bff"); //
-              } else if (userId === sender) {
-                setRelation("senderRequestBff"); //
-              } else if (userId === receiver) {
-                setRelation("receiverRequestBff"); //
-              }
-            } else if (relation === "friend") {
-              if (status) {
-                setRelation("friend"); //
-              } else if (userId === sender) {
-                setRelation("following"); //
-              } else if (userId === receiver) {
-                setRelation("follower"); //
-              }
-            } else if (relation === "block") {
-              if (userId === sender) {
-                setRelation("blocked"); //
-              } else if (userId === receiver) {
-                setRelation("blockedBy");
-              }
+          if (isMounted) {
+            if (!res) {
+              setRelation("stranger");
+              // setRelationStatus(false);
             } else {
-              setRelation("stranger"); //
+              const { relation, status, sender, receiver } = res;
+
+              if (relation === "bff") {
+                if (status) {
+                  setRelation("bff"); //
+                } else if (userId === sender) {
+                  setRelation("senderRequestBff"); //
+                } else if (userId === receiver) {
+                  setRelation("receiverRequestBff"); //
+                }
+              } else if (relation === "friend") {
+                if (status) {
+                  setRelation("friend"); //
+                } else if (userId === sender) {
+                  setRelation("following"); //
+                } else if (userId === receiver) {
+                  setRelation("follower"); //
+                }
+              } else if (relation === "block") {
+                if (userId === sender) {
+                  setRelation("blocked"); //
+                } else if (userId === receiver) {
+                  setRelation("blockedBy");
+                }
+              } else {
+                setRelation("stranger"); //
+              }
+              // setRelationStatus(status);
             }
-            // setRelationStatus(status);
           }
         }
       } catch (error) {
@@ -79,6 +88,9 @@ const ProfilePage = () => {
       }
     };
     check();
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   useEffect(() => {

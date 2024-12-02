@@ -1,6 +1,7 @@
 import {
   getAuthorByCommentId,
   getLikesByCommentId,
+  getRepliesByCommentId,
 } from "@/lib/services/comment.service"; // Import các hàm dịch vụ
 
 const fetchDetailedComments = async (comments) => {
@@ -12,21 +13,21 @@ const fetchDetailedComments = async (comments) => {
   const detailedComments = await Promise.all(
     comments.map(async (comment) => {
       try {
-        //   const comments = await getCommentsByPostId(post._id);
         const userId = await getAuthorByCommentId(comment._id);
-        //   const media = await getMediasByPostId(post._id);
         const likes = await getLikesByCommentId(comment._id);
-        return { ...comment, userId, likes };
+
+        const replies = await getRepliesByCommentId(comment._id);
+
+        return { ...comment, userId, likes, replies };
       } catch (error) {
         console.error(
           `Error fetching details for Comment ${comment._id}:`,
           error
         );
-        return { ...comment, author: null, likes: [] };
+        return { ...comment, author: null, likes: [], replies: [] };
       }
     })
   );
-
   return detailedComments;
 };
 

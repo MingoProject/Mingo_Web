@@ -23,7 +23,7 @@ const PostsCard = ({
   location,
   tags,
   privacy,
-  profileUser,
+  profile,
 }: {
   postId: string;
   author: any;
@@ -39,7 +39,7 @@ const PostsCard = ({
     type: string;
     allowedUsers?: any[];
   };
-  profileUser: any;
+  profile: any;
 }) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
@@ -61,17 +61,23 @@ const PostsCard = ({
   }, []);
 
   useEffect(() => {
+    let isMounted = true;
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
         console.log("userId", userId);
         console.log("likes", likes);
         const isUserLiked = likes.some((like) => like._id === userId);
-        setIsLiked(isUserLiked);
+        if (isMounted) {
+          setIsLiked(isUserLiked);
+        }
       } catch (error) {
         console.error("Invalid token:", error);
       }
     }
+    return () => {
+      isMounted = false;
+    };
   }, [likes]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -269,9 +275,7 @@ const PostsCard = ({
               <div className="w-12 overflow-hidden rounded-full">
                 <Image
                   src={
-                    profileUser?.avatar
-                      ? profileUser.avatar
-                      : "/assets/images/capy.jpg"
+                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
                   }
                   alt="Avatar"
                   width={40}
@@ -300,6 +304,7 @@ const PostsCard = ({
             shares={shares}
             privacy={privacy}
             onClose={closeModal}
+            profile={profile}
           />
         )}
       </div>

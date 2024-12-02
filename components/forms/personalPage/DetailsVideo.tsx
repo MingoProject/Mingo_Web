@@ -142,6 +142,7 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                         comment={comment}
                         setCommentsData={setCommentsData}
                         mediaId={video._id}
+                        profile={me}
                       />
                     </div>
                   ))
