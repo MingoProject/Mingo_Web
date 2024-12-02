@@ -231,12 +231,12 @@ const CommentCard = ({ comment, setCommentsData, type, profile }: any) => {
               />
               <button
                 onClick={handleReplyComment}
-                className="mt-2 text-primary-100 hover:underline"
+                className="mx-2 mt-3 h-10 rounded-lg bg-primary-100 p-2 text-white hover:underline"
               >
                 Reply
               </button>
               <button
-                className="text-primary-100"
+                className="text-2xl text-primary-100"
                 onClick={() => setReplyingTo(null)}
               >
                 x
@@ -246,7 +246,7 @@ const CommentCard = ({ comment, setCommentsData, type, profile }: any) => {
 
           {replies.length > 0 && (
             <p
-              className="cursor-pointer text-primary-100"
+              className="mb-1 cursor-pointer text-primary-100"
               onClick={toggleShowReplies}
             >
               Có {replies.length} phản hồi

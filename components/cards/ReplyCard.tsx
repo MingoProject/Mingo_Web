@@ -259,28 +259,6 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
             </button>
           </div>
         </div>
-        {replyingTo === detailsComment?._id && (
-          <div className="mt-2 flex">
-            <textarea
-              value={newComment}
-              onChange={(e) => setNewComment(e.target.value)}
-              className="w-full rounded-md border p-2"
-              placeholder="Write a reply..."
-            />
-            <button
-              onClick={handleReplyComment}
-              className="mt-2 text-primary-100 hover:underline"
-            >
-              Reply
-            </button>
-            <button
-              className="text-primary-100"
-              onClick={() => setReplyingTo(null)}
-            >
-              x
-            </button>
-          </div>
-        )}
 
         {selectedCommentId === reply._id && (
           <div ref={menuRef}>
@@ -295,6 +273,28 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
           </div>
         )}
       </div>
+      {replyingTo === detailsComment?._id && (
+        <div className="ml-10 mt-2 flex">
+          <textarea
+            value={newComment}
+            onChange={(e) => setNewComment(e.target.value)}
+            className="w-52 rounded-md border p-2"
+            placeholder="Write a reply..."
+          />
+          <button
+            onClick={handleReplyComment}
+            className="mx-2 mt-3 h-10 rounded-lg bg-primary-100 p-2 text-white hover:underline"
+          >
+            Reply
+          </button>
+          <button
+            className="text-2xl text-primary-100"
+            onClick={() => setReplyingTo(null)}
+          >
+            x
+          </button>
+        </div>
+      )}
     </div>
   );
 };
