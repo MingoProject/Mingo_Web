@@ -6,8 +6,9 @@ import Format from "../cards/FormatCard";
 import SearchMessage from "./SearchMessage";
 import ImagesMedia from "./ImagesMedia";
 import File from "./File";
+import { ItemChat } from "@/dtos/MessageDTO";
 
-const RightSide = () => {
+const RightSide = ({ item }: { item: ItemChat }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
@@ -61,18 +62,18 @@ const RightSide = () => {
       default:
         return (
           <>
-            <div className="h-[43px] w-full border-b border-gray-200 px-8">
+            <div className="h-[45px] w-full border-b border-gray-200 px-8">
               <p className="text-lg">Chi tiết</p>
             </div>
             <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
               <Image
-                src="/assets/images/4d7b4220f336f18936a8c33a557bf06b.jpg"
+                src={item.avatarUrl || "/assets/images/capy.jpg"}
                 alt="Avatar"
                 width={80}
                 height={80}
                 className="rounded-full"
               />
-              <p className="text-lg">Huỳnh Nguyễn</p>
+              <p className="text-lg">{item.userName}</p>
             </div>
             <div className="flex items-center px-8 ">
               <ul>
@@ -189,7 +190,7 @@ const RightSide = () => {
           onClose={closeReport}
           content="báo cáo"
           label="Báo cáo"
-          userName="Nguyễn Bạch Khiết"
+          userName={item.userName}
         />
       )}
       {isBlock && (
@@ -197,7 +198,7 @@ const RightSide = () => {
           onClose={closeBlock}
           content="chặn"
           label="Chặn"
-          userName="Nguyễn Bạch Khiết"
+          userName={item.userName}
         />
       )}
       {isDelete && (
@@ -205,7 +206,7 @@ const RightSide = () => {
           onClose={closeDelete}
           content="xóa đoạn chat với"
           label="Xóa"
-          userName="Nguyễn Bạch Khiết"
+          userName={item.userName}
         />
       )}
       {isNoNotification && (
@@ -213,7 +214,7 @@ const RightSide = () => {
           onClose={closeNoNotification}
           content="tắt thông báo đoạn chat với"
           label="Tắt thông báo"
-          userName="Nguyễn Bạch Khiết"
+          userName={item.userName}
         />
       )}
     </div>

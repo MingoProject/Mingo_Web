@@ -1,5 +1,3 @@
-import { teacherDataTable } from "@/constants/teacher";
-
 export interface Teacher {
   id: string;
   name: string;

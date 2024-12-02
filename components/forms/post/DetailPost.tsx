@@ -92,11 +92,7 @@ const DetailPost = ({
         <div className="p-4">
           <div className="ml-4 mt-3 flex items-center">
             <Image
-              src={
-                author?.avatar
-                  ? author.avatar
-                  : "/assets/images/default-avatar.jpg"
-              }
+              src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
               alt="Avatar"
               width={45}
               height={45}
