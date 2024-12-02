@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import fetchDetailedComments from "@/hooks/useComments";
 import { createComment } from "@/lib/services/comment.service";
 import Action from "./Action";
@@ -24,6 +23,7 @@ interface DetailPostProps {
     allowedUsers?: any[];
   };
   onClose: () => void;
+  profile: any;
 }
 
 const DetailPost = ({
@@ -38,8 +38,9 @@ const DetailPost = ({
   location,
   privacy,
   onClose,
+  profile,
 }: DetailPostProps) => {
-  const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,16 +48,25 @@ const DetailPost = ({
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCommentsData = async () => {
       const detailedPosts = await fetchDetailedComments(comments);
-
-      setCommentsData(detailedPosts);
+      if (isMounted) {
+        setCommentsData(detailedPosts);
+      }
     };
 
     if (comments.length > 0) {
       fetchCommentsData();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [comments]);
+
+  useEffect(() => {
+    console.log("comments", commentsData);
+  });
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -79,7 +89,19 @@ const DetailPost = ({
         postId
       );
 
-      setCommentsData((prev) => [newCommentData, ...prev]);
+      const enrichedComment = {
+        ...newCommentData,
+        userId: {
+          _id: profile?._id,
+          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+          firstName: profile?.firstName || "Anonymous",
+          lastName: profile?.lastName || "Anonymous",
+          createAt: "Now",
+        },
+      };
+
+      // Cập nhật state commentsData
+      setCommentsData((prev) => [enrichedComment, ...prev]);
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -161,6 +183,7 @@ const DetailPost = ({
                       comment={comment}
                       setCommentsData={setCommentsData}
                       postId={postId}
+                      profile={profile}
                     />
                   </div>
                 ))
@@ -168,15 +191,16 @@ const DetailPost = ({
                 <p className="text-dark100_light500">No comments yet.</p>
               )}
             </div>
-
             <div className="flex">
               <div className="size-[40px] overflow-hidden rounded-full">
                 <Image
-                  src="/assets/images/default-avatar.jpg"
+                  src={
+                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
+                  }
                   alt="Avatar"
                   width={40}
                   height={40}
-                  className="rounded-full object-cover"
+                  className="size-10 rounded-full object-cover"
                 />
               </div>
               <input

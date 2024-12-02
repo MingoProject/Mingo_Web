@@ -140,7 +140,7 @@ export default function Home() {
                 location={post.location}
                 tags={post.tags || []}
                 privacy={post.privacy}
-                profileUser={profile}
+                profile={profile}
               />
             ))
           )}
