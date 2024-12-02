@@ -10,6 +10,7 @@ import {
   likeComment,
 } from "@/lib/services/comment.service";
 import ReplyCard from "./ReplyCard";
+import { createNotification } from "@/lib/services/notification.service";
 
 const CommentCard = ({ comment, setCommentsData, type, profile }: any) => {
   const [isLiked, setIsLiked] = useState(false);
@@ -71,6 +72,13 @@ const CommentCard = ({ comment, setCommentsData, type, profile }: any) => {
       if (token) {
         await likeComment(comment._id, token);
         setIsLiked(!isLiked);
+        const params = {
+          senderId: profile._id,
+          receiverId: comment.userId._id,
+          type: "like_comment",
+          commentId: comment._id,
+        };
+        await createNotification(params, token);
       } else {
         console.warn("User is not authenticated");
       }
