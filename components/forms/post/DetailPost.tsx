@@ -112,26 +112,35 @@ const DetailPost = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
         <div className="p-4">
-          <div className="ml-4 mt-3 flex items-center">
-            <Image
-              src={
-                author?.avatar
-                  ? author.avatar
-                  : "/assets/images/default-avatar.jpg"
-              }
-              alt="Avatar"
-              width={45}
-              height={45}
-              className="size-11 rounded-full object-cover"
-            />
-            <div>
-              <p className="text-dark100_light500 ml-3 text-base">
-                {author?.firstName ? author.firstName : ""}
-              </p>
-              <span className="text-dark100_light500 ml-3 text-sm">
-                {getTimestamp(createdAt)}
-              </span>
+          <div className="flex">
+            <div className="ml-4 mt-3 flex items-center">
+              <Image
+                src={
+                  author?.avatar
+                    ? author.avatar
+                    : "/assets/images/default-avatar.jpg"
+                }
+                alt="Avatar"
+                width={45}
+                height={45}
+                className="size-11 rounded-full object-cover"
+              />
+              <div>
+                <p className="text-dark100_light500 ml-3 text-base">
+                  {author?.firstName ? author.firstName : ""}
+                </p>
+                <span className="text-dark100_light500 ml-3 text-sm">
+                  {getTimestamp(createdAt)}
+                </span>
+              </div>
             </div>
+
+            <button
+              onClick={onClose}
+              className="ml-auto mt-5 pl-2 text-3xl text-primary-100"
+            >
+              x
+            </button>
           </div>
 
           <div className="ml-4 mt-5">
@@ -218,13 +227,6 @@ const DetailPost = ({
               </button>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="mt-5 w-full text-center text-primary-100"
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>

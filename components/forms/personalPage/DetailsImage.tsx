@@ -79,7 +79,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="background-light700_dark300 text-dark100_light500 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
         <div className="block lg:flex">
-          <div className="w-3/5">
+          <div className="w-full lg:w-3/5">
             <div className="ml-4 mt-3 flex items-center">
               <div className="flex items-center">
                 <Link href={`/profile/${profileUser._id}`}>
@@ -119,7 +119,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
               </div>
             </div>
           </div>
-          <div className="w-2/5">
+          <div className="w-full lg:w-2/5">
             <div className="mx-10 my-5">
               <ImageAction
                 likes={image.likes}
