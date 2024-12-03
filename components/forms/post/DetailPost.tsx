@@ -3,7 +3,6 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import fetchDetailedComments from "@/hooks/useComments";
 import { createComment } from "@/lib/services/comment.service";
 import Action from "./Action";
@@ -24,6 +23,7 @@ interface DetailPostProps {
     allowedUsers?: any[];
   };
   onClose: () => void;
+  profile: any;
 }
 
 const DetailPost = ({
@@ -38,8 +38,9 @@ const DetailPost = ({
   location,
   privacy,
   onClose,
+  profile,
 }: DetailPostProps) => {
-  const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -47,15 +48,20 @@ const DetailPost = ({
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCommentsData = async () => {
       const detailedPosts = await fetchDetailedComments(comments);
-
-      setCommentsData(detailedPosts);
+      if (isMounted) {
+        setCommentsData(detailedPosts);
+      }
     };
 
     if (comments.length > 0) {
       fetchCommentsData();
     }
+    return () => {
+      isMounted = false;
+    };
   }, [comments]);
 
   const handleAddComment = async () => {
@@ -79,7 +85,19 @@ const DetailPost = ({
         postId
       );
 
-      setCommentsData((prev) => [newCommentData, ...prev]);
+      const enrichedComment = {
+        ...newCommentData,
+        userId: {
+          _id: profile?._id,
+          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+          firstName: profile?.firstName || "Anonymous",
+          lastName: profile?.lastName || "Anonymous",
+          createAt: "Now",
+        },
+      };
+
+      // Cập nhật state commentsData
+      setCommentsData((prev) => [enrichedComment, ...prev]);
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -90,22 +108,35 @@ const DetailPost = ({
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
         <div className="p-4">
-          <div className="ml-4 mt-3 flex items-center">
-            <Image
-              src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
-              alt="Avatar"
-              width={45}
-              height={45}
-              className="size-11 rounded-full object-cover"
-            />
-            <div>
-              <p className="text-dark100_light500 ml-3 text-base">
-                {author?.firstName ? author.firstName : ""}
-              </p>
-              <span className="text-dark100_light500 ml-3 text-sm">
-                {getTimestamp(createdAt)}
-              </span>
+          <div className="flex">
+            <div className="ml-4 mt-3 flex items-center">
+              <Image
+                src={
+                  author?.avatar
+                    ? author.avatar
+                    : "/assets/images/default-avatar.jpg"
+                }
+                alt="Avatar"
+                width={45}
+                height={45}
+                className="size-11 rounded-full object-cover"
+              />
+              <div>
+                <p className="text-dark100_light500 ml-3 text-base">
+                  {author?.firstName ? author.firstName : ""}
+                </p>
+                <span className="text-dark100_light500 ml-3 text-sm">
+                  {getTimestamp(createdAt)}
+                </span>
+              </div>
             </div>
+
+            <button
+              onClick={onClose}
+              className="ml-auto mt-5 pl-2 text-3xl text-primary-100"
+            >
+              x
+            </button>
           </div>
 
           <div className="ml-4 mt-5">
@@ -143,6 +174,8 @@ const DetailPost = ({
               postId={postId}
               comments={comments}
               shares={shares}
+              author={author}
+              profile={profile}
             />
             <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
@@ -157,6 +190,7 @@ const DetailPost = ({
                       comment={comment}
                       setCommentsData={setCommentsData}
                       postId={postId}
+                      profile={profile}
                     />
                   </div>
                 ))
@@ -164,15 +198,16 @@ const DetailPost = ({
                 <p className="text-dark100_light500">No comments yet.</p>
               )}
             </div>
-
             <div className="flex">
               <div className="size-[40px] overflow-hidden rounded-full">
                 <Image
-                  src="/assets/images/default-avatar.jpg"
+                  src={
+                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
+                  }
                   alt="Avatar"
                   width={40}
                   height={40}
-                  className="rounded-full object-cover"
+                  className="size-10 rounded-full object-cover"
                 />
               </div>
               <input
@@ -190,13 +225,6 @@ const DetailPost = ({
               </button>
             </div>
           </div>
-
-          <button
-            onClick={onClose}
-            className="mt-5 w-full text-center text-primary-100"
-          >
-            Close
-          </button>
         </div>
       </div>
     </div>

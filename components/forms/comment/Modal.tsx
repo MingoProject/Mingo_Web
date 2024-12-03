@@ -59,7 +59,7 @@ const CommentMenu = ({
       setCommentsData((prev: any) =>
         prev.map((comment: any) =>
           comment._id === commentId
-            ? { ...comment, content: updatedComment.content }
+            ? { ...comment, content: updatedComment.comment.content }
             : comment
         )
       );
@@ -104,7 +104,7 @@ const CommentMenu = ({
             Sửa
           </button>
           {isEditing && (
-            <div className="absolute mt-20">
+            <div className="absolute">
               <div>
                 <textarea
                   value={newComment}
@@ -131,9 +131,6 @@ const CommentMenu = ({
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
             Xóa
-          </button>
-          <button className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200">
-            Báo cáo
           </button>
         </>
       ) : (

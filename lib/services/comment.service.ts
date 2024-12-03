@@ -53,6 +53,33 @@ export async function createComment(
   }
 }
 
+export async function createReplyComment(
+  params: CreateCommentDTO,
+  token: string
+): Promise<CommentResponseDTO> {
+  try {
+    const response = await fetch(`${BASE_URL}/comment/create-reply-comment`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify(params),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating comment");
+    }
+
+    const data: CommentResponseDTO = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to create comment:", error);
+    throw error;
+  }
+}
+
 export async function getAuthorByCommentId(
   commentId: String
 ): Promise<UserResponseDTO> {
@@ -76,7 +103,7 @@ export async function updateComment(
   params: UpdateCommentDTO,
   commentId: string,
   token: string
-): Promise<CommentResponseDTO> {
+) {
   try {
     const response = await fetch(
       `${BASE_URL}/comment/update?commentId=${commentId}`,
@@ -95,10 +122,38 @@ export async function updateComment(
       throw new Error(errorData.message || "Error updating comment");
     }
 
-    const data: CommentResponseDTO = await response.json();
+    const data = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to update comment:", error);
+    throw error;
+  }
+}
+
+export async function addReplyToComment(
+  commentId: string,
+  replyId: string,
+  token: string
+) {
+  try {
+    const response = await fetch(`${BASE_URL}/comment/add-reply`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `${token}`,
+      },
+      body: JSON.stringify({ commentId, replyId }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error reply comment");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to reply comment:", error);
     throw error;
   }
 }
@@ -269,6 +324,39 @@ export async function deleteCommentMedia(
     return data;
   } catch (error) {
     console.error("Failed to delete comment:", error);
+    throw error;
+  }
+}
+
+export async function getRepliesByCommentId(commentId: String) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/comment/get-replies?commentId=${commentId}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching replies by commentId");
+    }
+    const data = await response.json();
+    console.log("replies", data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch replies by commentId:", error);
+    throw error;
+  }
+}
+
+export async function getCommentByCommentId(commentId: String) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/comment/get-comment?commentId=${commentId}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching comment by commentId");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch comment by commentId:", error);
     throw error;
   }
 }

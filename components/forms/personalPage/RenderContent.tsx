@@ -156,7 +156,7 @@ const RenderContentPage = ({
                     location={post.location}
                     tags={post.tags || []}
                     privacy={post.privacy}
-                    profileUser={profileUser}
+                    profile={me}
                   />
                 ))
               )}

@@ -128,6 +128,8 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                 mediaId={video._id}
                 comments={video.comments}
                 shares={video.shares}
+                author={profileUser}
+                profile={me}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
@@ -142,6 +144,7 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                         comment={comment}
                         setCommentsData={setCommentsData}
                         mediaId={video._id}
+                        profile={me}
                       />
                     </div>
                   ))
