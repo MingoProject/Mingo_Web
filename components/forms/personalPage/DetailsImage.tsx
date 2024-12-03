@@ -59,7 +59,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
         ...newCommentData,
         userId: {
           _id: me?._id,
-          avatar: me?.avatar || "/assets/images/default-avatar.jpg",
+          avatar: me?.avatar || "/assets/images/capy.jpg",
           firstName: me?.firstName || "Anonymous",
           lastName: me?.lastName || "Anonymous",
           createAt: "Now",

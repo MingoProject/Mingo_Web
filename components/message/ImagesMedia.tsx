@@ -1,86 +1,66 @@
-import React, { useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Icon } from "@iconify/react";
 import ImageRender from "./ImageRender";
 import VideoRender from "./VideoRender";
-interface ChatMessage {
-  messageId: string;
-  senderId: string;
-  timestamp: string;
-  content: string;
-  images: string[];
-  videos: string[]; // Thêm thuộc tính videos
-}
+import { getImageList, getVideoList } from "@/lib/services/message.service";
+import { FileContent } from "@/dtos/MessageDTO";
 
-const messages: ChatMessage[] = [
-  {
-    messageId: "1",
-    senderId: "user1",
-    timestamp: "2024-09-29T12:34:56Z",
-    content: "Đây là một tin nhắn có hình ảnh",
-    images: [
-      "https://i.pinimg.com/236x/1e/a3/9f/1ea39f9a9ff2f0d4a26c6f01635c794a.jpg",
-      "https://i.pinimg.com/236x/49/e8/a8/49e8a877294b37f0a16f5ec79b6cb60d.jpg",
-    ],
-    videos: ["https://www.youtube.com/watch?v=oft2kC6xQvw&pp=ygUJaGV5IGRhZGR5"], // Không có video trong tin nhắn này
-  },
-  {
-    messageId: "2",
-    senderId: "user2",
-    timestamp: "2024-09-29T12:35:00Z",
-    content: "Đây là một tin nhắn có video",
-    images: [],
-    videos: [
-      "https://www.youtube.com/watch?v=SutaE3lW_8E&list=RDSutaE3lW_8E&start_radio=1",
-    ], // Tin nhắn chứa video
-  },
-  {
-    messageId: "3",
-    senderId: "user1",
-    timestamp: "2024-09-29T12:36:00Z",
-    content: "Một tin nhắn khác với hình ảnh và video",
-    images: [
-      "https://i.pinimg.com/236x/bb/de/7c/bbde7cc71e1d383c5055c776b7ec3419.jpg",
-    ],
-    videos: ["https://www.youtube.com/watch?v=w28YjHjafy0"], // Tin nhắn chứa video
-  },
-];
-
-const getAllImagesFromChat = (chatMessages: ChatMessage[]) => {
-  const allImages: string[] = [];
-
-  chatMessages.forEach((message) => {
-    if (message.images && message.images.length > 0) {
-      allImages.push(...message.images);
-    }
-  });
-
-  return allImages;
+const getAllImagesFromChat = (chatMessages: FileContent[]) => {
+  return chatMessages.filter((message) => message.type === "Image");
 };
 
-const getAllVideosFromChat = (chatMessages: ChatMessage[]) => {
-  const allVideos: string[] = [];
-
-  chatMessages.forEach((message) => {
-    if (message.videos && message.videos.length > 0) {
-      allVideos.push(...message.videos);
-    }
-  });
-
-  return allVideos;
+const getAllVideosFromChat = (chatMessages: FileContent[]) => {
+  return chatMessages.filter((message) => message.type === "Video");
 };
 
-// Component ImagesMedia
-const ImagesMedia = ({ onCancel }: { onCancel: () => void }) => {
+const ImagesMedia = ({
+  onCancel,
+  boxId,
+}: {
+  onCancel: () => void;
+  boxId: string;
+}) => {
   const [activeTab, setActiveTab] = useState("image");
+  const [messages, setMessages] = useState<FileContent[]>([]);
+  const [videoList, setVideoList] = useState<FileContent[]>([]);
 
-  // Lấy tất cả hình ảnh từ đoạn chat
+  useEffect(() => {
+    let isMounted = true;
+
+    const myChat = async () => {
+      try {
+        const data = await getImageList(boxId); // Gọi API
+        if (isMounted && data) {
+          setMessages(data); // Lưu trực tiếp `messages` từ API
+        }
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      }
+
+      try {
+        const data = await getVideoList(boxId); // Gọi API
+        if (isMounted && data) {
+          setVideoList(data); // Lưu trực tiếp `messages` từ API
+        }
+      } catch (error) {
+        console.error("Error loading chat:", error);
+      }
+    };
+
+    myChat();
+
+    return () => {
+      isMounted = false; // Cleanup khi component unmount
+    };
+  }, [boxId]);
+
   const imagesInChat = getAllImagesFromChat(messages);
-  const videosInChat = getAllVideosFromChat(messages);
+  const videosInChat = getAllVideosFromChat(videoList);
 
   const RenderTag = () => {
     switch (activeTab) {
       case "image":
-        return <ImageRender images={imagesInChat} />; // Truyền hình ảnh vào
+        return <ImageRender images={imagesInChat} />;
       case "video":
         return <VideoRender videos={videosInChat} />;
       default:
@@ -106,7 +86,7 @@ const ImagesMedia = ({ onCancel }: { onCancel: () => void }) => {
           onClick={() => setActiveTab("image")}
           className={`flex w-1/2 justify-center cursor-pointer items-center gap-1 ${
             activeTab === "image"
-              ? " text-primary-100 opacity-100 border-b border-primary-100"
+              ? "text-primary-100 opacity-100 border-b border-primary-100"
               : "opacity-40"
           }`}
         >
@@ -116,14 +96,14 @@ const ImagesMedia = ({ onCancel }: { onCancel: () => void }) => {
           onClick={() => setActiveTab("video")}
           className={`flex w-1/2 justify-center cursor-pointer items-center gap-1 ${
             activeTab === "video"
-              ? " text-primary-100 opacity-100 border-b border-primary-100"
+              ? "text-primary-100 opacity-100 border-b border-primary-100"
               : "opacity-40"
           }`}
         >
           Video
         </div>
       </div>
-      {RenderTag()}
+      <div className="flex-1 overflow-y-auto">{RenderTag()}</div>
     </div>
   );
 };

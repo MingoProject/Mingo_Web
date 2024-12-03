@@ -1,18 +1,18 @@
 import React from "react";
-import { Icon } from "@iconify/react"; // Assuming you're using Iconify for icons
 import {
   faFilePdf,
   faFileWord,
   faFile,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FileContent } from "@/dtos/MessageDTO";
 
-const RenderFile = ({ files }: { files: string[] }) => {
+const RenderFile = ({ files }: { files: FileContent[] }) => {
   return (
     <div className="flex flex-wrap gap-4 w-full">
       {files.map((file, index) => {
-        // Extract the file extension from the URL
-        const fileExtension = file.split(".").pop()?.toLowerCase();
+        // Extract the file extension from the fileName
+        const fileExtension = file.fileName.split(".").pop()?.toLowerCase();
 
         let icon;
 
@@ -21,7 +21,7 @@ const RenderFile = ({ files }: { files: string[] }) => {
           case "pdf":
             icon = (
               <FontAwesomeIcon
-                className="w-4 h-4 bg-gray-200"
+                className="w-5 h-5 text-red-600"
                 icon={faFilePdf}
               />
             );
@@ -30,28 +30,31 @@ const RenderFile = ({ files }: { files: string[] }) => {
           case "docx":
             icon = (
               <FontAwesomeIcon
-                className="w-4 h-4 bg-gray-200"
+                className="w-5 h-5 text-blue-600"
                 icon={faFileWord}
               />
             );
             break;
           default:
             icon = (
-              <FontAwesomeIcon className="w-4 h-4 bg-gray-200" icon={faFile} />
-            ); // Default icon for other file types
+              <FontAwesomeIcon
+                className="w-5 h-5 text-gray-600"
+                icon={faFile}
+              />
+            );
         }
 
         return (
-          <div key={index} className="w-full h-full flex flex-col">
-            <div className="w-full h-[35px]  flex items-center border-b border-gray-200">
+          <div key={index} className="w-full flex flex-col">
+            <div className="w-full h-[35px] flex items-center border-b border-gray-200">
               {icon}
               <a
-                href={file}
+                href={file.url}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-2 "
+                className="ml-2 text-blue-500 hover:underline"
               >
-                {`File ${index + 1}`}
+                {file.fileName}
               </a>
             </div>
           </div>
@@ -62,23 +65,3 @@ const RenderFile = ({ files }: { files: string[] }) => {
 };
 
 export default RenderFile;
-
-// const RenderFile = ({ files }: { files: string[] }) => {
-//     return (
-//       <div className="flex flex-wrap gap-4">
-//         {files.map((file, index) => (
-//           <a
-//             key={index}
-//             href={file}
-//             target="_blank"
-//             rel="noopener noreferrer"
-//             className="text-blue-500 underline"
-//           >
-//             File {index + 1}
-//           </a>
-//         ))}
-//       </div>
-//     );
-//   };
-
-//   export default RenderFile;
