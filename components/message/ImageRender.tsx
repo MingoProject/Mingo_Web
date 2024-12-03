@@ -1,8 +1,9 @@
 import React from "react";
 import Image from "next/image";
+import { FileContent } from "@/dtos/MessageDTO";
 
 interface ImageRenderProps {
-  images: string[];
+  images: FileContent[];
 }
 
 const ImageRender: React.FC<ImageRenderProps> = ({ images }) => {
@@ -11,7 +12,7 @@ const ImageRender: React.FC<ImageRenderProps> = ({ images }) => {
       {images.map((image, index) => (
         <div key={index} className="relative w-32 h-32">
           <Image
-            src={image}
+            src={image.url}
             alt={`image-${index}`}
             layout="fill" // Tự động điều chỉnh chiều cao và chiều rộng
             objectFit="cover" // Đảm bảo hình ảnh không bị méo
