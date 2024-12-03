@@ -6,6 +6,7 @@ import { createMedia } from "@/lib/services/media.service";
 import { createPost } from "@/lib/services/post.service";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
+import { createNotification } from "@/lib/services/notification.service";
 
 const CreatePost = ({ onClose, me }: any) => {
   const [privacy, setPrivacy] = useState("public");
@@ -114,7 +115,20 @@ const CreatePost = ({ onClose, me }: any) => {
         },
       };
 
-      await createPost(postPayload, token);
+      const res = await createPost(postPayload, token);
+
+      if (taggedFriends && taggedFriends.length > 0) {
+        for (const friend of taggedFriends) {
+          const notificationParams = {
+            senderId: me._id,
+            receiverId: friend._id,
+            type: "tags",
+            postId: res._id,
+          };
+
+          await createNotification(notificationParams, token);
+        }
+      }
       alert("Post created successfully!");
       onClose();
     } catch (err: any) {

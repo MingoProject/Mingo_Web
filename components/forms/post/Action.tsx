@@ -24,13 +24,15 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
       if (token) {
         await likePost(postId, token);
         setIsLiked(!isLiked);
-        const params = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "like",
-          postId,
-        };
-        await createNotification(params, token);
+        if (profile._id !== author._id) {
+          const params = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "like",
+            postId,
+          };
+          await createNotification(params, token);
+        }
       } else {
         console.warn("User is not authenticated");
       }

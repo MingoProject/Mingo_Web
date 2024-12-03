@@ -7,6 +7,8 @@ import fetchDetailedComments from "@/hooks/useComments";
 import { createComment } from "@/lib/services/comment.service";
 import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { createNotification } from "@/lib/services/notification.service";
 
 interface DetailPostProps {
   postId: string;
@@ -22,6 +24,7 @@ interface DetailPostProps {
     type: string;
     allowedUsers?: any[];
   };
+  tags: any[];
   onClose: () => void;
   profile: any;
 }
@@ -37,6 +40,7 @@ const DetailPost = ({
   shares,
   location,
   privacy,
+  tags,
   onClose,
   profile,
 }: DetailPostProps) => {
@@ -98,6 +102,17 @@ const DetailPost = ({
 
       // Cập nhật state commentsData
       setCommentsData((prev) => [enrichedComment, ...prev]);
+
+      if (author._id !== profile._id) {
+        const notificationParams = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "comment",
+          postId,
+        };
+
+        await createNotification(notificationParams, token);
+      }
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -124,6 +139,28 @@ const DetailPost = ({
               <div>
                 <p className="text-dark100_light500 ml-3 text-base">
                   {author?.firstName ? author.firstName : ""}
+                  {tags.length > 0 && (
+                    <span>
+                      <span className="">{" with "}</span>
+
+                      {tags.map((tag, index) => (
+                        <span key={tag._id}>
+                          {tag.firstName}
+                          {index < tags.length - 1 ? ", " : ""}
+                        </span>
+                      ))}
+                    </span>
+                  )}
+                  {location && (
+                    <div className="flex">
+                      <Icon icon="mi:location" className="" />
+                      <span>
+                        <span className="">{" - "}</span>
+
+                        {location}
+                      </span>
+                    </div>
+                  )}
                 </p>
                 <span className="text-dark100_light500 ml-3 text-sm">
                   {getTimestamp(createdAt)}
@@ -189,8 +226,9 @@ const DetailPost = ({
                     <CommentCard
                       comment={comment}
                       setCommentsData={setCommentsData}
-                      postId={postId}
                       profile={profile}
+                      author={author}
+                      postId={postId}
                     />
                   </div>
                 ))

@@ -7,6 +7,7 @@ import { createCommentMedia } from "@/lib/services/comment.service";
 import CommentCard from "@/components/cards/CommentCard";
 import fetchDetailedComments from "@/hooks/useComments";
 import ImageAction from "./ImageAction";
+import { createNotification } from "@/lib/services/notification.service";
 
 // import { getTimestamp } from "@/lib/utils";
 
@@ -67,6 +68,17 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
 
       // Cập nhật state commentsData
       setCommentsData((prev) => [enrichedComment, ...prev]);
+
+      if (profileUser._id !== me._id) {
+        const notificationParams = {
+          senderId: me._id,
+          receiverId: profileUser._id,
+          type: "comment_media",
+          mediaId: image._id,
+        };
+
+        await createNotification(notificationParams, token);
+      }
 
       // setCommentsData((prev) => [newCommentData, ...prev]);
       setNewComment("");

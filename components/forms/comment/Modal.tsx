@@ -11,7 +11,8 @@ const CommentMenu = ({
   content,
   setCommentsData,
   handleCloseMenu,
-  type,
+  postId,
+  mediaId,
 }: any) => {
   const [newComment, setNewComment] = useState(content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
@@ -69,16 +70,15 @@ const CommentMenu = ({
     }
   };
 
-  const handleDeleteComment = async (commentId: string, type: string) => {
+  const handleDeleteComment = async (commentId: string, postId: string) => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
     try {
-      if (type === "mediaId") {
-        // Xóa bình luận
-        await deleteCommentMedia(commentId, type, token);
-      } else if (type === "postId") {
-        await deleteComment(commentId, type, token); // Wait for the deletion
+      if (postId) {
+        await deleteComment(commentId, postId, token);
+      } else {
+        await deleteCommentMedia(commentId, mediaId, token);
       }
 
       setCommentsData(
@@ -127,7 +127,7 @@ const CommentMenu = ({
             </div>
           )}
           <button
-            onClick={() => handleDeleteComment(commentId, type)}
+            onClick={() => handleDeleteComment(commentId, postId)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
             Xóa

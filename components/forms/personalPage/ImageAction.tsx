@@ -31,13 +31,15 @@ const ImageAction = ({
       if (token) {
         await likeMedia(mediaId, token);
         setIsLiked(!isLiked);
-        const params = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "like_media",
-          mediaId,
-        };
-        await createNotification(params, token);
+        if (profile._id !== author._id) {
+          const params = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "like_media",
+            mediaId,
+          };
+          await createNotification(params, token);
+        }
       } else {
         console.warn("User is not authenticated");
       }

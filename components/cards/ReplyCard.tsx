@@ -10,8 +10,17 @@ import {
   getCommentByCommentId,
   likeComment,
 } from "@/lib/services/comment.service";
+import { createNotification } from "@/lib/services/notification.service";
 
-const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
+const ReplyCard = ({
+  reply,
+  setReplies,
+  profile,
+  commentId,
+  author,
+  postId,
+  mediaId,
+}: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(reply.likes.length);
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
@@ -94,6 +103,17 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
       if (token) {
         await likeComment(reply._id, token);
         setIsLiked(!isLiked);
+        if (profile._id !== detailsComment.userId._id) {
+          const params = {
+            senderId: profile._id,
+            receiverId: detailsComment.userId._id,
+            type: "like_comment",
+            commentId: detailsComment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+          await createNotification(params, token);
+        }
       } else {
         console.warn("User is not authenticated");
       }
@@ -131,14 +151,17 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
     }
   };
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
     if (isLiked) {
-      handleDislikeComment();
-      setNumberOfLikes(reply.likes.length - 1);
+      // Dislike
+      await handleDislikeComment();
+      setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      handleLikeComment();
-      setNumberOfLikes(reply.likes.length + 1);
+      // Like
+      await handleLikeComment();
+      setNumberOfLikes((prev: any) => prev + 1);
     }
+    setIsLiked(!isLiked);
   };
 
   const handleReplyComment = async () => {
@@ -176,6 +199,28 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
 
       // Cập nhật state commentsData
       setReplies((prev: any) => [enrichedComment, ...prev]);
+
+      if (detailsComment.userId._id !== profile._id) {
+        const notificationParams = {
+          senderId: profile._id,
+          receiverId: detailsComment.userId._id,
+          type: "reply_comment",
+          commentId: detailsComment._id,
+          ...(postId && { postId }),
+          ...(mediaId && { mediaId }),
+        };
+
+        await createNotification(notificationParams, token);
+        const notificationParams2 = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "comment",
+          ...(postId && { postId }),
+          ...(mediaId && { mediaId }),
+        };
+
+        await createNotification(notificationParams2, token);
+      }
 
       setNewComment("");
       setReplyingTo(null);
@@ -268,7 +313,8 @@ const ReplyCard = ({ reply, setReplies, type, profile, commentId }: any) => {
               content={detailsComment.content}
               setCommentsData={setReplies}
               handleCloseMenu={handleCloseMenu}
-              type={type}
+              postId={postId}
+              mediaId={mediaId}
             />
           </div>
         )}

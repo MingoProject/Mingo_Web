@@ -1,18 +1,17 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
 import { navbarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
 import Theme from "./Theme";
-import { getTimestamp } from "@/lib/utils";
 import Search from "../search/Search";
 import { getMyProfile } from "@/lib/services/user.service";
 import SettingModal from "./SettingModal";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import Notification from "../notification/Notification";
 
 export const notifications = [
   {
@@ -74,7 +73,6 @@ const Navbar = () => {
         const userId = localStorage.getItem("userId");
         if (userId) {
           const profileData = await getMyProfile(userId);
-          console.log(profileData);
           if (isMounted) {
             setProfile(profileData.userProfile);
           }
@@ -89,12 +87,11 @@ const Navbar = () => {
 
     fetchProfile();
     return () => {
-      isMounted = false; // Cleanup: Mark the component as unmounted
+      isMounted = false;
     };
   }, []);
 
   const toggleDrawer = (drawerType: any) => {
-    // Open or close the drawer and set the active drawer type
     if (activeDrawer === drawerType) {
       setDrawerOpen(false);
       setActiveDrawer("");
@@ -210,38 +207,7 @@ const Navbar = () => {
                 <Search />
               </>
             )}
-            {activeDrawer === "/notifications" && (
-              <div>
-                <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-                  Notifications
-                </div>
-                <div className="mt-4  flex text-primary-100">Recently</div>
-                <div className="mt-5 flex flex-col  space-y-4">
-                  {notifications.map((notification) => (
-                    <div
-                      key={notification.id}
-                      className="flex items-center justify-between p-2 "
-                    >
-                      <Image
-                        src={notification.avatar}
-                        alt="Avatar"
-                        width={40}
-                        height={40}
-                        className="size-10 rounded-full object-cover"
-                      />
-                      <div className="ml-2 flex-1 pr-4">
-                        <p className="text-dark100_light500 font-light">
-                          {notification.content}
-                        </p>
-                        <p className="text-sm text-gray-500">
-                          {getTimestamp(notification.createdAt)}
-                        </p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
+            {activeDrawer === "/notifications" && <Notification />}
           </div>
         </div>
       )}
