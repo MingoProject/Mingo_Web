@@ -1,11 +1,10 @@
 import {
   ChatResponse,
-  DetailMessageBoxDTO,
+  FileContent,
   ItemChat,
   ResponseMessageBoxDTO,
-  ResponseMessageDTO,
-  UserInfoBox,
 } from "@/dtos/MessageDTO";
+import { create } from "domain";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -90,11 +89,12 @@ export async function getListChat(): Promise<ItemChat[]> {
           userName:
             `${receiver.firstName || ""} ${receiver.lastName || ""}`.trim(),
           avatarUrl: receiver.avatar || "", // Get the avatar URL of the recipient
-          status: box.flag ? "active" : "inactive", // Adjust status according to the 'flag'
+          status: box.readStatus, // Adjust status according to the 'flag'
           lastMessage: {
             id: box.lastMessage._id,
             text: box.lastMessage.text.join(" "), // Join text segments if multiple parts
             timestamp: new Date(box.lastMessage.createAt),
+            createBy: box.lastMessage.createBy,
           },
           isRead: box.readStatus,
         };
@@ -135,6 +135,105 @@ export async function sendMessage(formData: any): Promise<void> {
     console.log("Message sent successfully", responseData);
   } catch (error) {
     console.error("Failed to send message:", error);
+    throw error;
+  }
+}
+
+export async function getImageList(boxId: string): Promise<FileContent[]> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/getImageList?boxId=${boxId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error fetching image list by boxId: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch image list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function getVideoList(boxId: string): Promise<FileContent[]> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/getVideoList?boxId=${boxId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error fetching video list by boxId: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch video list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function getOrtherList(boxId: string): Promise<FileContent[]> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/getOrtherList?boxId=${boxId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error fetching video list by boxId: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch video list by boxId:", error);
     throw error;
   }
 }

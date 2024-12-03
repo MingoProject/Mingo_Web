@@ -95,6 +95,7 @@ export interface Text {
   id: string;
   text: string;
   timestamp: Date;
+  createBy: string;
 }
 
 export interface ItemChat {
@@ -104,8 +105,6 @@ export interface ItemChat {
   status: string;
   lastMessage: Text;
   isRead: boolean;
-  receiverId: string; // Giả sử đây là ID của người nhận
-  senderId: string; // Giả sử đây là ID của người gửi
 }
 
 export interface ItemHeader {

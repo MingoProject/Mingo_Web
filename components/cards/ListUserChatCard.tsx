@@ -162,6 +162,7 @@ interface Text {
   id: string;
   text: string;
   timestamp: Date;
+  createBy: string;
 }
 
 interface ItemChat {
@@ -171,8 +172,11 @@ interface ItemChat {
   status: string;
   lastMessage: Text;
   isRead: boolean;
-  receiverId: string; // Giả sử đây là ID của người nhận
-  senderId: string; // Giả sử đây là ID của người gửi
+}
+
+export function getDisplayName(name: string): string {
+  const parts = name.trim().split(" ");
+  return parts.length > 1 ? parts[parts.length - 1] : name;
 }
 
 const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
@@ -208,15 +212,14 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const userId = localStorage.getItem("userId");
 
   // Kiểm tra nếu receiverId là người nhận, không phải người gửi (userId)
-  const isReceiver = itemChat.receiverId !== userId;
+  const isReceiver = itemChat.lastMessage.createBy !== userId;
 
-  // Nếu không phải là người nhận, không hiển thị
-  if (!isReceiver) return null;
+  console.log(itemChat.lastMessage.createBy, "this is item chattt");
 
   return (
     <ContextMenu>
       <ContextMenuTrigger>
-        <div className="text-dark100_light500 flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100/20">
+        <div className="text-dark100_light500 flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100/20 hover:rounded-lg">
           <div className="flex w-full items-center gap-3">
             <div className="relative">
               <Image
@@ -226,11 +229,11 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 height={45}
                 className="rounded-full"
               />
-              {itemChat.status === "online" && (
+              {itemChat.status && (
                 <span className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-white bg-green-500"></span>
               )}
             </div>
-            <div className="hidden w-2/3 gap-1 text-xs md:flex md:flex-col">
+            <div className="hidden w-[55%] gap-1 text-xs md:flex md:flex-col">
               <span className="text-base font-semibold whitespace-nowrap overflow-hidden truncate">
                 {itemChat.userName}
               </span>
@@ -239,14 +242,14 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
               >
                 {isReceiver ? (
                   <>
-                    Bạn:{" "}
+                    {itemChat.userName.trim().split(" ").pop()}:{" "}
                     {itemChat.lastMessage.text.trim() !== ""
                       ? itemChat.lastMessage.text
                       : "Đã gửi 1 file"}
                   </>
                 ) : (
                   <>
-                    {itemChat.userName.trim().split(" ").pop()}:{" "}
+                    Bạn:{" "}
                     {itemChat.lastMessage.text.trim() !== ""
                       ? itemChat.lastMessage.text
                       : "Đã gửi 1 file"}
@@ -254,10 +257,10 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 )}
               </span>
             </div>
+            <span className="mt-8 items-center hidden whitespace-nowrap px-1 text-[11px] text-gray-500 md:block">
+              {timeSinceMessage(itemChat.lastMessage.timestamp)}
+            </span>
           </div>
-          <span className="mt-6 hidden whitespace-nowrap px-1 text-[11px] text-gray-500 md:block">
-            {timeSinceMessage(itemChat.lastMessage.timestamp)}
-          </span>
         </div>
       </ContextMenuTrigger>
       <ContextMenuContent className="text-dark100_light500 bg-gray-50 dark:bg-neutral-800">

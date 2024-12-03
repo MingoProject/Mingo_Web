@@ -66,7 +66,6 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     formData.append("boxId", messageData.boxId);
     formData.append("content", JSON.stringify(messageData.content)); // Directly append the string
 
-    console.log(formData);
     // Gửi API
     try {
       const storedToken = localStorage.getItem("token");
@@ -100,7 +99,6 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
         };
 
         const formData = new FormData();
-        console.log(file);
         formData.append("boxId", boxId);
         formData.append("content", JSON.stringify(fileContent));
         formData.append("file", file);

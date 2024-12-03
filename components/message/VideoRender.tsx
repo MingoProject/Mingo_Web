@@ -1,37 +1,24 @@
 import React from "react";
+import { FileContent } from "@/dtos/MessageDTO"; // Đường dẫn import interface của bạn
 
-// Helper function to extract YouTube video ID from different URL formats
-const extractVideoId = (url: string) => {
-  const regExp =
-    /(?:youtube\.com\/(?:[^\/\n\s]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([a-zA-Z0-9_-]{11})/;
-  const match = url.match(regExp);
-  return match ? match[1] : null; // Return the video ID or null if not found
-};
+interface VideoRenderProps {
+  videos: FileContent[]; // Sử dụng interface FileContent
+}
 
-const VideoRender = ({ videos }: { videos: string[] }) => {
+const VideoRender: React.FC<VideoRenderProps> = ({ videos }) => {
   return (
     <div className="flex flex-wrap gap-4 px-4">
-      {videos.map((video, index) => {
-        const videoId = extractVideoId(video); // Extract video ID from the URL
-        if (!videoId) {
-          return <p key={index}>Invalid video URL</p>; // Handle invalid URLs
-        }
-        const embedUrl = `https://www.youtube.com/embed/${videoId}`;
-
-        return (
-          <div key={index} className="w-32 h-32">
-            <iframe
-              width="128" // This is the 32px Tailwind equivalent
-              height="128"
-              src={embedUrl}
-              title={`YouTube video player - ${index}`}
-              frameBorder="0"
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
-          </div>
-        );
-      })}
+      {videos.map((video) => (
+        <div key={video.fileName} className="relative w-48 h-32">
+          <video
+            controls
+            className="w-full h-full object-cover rounded"
+            src={`${video.url}?q_auto,f_auto`} // Thêm tối ưu hóa URL Cloudinary
+          >
+            Your browser does not support the video tag.
+          </video>
+        </div>
+      ))}
     </div>
   );
 };

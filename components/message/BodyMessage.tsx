@@ -2,13 +2,11 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import MessageCard from "./MessageCard";
-import { ResponseMessageDTO } from "@/dtos/MessageDTO";
 import { getAllChat } from "@/lib/services/message.service";
 import { useChatContext } from "@/context/ChatContext";
 
 const BodyMessage = ({ boxId }: { boxId: string }) => {
   const { messages, setMessages } = useChatContext();
-  const [isHydrated, setIsHydrated] = useState(false);
   const messageEndRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {

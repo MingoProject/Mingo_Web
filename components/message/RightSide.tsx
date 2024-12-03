@@ -56,9 +56,11 @@ const RightSide = ({ item }: { item: ItemChat }) => {
       case "search":
         return <SearchMessage onCancel={resetActiveTab} />;
       case "media":
-        return <ImagesMedia onCancel={resetActiveTab} />;
+        return (
+          <ImagesMedia onCancel={resetActiveTab} boxId={item.id.toString()} />
+        );
       case "file":
-        return <File onCancel={resetActiveTab} />;
+        return <File onCancel={resetActiveTab} boxId={item.id.toString()} />;
       default:
         return (
           <>
