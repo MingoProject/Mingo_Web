@@ -65,3 +65,28 @@ export async function UpdateStatusNotifications(notificationId: String) {
     throw error;
   }
 }
+
+export async function deleteNotification(
+  notificationId: String,
+  token: string | null
+) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/notification/delete-notification?notificationId=${notificationId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+    if (!response.ok) {
+      throw new Error("Error deleting notifications ");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete notifications:", error);
+    throw error;
+  }
+}

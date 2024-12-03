@@ -11,6 +11,7 @@ import { dislikePost, likePost } from "@/lib/services/post.service";
 import Link from "next/link";
 import PostMenu from "../forms/post/PostMenu";
 import { createNotification } from "@/lib/services/notification.service";
+import TagModal from "../forms/post/TagModal";
 
 const PostsCard = ({
   postId,
@@ -46,6 +47,11 @@ const PostsCard = ({
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
   const [menuModal, setMenuModal] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+
+  const handleTagsModalToggle = () => {
+    setIsTagsModalOpen((prev) => !prev);
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -91,13 +97,15 @@ const PostsCard = ({
       if (token) {
         await likePost(postId, token);
         setIsLiked(!isLiked);
-        const params = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "like",
-          postId,
-        };
-        await createNotification(params, token);
+        if (profile._id !== author._id) {
+          const params = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "like",
+            postId,
+          };
+          await createNotification(params, token);
+        }
       } else {
         console.warn("User is not authenticated");
       }
@@ -150,13 +158,25 @@ const PostsCard = ({
               {tags.length > 0 && (
                 <span>
                   <span className="">{" with "}</span>
-
-                  {tags.map((tag, index) => (
-                    <span key={tag._id}>
-                      {tag.firstName}
-                      {index < tags.length - 1 ? ", " : ""}
-                    </span>
+                  {tags.slice(0, 2).map((tag, index) => (
+                    <Link href={`/profile/${tag._id}`} key={tag._id}>
+                      <span
+                        key={tag._id}
+                        className="cursor-pointer text-primary-100"
+                      >
+                        {tag.firstName}
+                        {index < tags.slice(0, 2).length - 1 ? ", " : ""}
+                      </span>
+                    </Link>
                   ))}
+                  {tags.length > 2 && (
+                    <span
+                      className="cursor-pointer text-primary-100"
+                      onClick={handleTagsModalToggle}
+                    >
+                      {` và ${tags.length - 2} người khác`}
+                    </span>
+                  )}
                 </span>
               )}
               {location && (
@@ -169,6 +189,11 @@ const PostsCard = ({
                   </span>
                 </div>
               )}
+              <TagModal
+                tags={tags}
+                isOpen={isTagsModalOpen}
+                onClose={handleTagsModalToggle}
+              />
             </p>
             <span className="text-dark100_light500 ml-3 text-sm">
               {getTimestamp(createdAt)}
@@ -311,6 +336,7 @@ const PostsCard = ({
             comments={comments}
             shares={shares}
             privacy={privacy}
+            tags={tags}
             onClose={closeModal}
             profile={profile}
           />

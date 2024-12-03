@@ -10,6 +10,7 @@ import {
   unfriend,
   unrequestBffOrRefuseBffRequest,
 } from "@/lib/services/friend.service";
+import { createNotification } from "@/lib/services/notification.service";
 import React from "react";
 
 const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
@@ -17,7 +18,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
     try {
       console.log(`Action: ${action}`);
 
-      const token = localStorage.getItem("token"); // Lấy token từ localStorage
+      const token = localStorage.getItem("token");
       if (!token) {
         alert("Bạn cần đăng nhập để thực hiện hành động này.");
         return;
@@ -32,6 +33,14 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         case "addFriend":
           await requestAddFriend(params, token);
           setRelation("following");
+          await createNotification(
+            {
+              senderId: userId,
+              receiverId: id,
+              type: "friend_request",
+            },
+            token
+          );
           break;
         case "unfriend":
           await unfriend(params, token);
@@ -48,6 +57,14 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
         case "addBFF":
           await requestAddBFF(params, token);
           setRelation("senderRequestBff");
+          await createNotification(
+            {
+              senderId: userId,
+              receiverId: id,
+              type: "bff_request",
+            },
+            token
+          );
           break;
         case "unBFF":
           await unBFF(params, token);
@@ -85,7 +102,6 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
           );
           setRelation("stranger");
           break;
-
         case "refuseRequestFriend":
           // Refuse a friend request
           await unfollowOrRefuseFriendRequest(
@@ -106,6 +122,14 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("friend");
+          await createNotification(
+            {
+              senderId: userId,
+              receiverId: id,
+              type: "friend_accept",
+            },
+            token
+          );
           break;
         case "acceptRequestBff":
           await acceptAddBff(
@@ -116,12 +140,20 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           setRelation("bff");
+          await createNotification(
+            {
+              senderId: userId,
+              receiverId: id,
+              type: "bff_accept",
+            },
+            token
+          );
           break;
         default:
           break;
       }
 
-      onClose(); // Close the modal after action
+      onClose();
     } catch (error: any) {
       console.error("Error:", error);
       alert(error.message || "Đã xảy ra lỗi.");
