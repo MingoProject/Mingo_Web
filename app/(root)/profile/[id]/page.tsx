@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMyProfile } from "@/lib/services/user.service";
 import Background from "@/components/forms/personalPage/Background";
@@ -12,6 +12,8 @@ import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import { checkRelation } from "@/lib/services/relation.service";
 import RelationModal from "@/components/forms/profile/RelationAction";
 import { useAuth } from "@/context/AuthContext";
+import MyButton from "@/components/shared/MyButton";
+import { faMessage } from "@fortawesome/free-solid-svg-icons";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
@@ -22,6 +24,7 @@ const ProfilePage = () => {
   const [isMe, setIsMe] = useState(false);
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     let isMounted = true;
@@ -110,6 +113,9 @@ const ProfilePage = () => {
 
   if (!profileUser) return <div>Loading...</div>;
 
+  const handleMessage = (id: string) => {
+    router.push(`/message/${id}`);
+  };
   return (
     <div className="background-light700_dark400 h-full pt-20">
       <Background profileUser={profileUser} setProfileUser={setProfileUser} />
@@ -124,6 +130,18 @@ const ProfilePage = () => {
           </h1>
           <Bio profileUser={profileUser} setProfileUser={setProfileUser} />
         </div>
+        {!isMe ? (
+          <MyButton
+            title="Message"
+            backgroundColor="bg-primary-100"
+            color="text-white"
+            width="w-22"
+            height="h-10"
+            onClick={() => handleMessage(id)}
+          />
+        ) : (
+          ""
+        )}
       </div>
 
       {!isMe && (

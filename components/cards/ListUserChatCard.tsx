@@ -214,23 +214,22 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   // Kiểm tra nếu receiverId là người nhận, không phải người gửi (userId)
   const isReceiver = itemChat.lastMessage.createBy !== userId;
 
-  console.log(itemChat.lastMessage.createBy, "this is item chattt");
-
   return (
     <ContextMenu>
       <ContextMenuTrigger>
         <div className="text-dark100_light500 flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100/20 hover:rounded-lg">
           <div className="flex w-full items-center gap-3">
-            <div className="relative">
+            <div className="relative w-[45px] h-[45px]">
               <Image
                 src={itemChat.avatarUrl || "/assets/images/capy.jpg"}
                 alt="Avatar"
                 width={45}
                 height={45}
-                className="rounded-full"
+                className="rounded-full object-cover"
+                style={{ objectFit: "cover", width: "45px", height: "45px" }}
               />
               {itemChat.status && (
-                <span className="absolute bottom-0 right-0 size-3 rounded-full border-2 border-white bg-green-500"></span>
+                <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
               )}
             </div>
             <div className="hidden w-[55%] gap-1 text-xs md:flex md:flex-col">

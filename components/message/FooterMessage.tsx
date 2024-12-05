@@ -10,15 +10,17 @@ import {
   faPaperPlane,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const FooterMessage = ({ boxId }: { boxId: string }) => {
+const FooterMessage = () => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
+  const { id } = useParams(); // Lấy ID từ URL
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -44,7 +46,7 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
   const handleSendTextMessage = async () => {
     // Tạo đối tượng SegmentMessageDTO
     const messageData = {
-      boxId: boxId,
+      boxId: id.toString(),
       content: value, // content is now a string
     };
 
@@ -63,7 +65,7 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     }
 
     const formData = new FormData();
-    formData.append("boxId", messageData.boxId);
+    formData.append("boxId", messageData.boxId.toString());
     formData.append("content", JSON.stringify(messageData.content)); // Directly append the string
 
     // Gửi API
@@ -79,7 +81,7 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
   };
 
   const handleSendMultipleFiles = async (files: File[]) => {
-    if (!files.length || !boxId) return;
+    if (!files.length || !id) return;
 
     const storedToken = localStorage.getItem("token");
     if (!storedToken) return;
@@ -99,15 +101,9 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
         };
 
         const formData = new FormData();
-        formData.append("boxId", boxId);
+        formData.append("boxId", id.toString());
         formData.append("content", JSON.stringify(fileContent));
         formData.append("file", file);
-
-        // await axios.post(`${process.env.BASE_URL}message/send`, formData, {
-        //   headers: {
-        //     Authorization: storedToken,
-        //   },
-        // });
 
         await sendMessage(formData);
       }
@@ -117,28 +113,35 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
   };
 
   useEffect(() => {
-    console.log(`private-${boxId}`, "Attempting to subscribe to the channel");
-
-    // Ensure boxId is not undefined or null
-    if (!boxId) {
+    // // Ensure boxId is not undefined or null
+    if (!id) {
       console.error("boxId is missing or invalid");
       return;
     }
+
+    // const handleNewMessage = (data: ResponseMessageDTO) => {
+    //   console.log("Successfully received message: ", data);
+
+    //   setMessages((prevMessages) => {
+    //     const currentMessages = prevMessages || [];
+    //     return [...currentMessages, data]; // Add new message to the list
+    //   });
+    // };
 
     const handleNewMessage = (data: ResponseMessageDTO) => {
       console.log("Successfully received message: ", data);
 
       setMessages((prevMessages) => {
-        const currentMessages = prevMessages || [];
-        return [...currentMessages, data]; // Add new message to the list
+        return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
       });
     };
+
     console.log("Updated messages:", messages); // Kiểm tra giá trị mới của messages
 
     // Ensure Pusher client is initialized and subscribed
-    console.log(`Đang đăng ký kênh private-${boxId}`);
-    pusherClient.subscribe(`private-${boxId}`);
-    console.log(`Đã đăng ký thành công kênh private-${boxId}`);
+    console.log(`Đang đăng ký kênh private-${id}`);
+    pusherClient.subscribe(`private-${id}`);
+    console.log(`Đã đăng ký thành công kênh private-${id}`);
 
     // Bind the new-message event
     pusherClient.bind("new-message", handleNewMessage);
@@ -147,11 +150,11 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     });
     // Cleanup function to unsubscribe and unbind when component unmounts or boxId changes
     return () => {
-      pusherClient.unsubscribe(`private-${boxId}`);
+      pusherClient.unsubscribe(`private-${id}`);
       pusherClient.unbind("new-message", handleNewMessage);
-      console.log(`Unsubscribed from private-${boxId} channel`);
+      console.log(`Unsubscribed from private-${id} channel`);
     };
-  }, [boxId, setMessages]); // Re-run if boxId or setMessages changes
+  }, [id, setMessages]); // Re-run if boxId or setMessages changes
 
   useEffect(() => {
     console.log("Updated messages:", messages); // Kiểm tra giá trị mới của messages

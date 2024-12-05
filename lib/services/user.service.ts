@@ -4,6 +4,7 @@ import {
   UserLoginDTO,
   UpdateUserBioDTO,
   UpdateUserDTO,
+  FindUserDTO,
 } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
@@ -293,6 +294,58 @@ export async function getMyVideos(id: string | null) {
     return data;
   } catch (error) {
     console.error("Failed to fetch videos:", error);
+    throw error;
+  }
+}
+
+export async function getUserById(userId: string): Promise<FindUserDTO> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    console.log(
+      `${BASE_URL}/user/get-user-by-id?userId=${userId}`,
+      "this is url"
+    );
+    const response = await fetch(
+      `${BASE_URL}/user/get-user-by-id?userId=${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Thêm Bearer nếu API yêu cầu
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error fetching user by userId: ${response.status}`);
+    }
+
+    const data: { userProfile: UserResponseDTO } = await response.json(); // Lấy toàn bộ đối tượng trả về
+    const rawData = data.userProfile; // Truy cập vào userProfile
+
+    console.log(rawData, "this is result");
+
+    // Chuyển đổi dữ liệu từ UserResponseDTO sang FindUserDTO
+    const result: FindUserDTO = {
+      _id: rawData._id,
+      firstName: rawData.firstName,
+      lastName: rawData.lastName,
+      nickName: rawData.nickName,
+      avatar: rawData.avatar,
+      relation: rawData.relationShip, // Map trường relation từ relationShip
+      status: rawData.flag, // Map trường status từ flag
+    };
+
+    return result;
+  } catch (error) {
+    console.error("Failed to fetch user by userId:", error);
     throw error;
   }
 }
