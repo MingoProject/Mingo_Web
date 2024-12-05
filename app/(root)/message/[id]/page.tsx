@@ -6,13 +6,15 @@ import BodyMessage from "@/components/message/BodyMessage";
 import FooterMessage from "@/components/message/FooterMessage";
 import HeaderMessageContent from "@/components/message/HeaderMessageContent";
 import RightSide from "@/components/message/RightSide";
-import { getListChat } from "@/lib/services/message.service";
+import { getListChat, getListGroupChat } from "@/lib/services/message.service";
 import { ChatProvider } from "@/context/ChatContext";
 import { getUserById } from "@/lib/services/user.service";
 import { FindUserDTO } from "@/dtos/UserDTO";
 
 const MessageContent = () => {
   const [allChat, setAllChat] = useState<ItemChat[]>([]);
+  const [filteredChat, setFilteredChat] = useState<ItemChat[]>([]); // State lưu trữ các cuộc trò chuyện đã lọc
+
   const [isRightSideVisible, setIsRightSideVisible] = useState(true); // Trạng thái hiển thị của RightSide
   const { id } = useParams(); // Lấy ID từ URL
   const [user, setUser] = useState<FindUserDTO | null>(null);
@@ -21,8 +23,15 @@ const MessageContent = () => {
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        const data = await getListChat();
-        setAllChat(data);
+        // Lấy danh sách chat thường
+        const normalChats = await getListChat();
+        // Lấy danh sách group chat
+        const groupChats = await getListGroupChat();
+
+        // Kết hợp cả hai danh sách
+        const combinedChats = [...normalChats, ...groupChats];
+        setAllChat(combinedChats); // Cập nhật danh sách chat
+        setFilteredChat(combinedChats); // Cập nhật danh sách chat đã lọc ban đầu
       } catch (error) {
         console.error("Error loading chats:", error);
       }
