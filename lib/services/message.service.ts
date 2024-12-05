@@ -1,8 +1,10 @@
 import {
   ChatResponse,
   FileContent,
+  FindMessageResponse,
   ItemChat,
   ResponseMessageBoxDTO,
+  ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import { create } from "domain";
 
@@ -16,10 +18,6 @@ export async function getAllChat(boxId: string): Promise<ChatResponse> {
   }
 
   try {
-    console.log(
-      `${BASE_URL}/message/getAllChat?boxId=${boxId}`,
-      "this is getallchat"
-    );
     const response = await fetch(
       `${BASE_URL}/message/getAllChat?boxId=${boxId}`,
       {
@@ -234,6 +232,78 @@ export async function getOrtherList(boxId: string): Promise<FileContent[]> {
     return data;
   } catch (error) {
     console.error("Failed to fetch video list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function removeChatBox(boxId: string | null) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  console.log(
+    `${BASE_URL}/message/removeChat?boxId=${boxId}`,
+    "this is remove"
+  );
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/removeChat?boxId=${boxId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error deleting chat box");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete chat box:", error);
+    throw error;
+  }
+}
+
+export async function findMessage(
+  boxId: string,
+  query: string
+): Promise<FindMessageResponse> {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/findMessage?boxId=${boxId}&query=${query}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error find message: ${response.status}`);
+    }
+
+    const data = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Failed to find message:", error);
     throw error;
   }
 }

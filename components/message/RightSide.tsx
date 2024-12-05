@@ -3,17 +3,28 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import Format from "../cards/FormatCard";
-import SearchMessage from "./SearchMessage";
 import ImagesMedia from "./ImagesMedia";
 import File from "./File";
 import { ItemChat } from "@/dtos/MessageDTO";
+import { FindUserDTO } from "@/dtos/UserDTO";
+import { removeChatBox } from "@/lib/services/message.service";
+import { useParams, useRouter } from "next/navigation";
+import SearchMessage from "./SearchMessage";
 
-const RightSide = ({ item }: { item: ItemChat }) => {
+const RightSide = ({
+  item,
+  user,
+}: {
+  item: ItemChat | null;
+  user: FindUserDTO | null;
+}) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
   const [isDelete, setIsDelete] = useState(false);
   const [isNoNotification, setIsNoNotification] = useState(false);
   const [activeTab, setActiveTab] = useState("");
+  const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
+  const { id } = useParams();
 
   const handleIsReport = () => {
     setIsReport(true);
@@ -51,32 +62,67 @@ const RightSide = ({ item }: { item: ItemChat }) => {
     setActiveTab(""); // hoặc bạn có thể đặt lại thành một giá trị khác nếu cần
   };
 
+  const handleDeleteChat = async () => {
+    try {
+      setIsLoading(true);
+      await removeChatBox(id.toString()); // Gọi API xóa chat
+      alert("Đoạn chat đã được xóa thành công!");
+      closeDelete(); // Đóng modal sau khi xóa
+    } catch (error) {
+      alert("Xóa chat thất bại. Vui lòng thử lại.");
+      setIsLoading(false);
+    }
+  };
+
   const RenderTag = () => {
     switch (activeTab) {
       case "search":
-        return <SearchMessage onCancel={resetActiveTab} />;
+        return item ? (
+          <SearchMessage onCancel={resetActiveTab} boxId={item.id.toString()} />
+        ) : null;
       case "media":
-        return (
+        return item ? (
           <ImagesMedia onCancel={resetActiveTab} boxId={item.id.toString()} />
-        );
+        ) : null;
       case "file":
-        return <File onCancel={resetActiveTab} boxId={item.id.toString()} />;
+        return item ? (
+          <File onCancel={resetActiveTab} boxId={item.id.toString()} />
+        ) : null;
+
       default:
         return (
           <>
             <div className="h-[45px] w-full border-b border-gray-200 px-8">
               <p className="text-lg">Chi tiết</p>
             </div>
-            <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
-              <Image
-                src={item.avatarUrl || "/assets/images/capy.jpg"}
-                alt="Avatar"
-                width={80}
-                height={80}
-                className="rounded-full"
-              />
-              <p className="text-lg">{item.userName}</p>
-            </div>
+            {item ? (
+              <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+                <Image
+                  src={item.avatarUrl || "/assets/images/capy.jpg"}
+                  alt="Avatar"
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover"
+                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
+                />
+                <p className="text-lg">{item.userName}</p>
+              </div>
+            ) : (
+              <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
+                <Image
+                  src={user?.avatar || "/assets/images/capy.jpg"}
+                  alt="Avatar"
+                  width={80}
+                  height={80}
+                  className="rounded-full object-cover"
+                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
+                />
+                <p className="text-lg">
+                  {" "}
+                  {`${user?.firstName || ""} ${user?.lastName || ""}`}
+                </p>
+              </div>
+            )}
             <div className="flex items-center px-8 ">
               <ul>
                 <li
@@ -192,7 +238,10 @@ const RightSide = ({ item }: { item: ItemChat }) => {
           onClose={closeReport}
           content="báo cáo"
           label="Báo cáo"
-          userName={item.userName}
+          userName={
+            item?.userName ||
+            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+          }
         />
       )}
       {isBlock && (
@@ -200,7 +249,10 @@ const RightSide = ({ item }: { item: ItemChat }) => {
           onClose={closeBlock}
           content="chặn"
           label="Chặn"
-          userName={item.userName}
+          userName={
+            item?.userName ||
+            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+          }
         />
       )}
       {isDelete && (
@@ -208,7 +260,11 @@ const RightSide = ({ item }: { item: ItemChat }) => {
           onClose={closeDelete}
           content="xóa đoạn chat với"
           label="Xóa"
-          userName={item.userName}
+          userName={
+            item?.userName ||
+            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+          }
+          onConfirmDelete={handleDeleteChat} // Thêm hàm gọi API xóa vào đây
         />
       )}
       {isNoNotification && (
@@ -216,11 +272,13 @@ const RightSide = ({ item }: { item: ItemChat }) => {
           onClose={closeNoNotification}
           content="tắt thông báo đoạn chat với"
           label="Tắt thông báo"
-          userName={item.userName}
+          userName={
+            item?.userName ||
+            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
+          }
         />
       )}
     </div>
   );
 };
-
 export default RightSide;

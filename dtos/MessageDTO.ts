@@ -120,3 +120,8 @@ export interface ChatResponse {
   success: boolean;
   messages: ResponseMessageDTO[];
 }
+
+export interface FindMessageResponse {
+  success: boolean;
+  messages: ResponseMessageDTO[];
+}

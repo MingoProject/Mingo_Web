@@ -3,21 +3,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
 import { Button } from "../ui/button";
 
+// Cập nhật thêm prop `onConfirmDelete`
 const Format = ({
   onClose,
   label,
   content,
   userName,
+  onConfirmDelete, // Prop mới để xử lý xóa
 }: {
   onClose: () => void;
   label: string;
   content: string;
   userName: string;
+  onConfirmDelete?: () => void; // Hàm xử lý xóa
 }) => {
   return (
-    // Add the return statement here
     <div className="fixed inset-0 z-50 flex items-center justify-center">
-      {/* Background mờ - khi nhấn vào nền mờ thì đóng component */}
       <div
         className="absolute inset-0 bg-black opacity-50"
         onClick={onClose}
@@ -47,7 +48,10 @@ const Format = ({
             >
               Hủy
             </Button>
-            <Button className="h-[35px] w-32  bg-primary-100 text-xs text-white shadow-md  md:text-sm ">
+            <Button
+              onClick={onConfirmDelete} // Gọi hàm xóa khi nhấn Xác nhận
+              className="h-[35px] w-32  bg-primary-100 text-xs text-white shadow-md  md:text-sm"
+            >
               Xác nhận
             </Button>
           </div>
