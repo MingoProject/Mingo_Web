@@ -8,7 +8,6 @@ import {
 } from "@/components/ui/pagination";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Button } from "../ui/button";
-import { teacherDataTable } from "@/components/shared/data";
 import { PaginationProps } from "@/types/pagination";
 
 interface pagination {

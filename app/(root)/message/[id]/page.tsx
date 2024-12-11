@@ -63,8 +63,6 @@ const MessageContent = () => {
     }
   }, [allChat, id]);
 
-  console.log(user, "thiss iss usser");
-
   if (!allChat) {
     return <div>Loading chat...</div>;
   }
@@ -81,7 +79,7 @@ const MessageContent = () => {
             toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
           />
           <BodyMessage />
-          <FooterMessage />
+          <FooterMessage item={chatItem || null} />
         </div>
 
         {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
