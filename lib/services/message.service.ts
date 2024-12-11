@@ -53,8 +53,6 @@ export async function getListChat(): Promise<ItemChat[]> {
     throw new Error("Authentication token or User ID is missing.");
   }
 
-  console.log(userId, "log userId");
-
   try {
     const response = await fetch(`${BASE_URL}/message/getListChat`, {
       headers: {
@@ -118,8 +116,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
-  console.log(userId, "log userId");
-
   // Kiểm tra xem token và userId có tồn tại trong localStorage không
   if (!token || !userId) {
     console.error("Token or User ID is missing");
@@ -143,7 +139,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
     }
 
     const rawData: ResponseMessageBoxDTO = await response.json();
-    // console.log(rawData, "raw data");
+    console.log(rawData, "raw data");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -156,17 +152,21 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
         // Nếu không tìm thấy người nhận hợp lệ và không có groupName, trả về null
         if (!receiver && !box.groupName) return null;
 
+        console.log(box.lastMessage, "box.responseLastMessage");
+
         // Xử lý trường hợp lastMessage là null
-        const lastMessage = box.responseLastMessage
+        const lastMessage = box.lastMessage
           ? {
-              id: box.responseLastMessage.id,
-              text: box.responseLastMessage.text
-                ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "",
-              timestamp: new Date(box.responseLastMessage.createAt),
-              createBy: box.responseLastMessage.createBy,
+              id: box.lastMessage.id,
+              text: box.lastMessage.text
+                ? box.lastMessage.text
+                : box.lastMessage.text || "",
+              timestamp: new Date(box.lastMessage.createAt),
+              createBy: box.lastMessage.createBy,
             }
           : { id: "", text: "", timestamp: new Date(), createBy: "" };
+
+        console.log(lastMessage, "lastMessage");
 
         return {
           id: box._id,

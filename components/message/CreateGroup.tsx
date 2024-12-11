@@ -54,7 +54,7 @@ const CreateGroup = ({ onClose, me }: any) => {
     return () => {
       isMounted = false;
     };
-  }, [me._id]);
+  }, []);
 
   const toggleTagFriend = (friend: any) => {
     setMembers((prev) => {
@@ -87,6 +87,7 @@ const CreateGroup = ({ onClose, me }: any) => {
       };
 
       const res = await createGroup(groupData);
+      console.log(res, "gi ma create hoai");
       if (res) {
         const fetchChats = async () => {
           try {

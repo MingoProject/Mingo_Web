@@ -1,5 +1,7 @@
 import { useChatContext } from "@/context/ChatContext";
+import { useChatItemContext } from "@/context/ChatItemContext";
 import { FileContent, ItemChat, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import { FindUserDTO } from "@/dtos/UserDTO";
 import { pusherClient } from "@/lib/pusher";
 import { sendMessage } from "@/lib/services/message.service";
 import { checkRelation } from "@/lib/services/relation.service";
@@ -14,7 +16,13 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const FooterMessage = ({ item }: { item: ItemChat | null }) => {
+const FooterMessage = ({
+  item,
+  user,
+}: {
+  item: ItemChat | null;
+  user: FindUserDTO | null;
+}) => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -76,10 +84,11 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     };
 
     check(); // Gọi hàm `check` một lần tại đây
-  }, [item?.receiverId]);
+  }, []);
 
   const handleSendTextMessage = async () => {
     // Tạo đối tượng SegmentMessageDTO
+
     const messageData = {
       boxId: id.toString(),
       content: value, // content is now a string
@@ -176,7 +185,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
       pusherClient.unbind("new-message", handleNewMessage);
       console.log(`Unsubscribed from private-${id} channel`);
     };
-  }, [id, setMessages]); // Re-run if boxId or setMessages changes
+  }, []); // Re-run if boxId or setMessages changes
 
   const handleIconClick = () => {
     if (fileInputRef.current) {

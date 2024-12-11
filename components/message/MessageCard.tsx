@@ -80,7 +80,7 @@ const MessageCard = ({
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
-  }, [id, messages, setMessages]);
+  }, []);
 
   return (
     <>

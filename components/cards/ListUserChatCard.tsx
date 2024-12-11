@@ -147,7 +147,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unsubscribe(pusherChannel);
     };
-  }, [itemChat.id]);
+  }, []);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();

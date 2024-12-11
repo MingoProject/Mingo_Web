@@ -19,26 +19,6 @@ const MessageContent = () => {
   const { id } = useParams(); // Lấy ID từ URL
   const [user, setUser] = useState<FindUserDTO | null>(null);
 
-  // Fetch danh sách chat khi component mount
-  useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        // Lấy danh sách chat thường
-        const normalChats = await getListChat();
-        // Lấy danh sách group chat
-        const groupChats = await getListGroupChat();
-
-        // Kết hợp cả hai danh sách
-        const combinedChats = [...normalChats, ...groupChats];
-        setAllChat(combinedChats); // Cập nhật danh sách chat
-        setFilteredChat(combinedChats); // Cập nhật danh sách chat đã lọc ban đầu
-      } catch (error) {
-        console.error("Error loading chats:", error);
-      }
-    };
-    fetchChats();
-  }, []);
-
   // Fetch user nếu không có chatItem
   useEffect(() => {
     if (id && !allChat.find((chat) => chat.id === id)) {
@@ -61,7 +41,27 @@ const MessageContent = () => {
         isMounted = false; // Cleanup khi component unmount
       };
     }
-  }, [allChat, id]);
+  }, []);
+
+  // Fetch danh sách chat khi component mount
+  useEffect(() => {
+    const fetchChats = async () => {
+      try {
+        // Lấy danh sách chat thường
+        const normalChats = await getListChat();
+        // Lấy danh sách group chat
+        const groupChats = await getListGroupChat();
+
+        // Kết hợp cả hai danh sách
+        const combinedChats = [...normalChats, ...groupChats];
+        setAllChat(combinedChats); // Cập nhật danh sách chat
+        setFilteredChat(combinedChats); // Cập nhật danh sách chat đã lọc ban đầu
+      } catch (error) {
+        console.error("Error loading chats:", error);
+      }
+    };
+    fetchChats();
+  }, []);
 
   if (!allChat) {
     return <div>Loading chat...</div>;
@@ -79,7 +79,10 @@ const MessageContent = () => {
             toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
           />
           <BodyMessage />
-          <FooterMessage item={chatItem || null} />
+          <FooterMessage
+            item={chatItem || null}
+            user={chatItem ? null : user}
+          />
         </div>
 
         {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}

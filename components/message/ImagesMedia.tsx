@@ -52,7 +52,7 @@ const ImagesMedia = ({
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [boxId]);
+  }, []);
 
   const imagesInChat = getAllImagesFromChat(messages);
   const videosInChat = getAllVideosFromChat(videoList);

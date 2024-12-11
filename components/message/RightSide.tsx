@@ -34,6 +34,8 @@ const RightSide = ({
   const { id } = useParams();
   const { allChat, setAllChat } = useChatItemContext();
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
+  const router = useRouter();
+
   const handleIsReport = () => {
     setIsReport(true);
   };
@@ -71,19 +73,52 @@ const RightSide = ({
   };
 
   const handleDeleteChat = async () => {
+    // try {
+    //   setIsLoading(true);
+    //   await removeChatBox(id.toString()); // Gọi API xóa chat
+    //   const normalChats = await getListChat();
+    //   const groupChats = await getListGroupChat();
+
+    //   const combinedChats = [...normalChats, ...groupChats];
+    //   setAllChat(combinedChats);
+    //   setFilteredChat(combinedChats);
+    //   alert("Đoạn chat đã được xóa thành công!");
+    //   closeDelete(); // Đóng modal sau khi xóa
+    // } catch (error) {
+    //   alert("Xóa chat thất bại. Vui lòng thử lại.");
+    //   setIsLoading(false);
+    // }
     try {
       setIsLoading(true);
-      await removeChatBox(id.toString()); // Gọi API xóa chat
+
+      // Gọi API xóa chat
+      await removeChatBox(id.toString());
+
+      // Lấy danh sách chat sau khi xóa
       const normalChats = await getListChat();
       const groupChats = await getListGroupChat();
-
       const combinedChats = [...normalChats, ...groupChats];
+
+      // Cập nhật danh sách chat
       setAllChat(combinedChats);
       setFilteredChat(combinedChats);
+
       alert("Đoạn chat đã được xóa thành công!");
-      closeDelete(); // Đóng modal sau khi xóa
+
+      // Đóng modal
+      closeDelete();
+
+      // Kiểm tra và điều hướng sang chat đầu tiên
+      if (combinedChats.length > 0) {
+        const firstChat = combinedChats[0];
+        router.push(`/message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
+      } else {
+        router.push("/message"); // Nếu không còn chat, điều hướng về trang tin nhắn chính
+      }
     } catch (error) {
+      console.error("Error deleting chat:", error);
       alert("Xóa chat thất bại. Vui lòng thử lại.");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -104,8 +139,6 @@ const RightSide = ({
         sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
         receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
       };
-
-      console.log(params, "this is param");
 
       await block(params, token); // Gọi API block
       alert("Đã block thành công!");
