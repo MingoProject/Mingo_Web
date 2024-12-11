@@ -7,21 +7,26 @@ import { PostCreateDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 import { createNotification } from "@/lib/services/notification.service";
 import { Button } from "../ui/button";
+import { useAuth } from "@/context/AuthContext";
+import {
+  createGroup,
+  getListChat,
+  getListGroupChat,
+} from "@/lib/services/message.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
 
 const CreateGroup = ({ onClose, me }: any) => {
-  const [privacy, setPrivacy] = useState("public");
-  const [content, setContent] = useState("");
-  const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [files, setFiles] = useState<File[]>([]);
-  const [captions, setCaptions] = useState<string[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
-  const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
-  const [newComment, setNewComment] = useState<string>("");
+  const [members, setMembers] = useState<any[]>([]);
+  const [newName, setNewName] = useState("");
+  const [avatar, setAvatar] = useState("");
+  const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setNewComment(e.target.value);
+    setNewName(e.target.value);
   };
 
   useEffect(() => {
@@ -52,7 +57,7 @@ const CreateGroup = ({ onClose, me }: any) => {
   }, [me._id]);
 
   const toggleTagFriend = (friend: any) => {
-    setTaggedFriends((prev) => {
+    setMembers((prev) => {
       if (prev.some((f) => f._id === friend._id)) {
         return prev.filter((f) => f._id !== friend._id);
       } else {
@@ -74,34 +79,32 @@ const CreateGroup = ({ onClose, me }: any) => {
     }
 
     try {
-      let mediaIds: string[] = [];
-
-      if (files.length > 0) {
-        const uploadPromises = files.map(async (file, index) => {
-          const caption = captions[index];
-          const uploadedMedia = await createMedia(file, caption, token);
-          console.log(uploadedMedia);
-          return uploadedMedia.media._id;
-        });
-
-        mediaIds = await Promise.all(uploadPromises);
-      }
-      console.log("tags", taggedFriends);
-
-      const postPayload: PostCreateDTO = {
-        content: content || "",
-        media: mediaIds,
-        location,
-        tags: taggedFriends.map((friend) => friend._id),
-        privacy: {
-          type: privacy,
-        },
+      const groupData = {
+        membersIds: [...members.map((friend) => friend._id), me._id],
+        leaderId: me._id,
+        groupName: newName,
+        groupAva: avatar || "",
       };
 
-      const res = await createPost(postPayload, token);
+      const res = await createGroup(groupData);
+      if (res) {
+        const fetchChats = async () => {
+          try {
+            const normalChats = await getListChat();
+            const groupChats = await getListGroupChat();
 
-      if (taggedFriends && taggedFriends.length > 0) {
-        for (const friend of taggedFriends) {
+            const combinedChats = [...normalChats, ...groupChats];
+            setAllChat(combinedChats);
+            setFilteredChat(combinedChats);
+          } catch (error) {
+            console.error("Error loading chats:", error);
+          }
+        };
+        fetchChats();
+      }
+
+      if (members && members.length > 0) {
+        for (const friend of members) {
           const notificationParams = {
             senderId: me._id,
             receiverId: friend._id,
@@ -112,11 +115,13 @@ const CreateGroup = ({ onClose, me }: any) => {
           await createNotification(notificationParams, token);
         }
       }
-      alert("Post created successfully!");
+
       onClose();
     } catch (err: any) {
       console.error(err);
-      setError(err.message || "Error creating post");
+      alert("Group created failed!");
+
+      setError(err.message || "Error creating group");
     } finally {
       setLoading(false);
     }
@@ -154,10 +159,11 @@ const CreateGroup = ({ onClose, me }: any) => {
                 type="text"
                 placeholder="Group name"
                 className="background-light800_dark400 text-dark100_light500  outline-none ml-3 h-[40px] w-full rounded-md pl-3 text-[20px] font-bold"
-                value={newComment}
+                value={newName}
                 onChange={handleInputChange}
               />
             </div>
+
             <div className="text-dark100_light500 flex items-center">
               <span className="text-sm text-primary-100">Choose friends</span>
               <div className="relative mb-4 ml-auto">
@@ -180,9 +186,7 @@ const CreateGroup = ({ onClose, me }: any) => {
                     >
                       <input
                         type="checkbox"
-                        checked={taggedFriends.some(
-                          (f) => f._id === friend._id
-                        )}
+                        checked={members.some((f) => f._id === friend._id)}
                         readOnly
                         className="mr-2"
                       />
@@ -202,11 +206,11 @@ const CreateGroup = ({ onClose, me }: any) => {
               </div>
             </div>
 
-            {taggedFriends.length > 0 && (
+            {members.length > 0 && (
               <div className="text-dark100_light500 mt-4">
                 <p className="text-sm text-gray-600">Members:</p>
                 <div className="flex flex-wrap">
-                  {taggedFriends.map((friend) => (
+                  {members.map((friend) => (
                     <div
                       key={friend._id}
                       className="m-1 flex items-center rounded-full bg-primary-100 px-3 py-1 text-white"
@@ -230,7 +234,6 @@ const CreateGroup = ({ onClose, me }: any) => {
                 </div>
               </div>
             )}
-
             {error && <p className="text-red-500">{error}</p>}
             <Button
               type="submit"

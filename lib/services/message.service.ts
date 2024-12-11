@@ -12,6 +12,7 @@ const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
 export async function getAllChat(boxId: string): Promise<ChatResponse> {
   const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
   if (!token) {
     console.error("No token found");
     throw new Error("Authentication token is missing.");
@@ -19,7 +20,7 @@ export async function getAllChat(boxId: string): Promise<ChatResponse> {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/message/getAllChat?boxId=${boxId}`,
+      `${BASE_URL}/message/getAllChat?boxId=${boxId}&&userId=${userId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -52,6 +53,8 @@ export async function getListChat(): Promise<ItemChat[]> {
     throw new Error("Authentication token or User ID is missing.");
   }
 
+  console.log(userId, "log userId");
+
   try {
     const response = await fetch(`${BASE_URL}/message/getListChat`, {
       headers: {
@@ -80,19 +83,26 @@ export async function getListChat(): Promise<ItemChat[]> {
         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
         if (!receiver) return null;
 
+        const lastMessage = box.responseLastMessage
+          ? {
+              id: box.responseLastMessage.id,
+              text: box.responseLastMessage.text
+                ? box.responseLastMessage.text
+                : box.responseLastMessage.text || "",
+              timestamp: new Date(box.responseLastMessage.createAt),
+              createBy: box.responseLastMessage.createBy,
+            }
+          : { id: "", text: "", timestamp: new Date(), createBy: "" };
         return {
           id: box._id,
           userName:
             `${receiver.firstName || ""} ${receiver.lastName || ""}`.trim(),
           avatarUrl: receiver.avatar || "", // Get the avatar URL of the recipient
           status: box.readStatus, // Adjust status according to the 'flag'
-          lastMessage: {
-            id: box.lastMessage._id,
-            text: box.lastMessage.text.join(" "), // Join text segments if multiple parts
-            timestamp: new Date(box.lastMessage.createAt),
-            createBy: box.lastMessage.createBy,
-          },
+          lastMessage: lastMessage,
           isRead: box.readStatus,
+          receiverId: receiver._id,
+          senderId: box.senderId,
         };
       })
       .filter((item): item is ItemChat => item !== null); // Filter out null values and ensure the type is ItemChat
@@ -108,6 +118,8 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
 
+  console.log(userId, "log userId");
+
   // Kiểm tra xem token và userId có tồn tại trong localStorage không
   if (!token || !userId) {
     console.error("Token or User ID is missing");
@@ -115,8 +127,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
   }
 
   try {
-    console.log(`${BASE_URL}/message/getListGroupChat`);
-
     const response = await fetch(`${BASE_URL}/message/getListGroupChat`, {
       headers: {
         "Content-Type": "application/json",
@@ -133,7 +143,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
     }
 
     const rawData: ResponseMessageBoxDTO = await response.json();
-    console.log(rawData, "raw data");
+    // console.log(rawData, "raw data");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -147,14 +157,14 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
         if (!receiver && !box.groupName) return null;
 
         // Xử lý trường hợp lastMessage là null
-        const lastMessage = box.lastMessage
+        const lastMessage = box.responseLastMessage
           ? {
-              id: box.lastMessage._id,
-              text: Array.isArray(box.lastMessage.text)
-                ? box.lastMessage.text.join(" ")
-                : box.lastMessage.text || "",
-              timestamp: new Date(box.lastMessage.createAt),
-              createBy: box.lastMessage.createBy,
+              id: box.responseLastMessage.id,
+              text: box.responseLastMessage.text
+                ? box.responseLastMessage.text
+                : box.responseLastMessage.text || "",
+              timestamp: new Date(box.responseLastMessage.createAt),
+              createBy: box.responseLastMessage.createBy,
             }
           : { id: "", text: "", timestamp: new Date(), createBy: "" };
 
@@ -167,11 +177,12 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
           status: box.readStatus, // Trạng thái đọc
           lastMessage, // Tin nhắn cuối
           isRead: box.readStatus, // Trạng thái đã đọc
+          receiverId: receiver._id,
+          senderId: box.senderId,
         };
       })
       .filter((item): item is ItemChat => item !== null); // Lọc bỏ các phần tử null
 
-    console.log(chat, "Mapped chat data");
     return chat;
   } catch (error) {
     console.error("Failed to fetch list chat", error);
@@ -316,10 +327,6 @@ export async function removeChatBox(boxId: string | null) {
     throw new Error("Authentication token is missing.");
   }
 
-  console.log(
-    `${BASE_URL}/message/removeChat?boxId=${boxId}`,
-    "this is remove"
-  );
   try {
     const response = await fetch(
       `${BASE_URL}/message/removeChat?boxId=${boxId}`,
@@ -377,6 +384,106 @@ export async function findMessage(
     return data;
   } catch (error) {
     console.error("Failed to find message:", error);
+    throw error;
+  }
+}
+
+export async function createGroup(data: any): Promise<any> {
+  // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  console.log(data, "this is form data");
+
+  try {
+    // Gửi yêu cầu API
+    const response = await fetch(`${BASE_URL}/message/createGroup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Đảm bảo thông báo content type là JSON
+        Authorization: `${token}`, // Đảm bảo sử dụng định dạng 'Bearer'
+      },
+      body: JSON.stringify(data), // Dữ liệu phải được chuyển thành JSON
+    });
+
+    // Kiểm tra trạng thái phản hồi
+    if (!response.ok) {
+      const errorMessage = `Error creating group: ${response.statusText} (${response.status})`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    // Phân tích dữ liệu phản hồi
+    const responseData = await response.json();
+    console.log("Group created successfully", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Failed to create group:", error);
+    throw error;
+  }
+}
+
+export async function removeMessage(messageId: string | null) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/deleteMessage?messageId=${messageId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error deleting message");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete message:", error);
+    throw error;
+  }
+}
+
+export async function revokeMessage(messageId: string | null) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/revokeMessage?messageId=${messageId}`,
+      {
+        method: "DELETE",
+        headers: {
+          Authorization: `${token}`,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error deleting message");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to delete message:", error);
     throw error;
   }
 }

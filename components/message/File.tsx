@@ -26,7 +26,7 @@ const File = ({ onCancel, boxId }: { onCancel: () => void; boxId: string }) => {
     return () => {
       isMounted = false; // Cleanup khi component unmount
     };
-  }, [boxId]);
+  }, []);
 
   return (
     <div className="flex flex-col w-full h-full font-sans">

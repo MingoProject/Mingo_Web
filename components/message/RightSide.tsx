@@ -7,9 +7,16 @@ import ImagesMedia from "./ImagesMedia";
 import File from "./File";
 import { ItemChat } from "@/dtos/MessageDTO";
 import { FindUserDTO } from "@/dtos/UserDTO";
-import { removeChatBox } from "@/lib/services/message.service";
+import {
+  getListChat,
+  getListGroupChat,
+  removeChatBox,
+} from "@/lib/services/message.service";
 import { useParams, useRouter } from "next/navigation";
 import SearchMessage from "./SearchMessage";
+import { block } from "@/lib/services/friend.service";
+import { FriendRequestDTO } from "@/dtos/FriendDTO";
+import { useChatItemContext } from "@/context/ChatItemContext";
 
 const RightSide = ({
   item,
@@ -25,7 +32,8 @@ const RightSide = ({
   const [activeTab, setActiveTab] = useState("");
   const [isLoading, setIsLoading] = useState(false); // Thêm trạng thái loading
   const { id } = useParams();
-
+  const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
   const handleIsReport = () => {
     setIsReport(true);
   };
@@ -66,10 +74,44 @@ const RightSide = ({
     try {
       setIsLoading(true);
       await removeChatBox(id.toString()); // Gọi API xóa chat
+      const normalChats = await getListChat();
+      const groupChats = await getListGroupChat();
+
+      const combinedChats = [...normalChats, ...groupChats];
+      setAllChat(combinedChats);
+      setFilteredChat(combinedChats);
       alert("Đoạn chat đã được xóa thành công!");
       closeDelete(); // Đóng modal sau khi xóa
     } catch (error) {
       alert("Xóa chat thất bại. Vui lòng thử lại.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleBlockChat = async () => {
+    try {
+      setIsLoading(true);
+      const token = localStorage.getItem("token");
+      // Kiểm tra xem receiverId và senderId có tồn tại hay không
+      if (!item?.receiverId || !item?.senderId) {
+        alert("Lỗi: Không có ID người nhận hoặc người gửi.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Tạo đối tượng params theo kiểu FriendRequestDTO
+      const params: FriendRequestDTO = {
+        sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
+        receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
+      };
+
+      console.log(params, "this is param");
+
+      await block(params, token); // Gọi API block
+      alert("Đã block thành công!");
+      closeDelete(); // Đóng modal sau khi block thành công
+    } catch (error) {
+      alert("Block thất bại. Vui lòng thử lại.");
       setIsLoading(false);
     }
   };
@@ -253,6 +295,8 @@ const RightSide = ({
             item?.userName ||
             `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
           }
+          onConfirmBlock={handleBlockChat}
+          type="block"
         />
       )}
       {isDelete && (
@@ -265,6 +309,7 @@ const RightSide = ({
             `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
           }
           onConfirmDelete={handleDeleteChat} // Thêm hàm gọi API xóa vào đây
+          type="delete"
         />
       )}
       {isNoNotification && (
@@ -276,6 +321,7 @@ const RightSide = ({
             item?.userName ||
             `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
           }
+          type="disableNotifications"
         />
       )}
     </div>
