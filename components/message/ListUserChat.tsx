@@ -39,61 +39,6 @@ const ListUserChat = () => {
   };
   const [user, setUser] = useState<FindUserDTO | null>(null);
 
-  // const fetchUserIfNotExists = useCallback(async () => {
-  //   if (id && !allChat.some((chat) => chat.id === id)) {
-  //     try {
-  //       const data = await getUserById(id.toString());
-  //       setUser(data);
-  //     } catch (error) {
-  //       console.error("Error loading user:", error);
-  //     }
-  //   }
-  // }, [id, allChat]);
-
-  // useEffect(() => {
-  //   fetchUserIfNotExists();
-  // }, [fetchUserIfNotExists]);
-
-  // useEffect(() => {
-  //   if (id && !allChat.find((chat) => chat.id === id)) {
-  //     let isMounted = true;
-
-  //     const fetchUser = async () => {
-  //       try {
-  //         const userId = localStorage.getItem("userId");
-
-  //         const existChat = allChat.find((item) => item?.receiverId === id);
-  //         if (!existChat) {
-  //           const groupData = {
-  //             membersIds: [id, userId],
-  //             leaderId: userId,
-  //             groupName: `${user?.firstName} ${user?.lastName}`,
-  //             groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
-  //           };
-  //           await createGroup(groupData);
-  //         } else {
-  //           console.log("Chat already exists!");
-  //         }
-  //       } catch (error) {
-  //         console.error("Error creating group chat:", error);
-  //       }
-  //     };
-
-  //     fetchUser();
-
-  //     // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
-  //     const existChat = allChat.find((item) => item?.receiverId === id);
-  //     if (existChat) {
-  //       router.push(`/message/${existChat.id}`);
-  //     } else {
-  //       router.push(`/message/${id}`);
-  //     }
-  //     return () => {
-  //       isMounted = false;
-  //     };
-  //   }
-  // }, [id, user, allChat]);
-
   useEffect(() => {
     const handleGroupCreationAndNavigation = async () => {
       if (!id) return;
@@ -223,6 +168,7 @@ const ListUserChat = () => {
               createBy: "system",
               text: "Bắt đầu đoạn chat",
               timestamp: new Date(data.createAt),
+              status: false,
             },
             status: "active",
             isRead: false,

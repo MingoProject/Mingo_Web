@@ -75,6 +75,7 @@ export interface Text {
   text: string;
   timestamp: Date;
   createBy: string;
+  status: boolean;
 }
 
 export interface ResponseMessageDTO {

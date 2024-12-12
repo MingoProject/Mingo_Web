@@ -17,7 +17,6 @@ const BodyMessage = () => {
     const myChat = async () => {
       try {
         const data = await getAllChat(id.toString()); // Gọi API
-        console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API
         }

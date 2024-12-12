@@ -89,11 +89,17 @@ export async function getListChat(): Promise<ItemChat[]> {
                 : box.responseLastMessage.text || "",
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,
+              status: box.responseLastMessage.readedId.includes(userId)
+                ? true
+                : false, // Kiểm tra nếu userId (profile._id) nằm trong readedId
             }
-          : { id: "", text: "", timestamp: new Date(), createBy: "" };
-
-        console.log(lastMessage, "lastMessage list");
-
+          : {
+              id: "",
+              text: "",
+              timestamp: new Date(),
+              createBy: "",
+              status: false,
+            };
         return {
           id: box._id,
           userName:
@@ -142,7 +148,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
     }
 
     const rawData: ResponseMessageBoxDTO = await response.json();
-    console.log(rawData, "raw data");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -155,8 +160,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
         // Nếu không tìm thấy người nhận hợp lệ và không có groupName, trả về null
         if (!receiver && !box.groupName) return null;
 
-        console.log(box.lastMessage, "box.responseLastMessage");
-
         // Xử lý trường hợp lastMessage là null
         const lastMessage = box.lastMessage
           ? {
@@ -166,8 +169,15 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
                 : box.lastMessage.text || "",
               timestamp: new Date(box.lastMessage.createAt),
               createBy: box.lastMessage.createBy,
+              status: box.lastMessage.readedId.includes(userId) ? true : false, // Kiểm tra nếu userId (profile._id) nằm trong readedId
             }
-          : { id: "", text: "", timestamp: new Date(), createBy: "" };
+          : {
+              id: "",
+              text: "",
+              timestamp: new Date(),
+              createBy: "",
+              status: false,
+            };
 
         return {
           id: box._id,
@@ -176,7 +186,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
             `${receiver?.firstName || ""} ${receiver?.lastName || ""}`.trim(),
           avatarUrl: box.groupAva || receiver?.avatar || "", // Lấy avatar của người nhận hoặc nhóm
           status: box.readStatus, // Trạng thái đọc
-          lastMessage, // Tin nhắn cuối
+          lastMessage: lastMessage, // Tin nhắn cuối
           isRead: box.readStatus, // Trạng thái đã đọc
           receiverId: receiver._id,
           senderId: box.senderId,
@@ -397,8 +407,6 @@ export async function createGroup(data: any): Promise<any> {
     throw new Error("Authentication token is missing.");
   }
 
-  console.log(data, "this is form data");
-
   try {
     // Gửi yêu cầu API
     const response = await fetch(`${BASE_URL}/message/createGroup`, {
@@ -485,6 +493,79 @@ export async function revokeMessage(messageId: string | null) {
     return data;
   } catch (error) {
     console.error("Failed to delete message:", error);
+    throw error;
+  }
+}
+
+export async function checkMarkMessageAsRead(boxIds: string[]) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/checkMessageAsRead?boxIds=${boxIds}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(
+        `Error fetching check mark as read list by boxId: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    console.log(data, "checkMarkMessageAsRead");
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch check mark as read list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function MarkMessageAsRead(boxId: string) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(
+        `Error fetching mark as read list by boxId: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    console.log(data, "MarkMessageAsRead");
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch mark as read list by boxId:", error);
     throw error;
   }
 }
