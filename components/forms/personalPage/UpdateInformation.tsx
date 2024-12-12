@@ -20,7 +20,6 @@ interface InfomationUserProps {
   onClose: () => void;
 }
 
-// hobbyIcons.ts
 export const hobbyIcons: Record<string, string> = {
   Soccer: "mdi:soccer",
   Swimming: "mdi:swim",

@@ -14,15 +14,17 @@ import {
 } from "@/lib/services/message.service";
 import { useParams, useRouter } from "next/navigation";
 import SearchMessage from "./SearchMessage";
-import { block } from "@/lib/services/friend.service";
+import { block, unblock } from "@/lib/services/friend.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { useChatItemContext } from "@/context/ChatItemContext";
 
 const RightSide = ({
   item,
+  setRelation,
   // user,
 }: {
   item: ItemChat | null;
+  setRelation: any;
   // user: FindUserDTO | null;
 }) => {
   const [isReport, setIsReport] = useState(false);

@@ -9,6 +9,7 @@ import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
+import { getCommentsByPostId } from "@/lib/services/post.service";
 
 interface DetailPostProps {
   postId: string;
@@ -44,6 +45,7 @@ const DetailPost = ({
   onClose,
   profile,
 }: DetailPostProps) => {
+  const [getComments, setGetComments] = useState<any[]>([]);
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
 
@@ -53,20 +55,36 @@ const DetailPost = ({
 
   useEffect(() => {
     let isMounted = true;
-    const fetchCommentsData = async () => {
-      const detailedPosts = await fetchDetailedComments(comments);
+    const getComments = async () => {
+      const detailedComments = await getCommentsByPostId(postId);
       if (isMounted) {
-        setCommentsData(detailedPosts);
+        setGetComments(detailedComments);
       }
     };
 
-    if (comments.length > 0) {
+    getComments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [postId]);
+
+  useEffect(() => {
+    let isMounted = true;
+    const fetchCommentsData = async () => {
+      const detailedComments = await fetchDetailedComments(getComments);
+      if (isMounted) {
+        setCommentsData(detailedComments);
+      }
+    };
+
+    if (getComments.length > 0) {
       fetchCommentsData();
     }
     return () => {
       isMounted = false;
     };
-  }, [comments]);
+  }, [getComments]);
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -181,7 +199,7 @@ const DetailPost = ({
           </div>
 
           {media && media.length > 0 && (
-            <div className="mt-3 flex h-[400px] w-full justify-around">
+            <div className="mx-auto ml-5 flex h-[400px] w-full justify-center">
               <Swiper spaceBetween={10} slidesPerView={1}>
                 {media.map((item, index) => (
                   <SwiperSlide key={index}>
@@ -209,7 +227,7 @@ const DetailPost = ({
             <Action
               likes={likes}
               postId={postId}
-              comments={comments}
+              comments={commentsData}
               shares={shares}
               author={author}
               profile={profile}

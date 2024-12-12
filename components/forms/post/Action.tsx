@@ -11,7 +11,7 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        const isUserLiked = likes.some((like: any) => like._id === userId);
+        const isUserLiked = likes.some((like: any) => like === userId);
         setIsLiked(isUserLiked);
       } catch (error) {
         console.error("Invalid token:", error);
@@ -56,14 +56,26 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
     }
   };
 
-  const toggleLike = () => {
+  // const toggleLike = () => {
+  //   if (isLiked) {
+  //     handleDislikePost();
+  //     setNumberOfLikes(likes.length - 1);
+  //   } else {
+  //     handleLikePost();
+  //     setNumberOfLikes(likes.length + 1);
+  //   }
+  // };
+  const toggleLike = async () => {
     if (isLiked) {
-      handleDislikePost();
-      setNumberOfLikes(likes.length - 1);
+      // Dislike
+      await handleDislikePost();
+      setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      handleLikePost();
-      setNumberOfLikes(likes.length + 1);
+      // Like
+      await handleLikePost();
+      setNumberOfLikes((prev: any) => prev + 1);
     }
+    setIsLiked(!isLiked);
   };
   return (
     <div>

@@ -16,13 +16,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const FooterMessage = ({
-  item,
-  user,
-}: {
-  item: ItemChat | null;
-  user: FindUserDTO | null;
-}) => {
+const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -30,7 +24,7 @@ const FooterMessage = ({
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
   const { id } = useParams(); // Lấy ID từ URL
-  const [relation, setRelation] = useState<string>("");
+  // const [relation, setRelation] = useState<string>("");
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -53,38 +47,38 @@ const FooterMessage = ({
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
-  useEffect(() => {
-    const check = async () => {
-      try {
-        const userId = localStorage.getItem("userId");
-        console.log(userId, "this is usid");
-        if (userId) {
-          const res: any = await checkRelation(
-            userId.toString(),
-            item?.receiverId?.toString()
-          );
-          if (!res) {
-            setRelation("stranger");
-          } else {
-            const { relation, sender, receiver } = res;
-            if (relation === "block") {
-              if (userId === sender) {
-                setRelation("blocked"); //
-              } else if (userId === receiver) {
-                setRelation("blockedBy");
-              }
-            } else {
-              setRelation("friend");
-            }
-          }
-        }
-      } catch (error) {
-        console.error("Error fetching relation:", error);
-      }
-    };
+  // useEffect(() => {
+  //   const check = async () => {
+  //     try {
+  //       const userId = localStorage.getItem("userId");
+  //       console.log(userId, "this is usid");
+  //       if (userId) {
+  //         const res: any = await checkRelation(
+  //           userId.toString(),
+  //           item?.receiverId?.toString()
+  //         );
+  //         if (!res) {
+  //           setRelation("stranger");
+  //         } else {
+  //           const { relation, sender, receiver } = res;
+  //           if (relation === "block") {
+  //             if (userId === sender) {
+  //               setRelation("blocked"); //
+  //             } else if (userId === receiver) {
+  //               setRelation("blockedBy");
+  //             }
+  //           } else {
+  //             setRelation("friend");
+  //           }
+  //         }
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching relation:", error);
+  //     }
+  //   };
 
-    check(); // Gọi hàm `check` một lần tại đây
-  }, []);
+  //   check(); // Gọi hàm `check` một lần tại đây
+  // }, []);
 
   const handleSendTextMessage = async () => {
     // Tạo đối tượng SegmentMessageDTO
@@ -198,81 +192,57 @@ const FooterMessage = ({
   }
 
   return (
-    <>
-      {relation === "blockedBy" ? (
-        // Giao diện thông báo nếu bị block bởi người khác
-        <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
-          <p className="text-sm">Bạn không thể liên lạc với người dùng này.</p>
+    // Giao diện footer thông thường
+    <div className="sticky bottom-0 w-full bg-white px-6 py-2 flex items-center gap-4">
+      <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-gray-100">
+        <div className="flex-1">
+          <input
+            type="text"
+            placeholder="Aa"
+            className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
+            onChange={(e) => setValue(e.target.value)}
+            value={value}
+          />
         </div>
-      ) : relation === "blocked" ? (
-        // Giao diện thông báo nếu bạn đã block người khác
-        <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700 ">
-          <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
-          <button className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4">
-            Bỏ chặn
-          </button>
-          <button className="text-sm cursor-pointer text-red-500 hover:bg-opacity-30  hover:bg-border-color rounded-md shadow-md w-full p-4">
-            Báo cáo
-          </button>
-        </div>
-      ) : (
-        // Giao diện footer thông thường
-        <div className="sticky bottom-0 w-full bg-white px-6 py-2 flex items-center gap-4">
-          <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-gray-100">
-            <div className="flex-1">
-              <input
-                type="text"
-                placeholder="Aa"
-                className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
-                onChange={(e) => setValue(e.target.value)}
-                value={value}
-              />
-            </div>
-            <div className="flex gap-3">
-              <FontAwesomeIcon
-                icon={faMicrophone}
-                size="lg"
-                className="text-primary-100 cursor-pointer hover:text-primary-200"
-              />
-              <FontAwesomeIcon
-                icon={faFaceSmile}
-                size="lg"
-                className="text-primary-100 cursor-pointer hover:text-primary-200"
-              />
-              <label htmlFor="image-upload">
-                <FontAwesomeIcon
-                  icon={faImage}
-                  size="lg"
-                  className="text-primary-100 cursor-pointer hover:text-primary-200"
-                  onClick={handleIconClick}
-                />
-              </label>
-              <input
-                type="file"
-                ref={fileInputRef}
-                style={{ display: "none" }}
-                multiple
-                onChange={(e) => {
-                  if (e.target.files) {
-                    handleSendMultipleFiles(Array.from(e.target.files));
-                  }
-                }}
-              />
-            </div>
-          </div>
-          <div
-            className="bg-primary-100 flex items-center justify-center rounded-full w-10 h-10 p-2 cursor-pointer hover:bg-primary-200"
-            onClick={handleSendTextMessage}
-          >
+        <div className="flex gap-3">
+          <FontAwesomeIcon
+            icon={faMicrophone}
+            size="lg"
+            className="text-primary-100 cursor-pointer hover:text-primary-200"
+          />
+          <FontAwesomeIcon
+            icon={faFaceSmile}
+            size="lg"
+            className="text-primary-100 cursor-pointer hover:text-primary-200"
+          />
+          <label htmlFor="image-upload">
             <FontAwesomeIcon
-              icon={faPaperPlane}
+              icon={faImage}
               size="lg"
-              className="text-white"
+              className="text-primary-100 cursor-pointer hover:text-primary-200"
+              onClick={handleIconClick}
             />
-          </div>
+          </label>
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            multiple
+            onChange={(e) => {
+              if (e.target.files) {
+                handleSendMultipleFiles(Array.from(e.target.files));
+              }
+            }}
+          />
         </div>
-      )}
-    </>
+      </div>
+      <div
+        className="bg-primary-100 flex items-center justify-center rounded-full w-10 h-10 p-2 cursor-pointer hover:bg-primary-200"
+        onClick={handleSendTextMessage}
+      >
+        <FontAwesomeIcon icon={faPaperPlane} size="lg" className="text-white" />
+      </div>
+    </div>
   );
 };
 

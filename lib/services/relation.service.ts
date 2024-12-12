@@ -5,6 +5,11 @@ export async function checkRelation(
   ndUser: string | undefined
 ) {
   try {
+    console.log(
+      `${BASE_URL}/relation/check-relation?stUser=${stUser}&ndUser=${ndUser}`,
+      "URL"
+    );
+    console.log(stUser, ndUser, "URL Ìnor");
     const response = await fetch(
       `${BASE_URL}/relation/check-relation?stUser=${stUser}&ndUser=${ndUser}`
     );

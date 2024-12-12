@@ -262,7 +262,6 @@ export async function unblock(params: FriendRequestDTO, token: string | null) {
     }
 
     const data = await response.json();
-    console.log("Unblock result:", data);
     return data;
   } catch (error) {
     console.error("Failed to unblock user:", error);

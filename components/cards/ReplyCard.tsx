@@ -37,7 +37,6 @@ const ReplyCard = ({
     const fetchDetailsComment = async () => {
       try {
         const details = await getCommentByCommentId(reply._id);
-        console.log("details", details);
         if (isMounted) {
           setDetailsComment(details);
         }

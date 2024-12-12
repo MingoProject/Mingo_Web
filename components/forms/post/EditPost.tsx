@@ -402,7 +402,7 @@ const EditPost = ({
               className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
               disabled={loading}
             >
-              {loading ? "Creating..." : "Create Post"}
+              {loading ? "Updating..." : "Update Post"}
             </Button>
           </form>
         </div>

@@ -19,14 +19,6 @@ const HeaderMessageContent = ({
   // user: FindUserDTO | null;
   toggleRightSide: () => void;
 }) => {
-  if (!item) {
-    return (
-      <div className="flex w-full h-full items-center justify-center bg-white">
-        <div className="loader"></div>
-      </div>
-    );
-  }
-
   return (
     <div className="w-full border-b border-gray-200 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
