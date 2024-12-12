@@ -50,6 +50,10 @@ const Format = ({
     }
   };
 
+  if (!userName) {
+    return <div>Loading chat...</div>;
+  }
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div

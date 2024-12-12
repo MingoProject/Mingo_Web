@@ -207,17 +207,28 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 {isReceiver && lastMessage.id === itemChat.id ? (
                   <>
                     {itemChat.userName.trim().split(" ").pop()}:{" "}
-                    {lastMessage.text.trim() !== ""
-                      ? lastMessage.text
-                      : "Đã gửi 1 file"}
+                    {lastMessage.text.trim() !== "" ? (
+                      lastMessage.text
+                    ) : (
+                      <p className="text-sm font-bold">Start a chat</p>
+                    )}
+                    {/* {!lastMessage && (
+                    
+                    )} */}
                   </>
                 ) : (
-                  <>
-                    Bạn:{" "}
-                    {lastMessage.text.trim() !== ""
-                      ? lastMessage.text
-                      : "Đã gửi 1 file"}
-                  </>
+                  <div className="flex items-center gap-1">
+                    <p> Bạn: </p>
+
+                    {lastMessage.text.trim() !== "" ? (
+                      lastMessage.text
+                    ) : (
+                      <p className="text-sm font-bold">Start a chat</p>
+                    )}
+                    {!lastMessage && (
+                      <p className="text-sm font-bold">Start a chat</p>
+                    )}
+                  </div>
                 )}
               </span>
             </div>

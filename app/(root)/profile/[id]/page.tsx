@@ -121,8 +121,6 @@ const ProfilePage = () => {
       console.log(normalChats, "Normal Chats");
       setAllChat(normalChats);
 
-      const userId = localStorage.getItem("userId");
-
       // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
       const existChat = allChat.find((item) => item?.receiverId === id);
       if (existChat) {

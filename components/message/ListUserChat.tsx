@@ -39,52 +39,93 @@ const ListUserChat = () => {
   };
   const [user, setUser] = useState<FindUserDTO | null>(null);
 
-  const fetchUserIfNotExists = useCallback(async () => {
-    if (id && !allChat.some((chat) => chat.id === id)) {
-      try {
-        const data = await getUserById(id.toString());
-        setUser(data);
-      } catch (error) {
-        console.error("Error loading user:", error);
-      }
-    }
-  }, [id, allChat]);
+  // const fetchUserIfNotExists = useCallback(async () => {
+  //   if (id && !allChat.some((chat) => chat.id === id)) {
+  //     try {
+  //       const data = await getUserById(id.toString());
+  //       setUser(data);
+  //     } catch (error) {
+  //       console.error("Error loading user:", error);
+  //     }
+  //   }
+  // }, [id, allChat]);
+
+  // useEffect(() => {
+  //   fetchUserIfNotExists();
+  // }, [fetchUserIfNotExists]);
+
+  // useEffect(() => {
+  //   if (id && !allChat.find((chat) => chat.id === id)) {
+  //     let isMounted = true;
+
+  //     const fetchUser = async () => {
+  //       try {
+  //         const userId = localStorage.getItem("userId");
+
+  //         const existChat = allChat.find((item) => item?.receiverId === id);
+  //         if (!existChat) {
+  //           const groupData = {
+  //             membersIds: [id, userId],
+  //             leaderId: userId,
+  //             groupName: `${user?.firstName} ${user?.lastName}`,
+  //             groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
+  //           };
+  //           await createGroup(groupData);
+  //         } else {
+  //           console.log("Chat already exists!");
+  //         }
+  //       } catch (error) {
+  //         console.error("Error creating group chat:", error);
+  //       }
+  //     };
+
+  //     fetchUser();
+
+  //     // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
+  //     const existChat = allChat.find((item) => item?.receiverId === id);
+  //     if (existChat) {
+  //       router.push(`/message/${existChat.id}`);
+  //     } else {
+  //       router.push(`/message/${id}`);
+  //     }
+  //     return () => {
+  //       isMounted = false;
+  //     };
+  //   }
+  // }, [id, user, allChat]);
 
   useEffect(() => {
-    fetchUserIfNotExists();
-  }, [fetchUserIfNotExists]);
+    const handleGroupCreationAndNavigation = async () => {
+      if (!id) return;
 
-  useEffect(() => {
-    if (id && !allChat.find((chat) => chat.id === id)) {
-      let isMounted = true;
+      const existChat = allChat.find((item) => item?.receiverId === id);
 
-      const fetchUser = async () => {
+      if (!existChat) {
         try {
           const userId = localStorage.getItem("userId");
+          const groupData = {
+            membersIds: [id, userId],
+            leaderId: userId,
+            groupName: `${user?.firstName || ""} ${user?.lastName || ""}`,
+            groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
+          };
 
-          const existChat = allChat.find((item) => item?.receiverId === id);
-          if (!existChat) {
-            const groupData = {
-              membersIds: [id, userId],
-              leaderId: userId,
-              groupName: `${user?.firstName} ${user?.lastName}`,
-              groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
-            };
-            await createGroup(groupData);
-          } else {
-            console.log("Chat already exists!");
+          const newGroup = await createGroup(groupData);
+
+          if (newGroup && newGroup.id) {
+            // Điều hướng đến nhóm mới tạo
+            router.push(`/message/${newGroup.id}`);
           }
         } catch (error) {
           console.error("Error creating group chat:", error);
         }
-      };
+      } else {
+        // Điều hướng đến nhóm đã tồn tại
+        router.push(`/message/${existChat.id}`);
+      }
+    };
 
-      fetchUser();
-
-      return () => {
-        isMounted = false;
-      };
-    }
+    handleGroupCreationAndNavigation();
   }, [id, user, allChat]);
 
   const fetchChats = useCallback(async () => {
@@ -114,7 +155,7 @@ const ListUserChat = () => {
 
   useEffect(() => {
     fetchChats();
-  }, [fetchChats]);
+  }, []);
 
   useEffect(() => {
     const handleNewMessage = (data: any) => {
@@ -143,7 +184,7 @@ const ListUserChat = () => {
               data.avatarUrl ||
               "/assets/images/0d80fa84f049bc902d6786a7d5574ca6.jpg",
             lastMessage: {
-              text: data.text || "Đã gửi 1 file",
+              text: "Bắt đầu đoạn chat",
               timestamp: new Date(data.createAt),
             },
             status: false,
@@ -180,7 +221,7 @@ const ListUserChat = () => {
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: data.text || "Đã gửi 1 file",
+              text: "Bắt đầu đoạn chat",
               timestamp: new Date(data.createAt),
             },
             status: "active",

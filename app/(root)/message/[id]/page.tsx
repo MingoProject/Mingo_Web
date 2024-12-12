@@ -15,7 +15,7 @@ const MessageContent = () => {
   const [allChat, setAllChat] = useState<ItemChat[]>([]);
   const [filteredChat, setFilteredChat] = useState<ItemChat[]>([]); // State lưu trữ các cuộc trò chuyện đã lọc
 
-  const [isRightSideVisible, setIsRightSideVisible] = useState(true); // Trạng thái hiển thị của RightSide
+  const [isRightSideVisible, setIsRightSideVisible] = useState(false); // Trạng thái hiển thị của RightSide
   const { id } = useParams(); // Lấy ID từ URL
   const [user, setUser] = useState<FindUserDTO | null>(null);
 
@@ -64,9 +64,12 @@ const MessageContent = () => {
   }, []);
 
   if (!allChat) {
-    return <div>Loading chat...</div>;
+    return (
+      <div className="flex h-screen w-screen items-center justify-center bg-white">
+        <div className="loader"></div>
+      </div>
+    );
   }
-
   const chatItem = allChat.find((chat) => chat.id === id);
 
   return (
@@ -75,7 +78,7 @@ const MessageContent = () => {
         <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
           <HeaderMessageContent
             item={chatItem || null}
-            user={chatItem ? null : user} // Nếu không có chatItem, truyền user
+            // user={chatItem ? null : user} // Nếu không có chatItem, truyền user
             toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
           />
           <BodyMessage />
@@ -88,7 +91,7 @@ const MessageContent = () => {
         {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
         {isRightSideVisible && (
           <div className="h-full hidden w-[25%] flex-col gap-2 overflow-y-auto lg:block">
-            <RightSide item={chatItem || null} user={chatItem ? null : user} />
+            <RightSide item={chatItem || null} />
           </div>
         )}
       </div>

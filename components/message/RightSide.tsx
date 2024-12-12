@@ -20,10 +20,10 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 
 const RightSide = ({
   item,
-  user,
+  // user,
 }: {
   item: ItemChat | null;
-  user: FindUserDTO | null;
+  // user: FindUserDTO | null;
 }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
@@ -73,21 +73,6 @@ const RightSide = ({
   };
 
   const handleDeleteChat = async () => {
-    // try {
-    //   setIsLoading(true);
-    //   await removeChatBox(id.toString()); // Gọi API xóa chat
-    //   const normalChats = await getListChat();
-    //   const groupChats = await getListGroupChat();
-
-    //   const combinedChats = [...normalChats, ...groupChats];
-    //   setAllChat(combinedChats);
-    //   setFilteredChat(combinedChats);
-    //   alert("Đoạn chat đã được xóa thành công!");
-    //   closeDelete(); // Đóng modal sau khi xóa
-    // } catch (error) {
-    //   alert("Xóa chat thất bại. Vui lòng thử lại.");
-    //   setIsLoading(false);
-    // }
     try {
       setIsLoading(true);
 
@@ -165,12 +150,15 @@ const RightSide = ({
         ) : null;
 
       default:
+        if (!item) {
+          return <div>Loading chat...</div>;
+        }
         return (
           <>
             <div className="h-[45px] w-full border-b border-gray-200 px-8">
               <p className="text-lg">Chi tiết</p>
             </div>
-            {item ? (
+            {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
                 <Image
                   src={item.avatarUrl || "/assets/images/capy.jpg"}
@@ -181,21 +169,6 @@ const RightSide = ({
                   style={{ objectFit: "cover", width: "80px", height: "80px" }}
                 />
                 <p className="text-lg">{item.userName}</p>
-              </div>
-            ) : (
-              <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
-                <Image
-                  src={user?.avatar || "/assets/images/capy.jpg"}
-                  alt="Avatar"
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
-                />
-                <p className="text-lg">
-                  {" "}
-                  {`${user?.firstName || ""} ${user?.lastName || ""}`}
-                </p>
               </div>
             )}
             <div className="flex items-center px-8 ">
@@ -313,10 +286,7 @@ const RightSide = ({
           onClose={closeReport}
           content="báo cáo"
           label="Báo cáo"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
         />
       )}
       {isBlock && (
@@ -324,10 +294,7 @@ const RightSide = ({
           onClose={closeBlock}
           content="chặn"
           label="Chặn"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           onConfirmBlock={handleBlockChat}
           type="block"
         />
@@ -337,10 +304,7 @@ const RightSide = ({
           onClose={closeDelete}
           content="xóa đoạn chat với"
           label="Xóa"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           onConfirmDelete={handleDeleteChat} // Thêm hàm gọi API xóa vào đây
           type="delete"
         />
@@ -350,10 +314,7 @@ const RightSide = ({
           onClose={closeNoNotification}
           content="tắt thông báo đoạn chat với"
           label="Tắt thông báo"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           type="disableNotifications"
         />
       )}

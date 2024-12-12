@@ -193,6 +193,10 @@ const FooterMessage = ({
     }
   };
 
+  if (!item) {
+    return <div></div>;
+  }
+
   return (
     <>
       {relation === "blockedBy" ? (
