@@ -41,101 +41,97 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
 
+  const myChat = async () => {
+    try {
+      const data = await getAllChat(itemChat.id.toString()); // Gọi API
+      if (data.success) {
+        setMessages(data.messages); // Lưu trực tiếp `messages` từ API
+      }
+    } catch (error) {
+      console.error("Error loading chat:", error);
+    }
+  };
+
+  const handleNewMessage = (data: ResponseMessageDTO) => {
+    console.log("Successfully received message: ", data);
+    if (data.boxId !== itemChat.id) return;
+
+    // Cập nhật mảng tin nhắn
+    setMessages((prevMessages) => {
+      const updatedMessages = [...prevMessages, data];
+
+      // Lấy tin nhắn mới nhất
+      const latestMessage = updatedMessages.sort(
+        (a, b) =>
+          new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+      )[0];
+
+      // Cập nhật `lastMessage`
+      setLastMessage({
+        id: latestMessage.boxId, // Include the 'id' from latestMessage
+        text: latestMessage.text
+          ? latestMessage.text // Lấy phần tử đầu tiên nếu có text
+          : latestMessage.contentId
+            ? "" // Nếu không có text, kiểm tra tệp
+            : "",
+        createBy: latestMessage.createBy,
+        timestamp: new Date(latestMessage.createAt),
+      });
+
+      return updatedMessages;
+    });
+  };
+
+  const handleDeleteMessage = (data: any) => {
+    if (data.boxId !== itemChat.id) return;
+
+    console.log(messages, "this is premessage");
+    setMessages((prevMessages) => {
+      // Filter out the deleted message
+      const updatedMessages = prevMessages.filter(
+        (chat) => chat.id !== data.id
+      );
+
+      console.log(updatedMessages, "Day la thang updateMessage");
+
+      // If the deleted message was the last one, update the lastMessage
+      if (updatedMessages.length >= 0) {
+        const latestMessage = updatedMessages.sort(
+          (a, b) =>
+            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+        )[0]; // Get the latest message from the updated list
+
+        // Update the `lastMessage` state with the new last message
+        setLastMessage({
+          id: latestMessage.boxId, // Include the 'id' from latestMessage
+          text: latestMessage.text
+            ? latestMessage.text
+            : latestMessage.contentId
+              ? "" // If no text, check for file
+              : "",
+          createBy: latestMessage.createBy,
+          timestamp: new Date(latestMessage.createAt),
+        });
+      } else {
+        // If no messages left after deletion, clear the lastMessage
+        setLastMessage({
+          id: "",
+          text: "",
+          createBy: "",
+          timestamp: new Date(),
+        });
+      }
+
+      return updatedMessages;
+    });
+  };
+
   useEffect(() => {
     if (!itemChat.id) {
       console.error("ID is missing or invalid");
       return;
     }
-
-    const myChat = async () => {
-      try {
-        const data = await getAllChat(itemChat.id.toString()); // Gọi API
-        if (data.success) {
-          setMessages(data.messages); // Lưu trực tiếp `messages` từ API
-        }
-      } catch (error) {
-        console.error("Error loading chat:", error);
-      }
-    };
-
     myChat();
-
-    const handleNewMessage = (data: ResponseMessageDTO) => {
-      console.log("Successfully received message: ", data);
-      if (data.boxId !== itemChat.id) return;
-
-      // Cập nhật mảng tin nhắn
-      setMessages((prevMessages) => {
-        const updatedMessages = [...prevMessages, data];
-
-        // Lấy tin nhắn mới nhất
-        const latestMessage = updatedMessages.sort(
-          (a, b) =>
-            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-        )[0];
-
-        // Cập nhật `lastMessage`
-        setLastMessage({
-          id: latestMessage.boxId, // Include the 'id' from latestMessage
-          text: latestMessage.text
-            ? latestMessage.text // Lấy phần tử đầu tiên nếu có text
-            : latestMessage.contentId
-              ? "" // Nếu không có text, kiểm tra tệp
-              : "",
-          createBy: latestMessage.createBy,
-          timestamp: new Date(latestMessage.createAt),
-        });
-
-        return updatedMessages;
-      });
-    };
-
-    const handleDeleteMessage = (data: any) => {
-      if (data.boxId !== itemChat.id) return;
-
-      console.log(messages, "this is premessage");
-      setMessages((prevMessages) => {
-        // Filter out the deleted message
-        const updatedMessages = prevMessages.filter(
-          (chat) => chat.id !== data.id
-        );
-
-        console.log(updatedMessages, "Day la thang updateMessage");
-
-        // If the deleted message was the last one, update the lastMessage
-        if (updatedMessages.length >= 0) {
-          const latestMessage = updatedMessages.sort(
-            (a, b) =>
-              new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-          )[0]; // Get the latest message from the updated list
-
-          // Update the `lastMessage` state with the new last message
-          setLastMessage({
-            id: latestMessage.boxId, // Include the 'id' from latestMessage
-            text: latestMessage.text
-              ? latestMessage.text
-              : latestMessage.contentId
-                ? "" // If no text, check for file
-                : "",
-            createBy: latestMessage.createBy,
-            timestamp: new Date(latestMessage.createAt),
-          });
-        } else {
-          // If no messages left after deletion, clear the lastMessage
-          setLastMessage({
-            id: "",
-            text: "",
-            createBy: "",
-            timestamp: new Date(),
-          });
-        }
-
-        return updatedMessages;
-      });
-    };
-
-    // Lắng nghe sự kiện tin nhắn mới
-    // Cấu hình `pusherClient` nếu có
     const pusherChannel = `private-${itemChat.id}`;
     pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);

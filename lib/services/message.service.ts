@@ -91,6 +91,9 @@ export async function getListChat(): Promise<ItemChat[]> {
               createBy: box.responseLastMessage.createBy,
             }
           : { id: "", text: "", timestamp: new Date(), createBy: "" };
+
+        console.log(lastMessage, "lastMessage list");
+
         return {
           id: box._id,
           userName:
@@ -165,8 +168,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
               createBy: box.lastMessage.createBy,
             }
           : { id: "", text: "", timestamp: new Date(), createBy: "" };
-
-        console.log(lastMessage, "lastMessage");
 
         return {
           id: box._id,

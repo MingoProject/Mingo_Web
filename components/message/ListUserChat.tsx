@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import {
   createGroup,
   getListChat,
@@ -17,7 +17,7 @@ import {
 } from "@radix-ui/react-menubar";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import MessageSearch from "./MessageSearch"; // Import component tìm kiếm
+import MessageSearch from "./MessageSearch";
 import CreateGroup from "./CreateGroup";
 import { useAuth } from "@/context/AuthContext";
 import { useChatItemContext } from "@/context/ChatItemContext";
@@ -28,39 +28,31 @@ import { FindUserDTO } from "@/dtos/UserDTO";
 
 const ListUserChat = () => {
   const { allChat, setAllChat } = useChatItemContext();
-  const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
-  const [searchTerm, setSearchTerm] = useState<string>(""); // State lưu trữ từ khóa tìm kiếm
-  const router = useRouter(); // Use router for navigation
+  const { filteredChat, setFilteredChat } = useChatItemContext();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { profile } = useAuth();
-  const { id } = useParams(); // Lấy ID từ URL
+  const { id } = useParams();
   const toggleForm = () => {
     setIsFormOpen(!isFormOpen);
   };
   const [user, setUser] = useState<FindUserDTO | null>(null);
-  // Fetch user nếu không có chatItem
-  useEffect(() => {
-    if (id && !allChat.find((chat) => chat.id === id)) {
-      let isMounted = true;
 
-      const fetchUser = async () => {
-        try {
-          const data = await getUserById(id.toString());
-          if (isMounted && data) {
-            setUser(data);
-          }
-        } catch (error) {
-          console.error("Error loading user:", error);
-        }
-      };
-
-      fetchUser();
-
-      return () => {
-        isMounted = false; // Cleanup khi component unmount
-      };
+  const fetchUserIfNotExists = useCallback(async () => {
+    if (id && !allChat.some((chat) => chat.id === id)) {
+      try {
+        const data = await getUserById(id.toString());
+        setUser(data);
+      } catch (error) {
+        console.error("Error loading user:", error);
+      }
     }
-  }, []);
+  }, [id, allChat]);
+
+  useEffect(() => {
+    fetchUserIfNotExists();
+  }, [fetchUserIfNotExists]);
 
   useEffect(() => {
     if (id && !allChat.find((chat) => chat.id === id)) {
@@ -70,60 +62,63 @@ const ListUserChat = () => {
         try {
           const userId = localStorage.getItem("userId");
 
-          // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
           const existChat = allChat.find((item) => item?.receiverId === id);
           if (!existChat) {
-            // Dữ liệu để tạo group chat
             const groupData = {
               membersIds: [id, userId],
               leaderId: userId,
               groupName: `${user?.firstName} ${user?.lastName}`,
               groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
             };
-
-            // Gọi API tạo group
-            const res = await createGroup(groupData);
+            await createGroup(groupData);
           } else {
             console.log("Chat already exists!");
           }
         } catch (error) {
-          console.error("Error loading user:", error);
+          console.error("Error creating group chat:", error);
         }
       };
 
       fetchUser();
 
       return () => {
-        isMounted = false; // Cleanup khi component unmount
+        isMounted = false;
       };
     }
-  }, []);
+  }, [id, user, allChat]);
+
+  const fetchChats = useCallback(async () => {
+    try {
+      const [normalChats, groupChats] = await Promise.all([
+        getListChat(),
+        getListGroupChat(),
+      ]);
+      const combinedChats = [
+        ...(normalChats || []),
+        ...(groupChats || []),
+      ].sort((a, b) => {
+        return (
+          new Date(b.lastMessage.timestamp).getTime() -
+          new Date(a.lastMessage.timestamp).getTime()
+        );
+      });
+
+      console.log(combinedChats, "combinedChats");
+
+      setAllChat(combinedChats);
+      setFilteredChat(combinedChats);
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  }, [setAllChat, setFilteredChat]);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const normalChats = await getListChat();
-        const groupChats = await getListGroupChat();
-
-        // Gộp hai danh sách, đảm bảo không bị rỗng nếu một trong hai có dữ liệu
-        const combinedChats = [
-          ...(normalChats || []), // Nếu rỗng, dùng mảng trống thay thế
-          ...(groupChats || []),
-        ];
-
-        setAllChat(combinedChats);
-        setFilteredChat(combinedChats);
-      } catch (error) {
-        console.error("Error loading chats:", error);
-      }
-    };
-
     fetchChats();
+  }, [fetchChats]);
 
-    // Lắng nghe sự kiện tin nhắn mới
+  useEffect(() => {
     const handleNewMessage = (data: any) => {
       setAllChat((prevChats: any) => {
-        // Cập nhật danh sách chat
         const updatedChats = prevChats.map((chat: any) => {
           if (chat.id === data.boxId) {
             return {
@@ -137,7 +132,6 @@ const ListUserChat = () => {
           return chat;
         });
 
-        // Nếu tin nhắn mới thuộc một chat chưa tồn tại, thêm nó
         const isNewChat = !updatedChats.find(
           (chat: any) => chat.id === data.boxId
         );
@@ -157,17 +151,18 @@ const ListUserChat = () => {
           });
         }
 
-        return updatedChats;
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
       });
 
-      // Cập nhật danh sách chat đã lọc nếu cần
       setFilteredChat((prevFiltered) => {
         const updatedChats = prevFiltered.map((chat) => {
           if (chat.id === data.boxId) {
             return {
               ...chat,
               lastMessage: {
-                ...chat.lastMessage, // Giữ nguyên các thuộc tính khác
+                ...chat.lastMessage,
                 text: data.text || "Đã gửi 1 file",
                 timestamp: new Date(data.createAt),
               },
@@ -176,7 +171,6 @@ const ListUserChat = () => {
           return chat;
         });
 
-        // Nếu tin nhắn mới thuộc một chat chưa tồn tại, thêm nó
         const isNewChat = !updatedChats.find((chat) => chat.id === data.boxId);
         if (isNewChat) {
           updatedChats.unshift({
@@ -184,43 +178,32 @@ const ListUserChat = () => {
             userName: data.userName || "Người dùng mới",
             avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
             lastMessage: {
-              id: "unique-id", // Cung cấp giá trị mặc định cho id
-              createBy: "system", // Cung cấp giá trị mặc định cho createBy
+              id: "unique-id",
+              createBy: "system",
               text: data.text || "Đã gửi 1 file",
               timestamp: new Date(data.createAt),
             },
-            status: "active", // Giá trị mặc định cho status
-            isRead: false, // Giá trị mặc định cho isRead
+            status: "active",
+            isRead: false,
             senderId: profile._id,
             receiverId: data.receiverIds,
           });
         }
 
-        return updatedChats;
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
       });
     };
 
-    // Đăng ký kênh và sự kiện
     pusherClient.subscribe("chat-channel");
     pusherClient.bind("new-message", handleNewMessage);
 
-    // Dọn dẹp sự kiện
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unsubscribe("chat-channel");
     };
-  }, []);
-
-  // const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //   const searchValue = e.target.value;
-  //   setSearchTerm(searchValue);
-
-  //   // Lọc các cuộc trò chuyện theo tên
-  //   const filtered = allChat.filter((chat) =>
-  //     chat.userName.toLowerCase().includes(searchValue.toLowerCase())
-  //   );
-  //   setFilteredChat(filtered);
-  // };
+  }, [id, allChat]);
 
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
@@ -235,24 +218,20 @@ const ListUserChat = () => {
     const sortedFilteredChats = filtered.sort((a, b) => {
       const timestampA = new Date(a.lastMessage.timestamp).getTime();
       const timestampB = new Date(b.lastMessage.timestamp).getTime();
-      return timestampA - timestampB; // Sorting in descending order
+      return timestampB - timestampA; // Sorting in descending order
     });
 
     setFilteredChat(sortedFilteredChats);
   };
 
-  console.log(filteredChat, "this is filterchat");
-
-  // Handle chat selection and navigation
   const handleChatClick = (id: string) => {
-    router.push(`/message/${id}`); // Navigate to chat details page
+    router.push(`/message/${id}`);
   };
 
   return (
     <ChatProvider>
       <div className="flex flex-col w-full">
-        <MessageSearch value={searchTerm} onChange={handleSearch} />{" "}
-        {/* Component tìm kiếm */}
+        <MessageSearch value={searchTerm} onChange={handleSearch} />
         <Menubar className="relative border-none bg-transparent py-4 shadow-none z-50">
           <MenubarMenu>
             <MenubarTrigger className="flex items-center gap-2">
