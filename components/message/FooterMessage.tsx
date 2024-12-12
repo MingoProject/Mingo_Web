@@ -3,7 +3,7 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 import { FileContent, ItemChat, ResponseMessageDTO } from "@/dtos/MessageDTO";
 import { FindUserDTO } from "@/dtos/UserDTO";
 import { pusherClient } from "@/lib/pusher";
-import { sendMessage } from "@/lib/services/message.service";
+import { MarkMessageAsRead, sendMessage } from "@/lib/services/message.service";
 import { checkRelation } from "@/lib/services/relation.service";
 import { getFileFormat } from "@/lib/utils";
 import {

@@ -26,6 +26,7 @@ const HeaderMessageContent = ({
       </div>
     );
   }
+
   return (
     <div className="w-full border-b border-gray-200 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
@@ -42,13 +43,13 @@ const HeaderMessageContent = ({
                   className="rounded-full object-cover"
                   style={{ objectFit: "cover", width: "45px", height: "45px" }}
                 />
+                {item.status && (
+                  <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
+                )}
               </div>
-              <div className="hidden w-2/3 text-xs md:flex md:flex-col">
-                <span className="text-base font-semibold">{item.userName}</span>
-                <span className="truncate text-xs text-border-color">
-                  {item.status}
-                </span>
-              </div>
+              <span className="text-[18px] font-semibold self-center">
+                {item.userName}
+              </span>
             </>
           )}
         </div>

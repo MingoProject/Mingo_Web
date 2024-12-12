@@ -86,7 +86,10 @@ export async function getListChat(): Promise<ItemChat[]> {
               id: box.responseLastMessage.id,
               text: box.responseLastMessage.text
                 ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "",
+                : box.responseLastMessage.contentId || "",
+              contentId: box.responseLastMessage.contentId
+                ? box.responseLastMessage.contentId
+                : box.responseLastMessage.contentId || "",
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,
               status: box.responseLastMessage.readedId.includes(userId)
@@ -96,6 +99,16 @@ export async function getListChat(): Promise<ItemChat[]> {
           : {
               id: "",
               text: "",
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
               timestamp: new Date(),
               createBy: "",
               status: false,
@@ -167,6 +180,9 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
               text: box.lastMessage.text
                 ? box.lastMessage.text
                 : box.lastMessage.text || "",
+              contentId: box.lastMessage.contentId
+                ? box.lastMessage.contentId
+                : box.lastMessage.contentId || "",
               timestamp: new Date(box.lastMessage.createAt),
               createBy: box.lastMessage.createBy,
               status: box.lastMessage.readedId.includes(userId) ? true : false, // Kiểm tra nếu userId (profile._id) nằm trong readedId
@@ -174,6 +190,16 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
           : {
               id: "",
               text: "",
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
               timestamp: new Date(),
               createBy: "",
               status: false,
@@ -533,7 +559,7 @@ export async function checkMarkMessageAsRead(boxIds: string[]) {
   }
 }
 
-export async function MarkMessageAsRead(boxId: string) {
+export async function MarkMessageAsRead(boxId: string, userId: string) {
   const token = localStorage.getItem("token");
   if (!token) {
     console.error("No token found");
@@ -542,7 +568,7 @@ export async function MarkMessageAsRead(boxId: string) {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}`,
+      `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}&&userId=${userId}`,
       {
         headers: {
           "Content-Type": "application/json",

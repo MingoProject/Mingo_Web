@@ -73,6 +73,7 @@ export interface DetailMessageBoxDTO {
 export interface Text {
   id: string;
   text: string;
+  contentId: FileContent;
   timestamp: Date;
   createBy: string;
   status: boolean;

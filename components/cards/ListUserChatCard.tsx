@@ -11,7 +11,7 @@ import { Icon } from "@iconify/react";
 import Format from "./FormatCard";
 import { useChatContext } from "@/context/ChatContext";
 import { useParams } from "next/navigation";
-import { ResponseMessageDTO } from "@/dtos/MessageDTO";
+import { FileContent, ResponseMessageDTO } from "@/dtos/MessageDTO";
 import { pusherClient } from "@/lib/pusher";
 import {
   checkMarkMessageAsRead,
@@ -22,6 +22,7 @@ import {
 interface Text {
   id: string;
   text: string;
+  contentId: FileContent;
   timestamp: Date;
   createBy: string;
   status: boolean;
@@ -45,6 +46,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
   // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
+  const userId = localStorage.getItem("userId");
 
   const myChat = async () => {
     try {
@@ -89,9 +91,24 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   //     return updatedMessages;
   //   });
   // };
+
   const handleNewMessage = async (data: ResponseMessageDTO) => {
     console.log("Received new message: ", data);
     if (data.boxId !== itemChat.id) return;
+
+    console.log(userId, "userId");
+    console.log(data.boxId, "data.boxId");
+    console.log(itemChat.id, "itemChat.id");
+
+    try {
+      const mark = await MarkMessageAsRead(
+        data.boxId,
+        userId?.toString() || ""
+      );
+      console.log(mark, "this is mark");
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
 
     setMessages((prevMessages) => {
       const updatedMessages = [...prevMessages, data];
@@ -104,31 +121,36 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
       // Kiểm tra xem userId có trong mảng readedId không
       const userId = localStorage.getItem("userId");
-      const isRead = latestMessage.readedId.includes(userId?.toString() || "");
+      const isRead =
+        latestMessage.readedId.includes(userId?.toString() || "") ||
+        data.boxId === itemChat.id;
 
-      // Cập nhật lastMessage và trạng thái (status)
+      const fileContent: FileContent = {
+        fileName: "",
+        bytes: "",
+        format: "",
+        height: "",
+        publicId: "",
+        type: "",
+        url: "",
+        width: "",
+      };
+
+      // Cập nhật `lastMessage` và trạng thái (`status`)
       setLastMessage({
         id: latestMessage.boxId,
-        text: latestMessage.text ? latestMessage.text : "",
+        text: latestMessage.text || "",
+        contentId: latestMessage.contentId || fileContent,
         createBy: latestMessage.createBy,
         timestamp: new Date(latestMessage.createAt),
-        status: isRead, // Cập nhật trạng thái dựa vào readedId
+        status: isRead, // Cập nhật trạng thái dựa vào `readedId`
       });
-
       console.log(updatedMessages, "updatedMessages");
 
       return updatedMessages;
     });
 
     // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
-    if (data.createBy !== userId) {
-      try {
-        const mark = await MarkMessageAsRead(data.boxId);
-        console.log(mark, "this is mark");
-      } catch (error) {
-        console.error("Error marking message as read:", error);
-      }
-    }
   };
 
   const handleDeleteMessage = (data: any) => {
@@ -139,6 +161,18 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       const updatedMessages = prevMessages.filter(
         (chat) => chat.id !== data.id
       );
+      const fileContent: FileContent = {
+        fileName: "",
+        bytes: "",
+        format: "",
+        height: "",
+        publicId: "",
+        type: "",
+        url: "",
+        width: "",
+      };
+
+      // Cập nhật `lastMessage` và trạng thái (`status`)
 
       // If the deleted message was the last one, update the lastMessage
       if (updatedMessages.length >= 0) {
@@ -149,21 +183,19 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
         // Update the `lastMessage` state with the new last message
         setLastMessage({
-          id: latestMessage.boxId, // Include the 'id' from latestMessage
-          text: latestMessage.text
-            ? latestMessage.text
-            : latestMessage.contentId
-              ? "" // If no text, check for file
-              : "",
+          id: latestMessage.boxId,
+          text: latestMessage.text || "",
+          contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,
           timestamp: new Date(latestMessage.createAt),
-          status: false,
+          status: false, // Cập nhật trạng thái dựa vào `readedId`
         });
       } else {
         // If no messages left after deletion, clear the lastMessage
         setLastMessage({
           id: "",
           text: "",
+          contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
           status: false,
@@ -191,7 +223,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unsubscribe(pusherChannel);
     };
-  }, []);
+  }, [itemChat.id]);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();
@@ -222,12 +254,11 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   };
 
   // Lấy ID người đăng nhập (giả sử lưu trữ trong localStorage)
-  const userId = localStorage.getItem("userId");
 
   // Kiểm tra nếu receiverId là người nhận, không phải người gửi (userId)
   const isReceiver = lastMessage.createBy !== userId;
 
-  console.log(lastMessage.status, "lastMessage.status");
+  console.log(lastMessage.contentId?.type, "lastMessage.status");
 
   return (
     <ContextMenu>
@@ -252,7 +283,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 {itemChat.userName}
               </span>
               <span className={`truncate text-sm font-medium `}>
-                {isReceiver && lastMessage.id === itemChat.id ? (
+                {/* {isReceiver ? (
                   <div className="flex gap-1">
                     <p
                       className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
@@ -265,8 +296,30 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                       >
                         {lastMessage.text}
                       </p>
+                    ) : lastMessage.contentId.type === "Image" ? (
+                      <p
+                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                      >
+                        Gửi 1 ảnh
+                      </p>
+                    ) : lastMessage.contentId.type === "Video" ? (
+                      <p
+                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                      >
+                        Gửi 1 video
+                      </p>
+                    ) : lastMessage.contentId.type === "Other" ? (
+                      <p
+                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                      >
+                        Gửi 1 file
+                      </p>
                     ) : (
-                      <p className="text-sm font-bold">Start a chat</p>
+                      <p
+                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                      >
+                        Bắt đầu đoạn chat
+                      </p>
                     )}
                   </div>
                 ) : (
@@ -274,7 +327,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                     <p
                       className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
                     >
-                      {" "}
                       Bạn:{" "}
                     </p>
 
@@ -285,11 +337,101 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         {lastMessage.text}
                       </p>
                     ) : (
-                      <p className="text-sm font-bold">Start a chat</p>
+                      <p
+                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                      >
+                        Gửi 1 file
+                      </p>
                     )}
-                    {!lastMessage && (
-                      <p className="text-sm font-bold">Start a chat</p>
-                    )}
+                  </div>
+                )} */}
+                {isReceiver ? (
+                  <div className="flex gap-1">
+                    <p
+                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                    >
+                      {itemChat.userName.trim().split(" ").pop()}:{" "}
+                    </p>
+                    {(() => {
+                      const type =
+                        lastMessage.contentId?.type?.toLowerCase() || "";
+                      const messageStatusClass = lastMessage.status
+                        ? "font-normal"
+                        : "font-bold";
+
+                      if (lastMessage.text.trim() !== "") {
+                        return (
+                          <p className={messageStatusClass}>
+                            {lastMessage.text}
+                          </p>
+                        );
+                      }
+
+                      switch (type) {
+                        case "image":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 ảnh</p>
+                          );
+                        case "video":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 video</p>
+                          );
+                        case "other":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 file</p>
+                          );
+                        default:
+                          return (
+                            <p className={messageStatusClass}>
+                              Bắt đầu đoạn chat
+                            </p>
+                          );
+                      }
+                    })()}
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1">
+                    <p
+                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
+                    >
+                      Bạn:{" "}
+                    </p>
+                    {(() => {
+                      const type =
+                        lastMessage.contentId?.type?.toLowerCase() || "";
+                      const messageStatusClass = lastMessage.status
+                        ? "font-normal"
+                        : "font-bold";
+
+                      if (lastMessage.text.trim() !== "") {
+                        return (
+                          <p className={messageStatusClass}>
+                            {lastMessage.text}
+                          </p>
+                        );
+                      }
+
+                      switch (type) {
+                        case "image":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 ảnh</p>
+                          );
+                        case "video":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 video</p>
+                          );
+                        case "other":
+                          return (
+                            <p className={messageStatusClass}>Gửi 1 file</p>
+                          );
+                        default:
+                          return (
+                            <p className={messageStatusClass}>
+                              Bắt đầu đoạn chat
+                            </p>
+                          );
+                      }
+                    })()}
                   </div>
                 )}
               </span>
