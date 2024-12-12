@@ -72,9 +72,7 @@ const PostsCard = ({
     const userId = localStorage.getItem("userId");
     if (userId) {
       try {
-        console.log("userId", userId);
-        console.log("likes", likes);
-        const isUserLiked = likes.some((like) => like._id === userId);
+        const isUserLiked = likes.some((like) => like === userId);
         if (isMounted) {
           setIsLiked(isUserLiked);
         }
@@ -129,15 +127,27 @@ const PostsCard = ({
     }
   };
 
-  const toggleLike = () => {
+  const toggleLike = async () => {
     if (isLiked) {
-      handleDislikePost();
-      setNumberOfLikes(likes.length - 1);
+      // Dislike
+      await handleDislikePost();
+      setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      handleLikePost();
-      setNumberOfLikes(likes.length + 1);
+      // Like
+      await handleLikePost();
+      setNumberOfLikes((prev: any) => prev + 1);
     }
+    setIsLiked(!isLiked);
   };
+  // const toggleLike = () => {
+  //   if (isLiked) {
+  //     handleDislikePost();
+  //     setNumberOfLikes(likes.length - 1);
+  //   } else {
+  //     handleLikePost();
+  //     setNumberOfLikes(likes.length + 1);
+  //   }
+  // };
 
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
@@ -153,7 +163,7 @@ const PostsCard = ({
             />
           </Link>
           <div>
-            <p className="text-dark100_light500 ml-3 text-base">
+            <span className="text-dark100_light500 ml-3 text-base">
               {author?.firstName ? author.firstName : ""}
               {tags.length > 0 && (
                 <span>
@@ -194,7 +204,7 @@ const PostsCard = ({
                 isOpen={isTagsModalOpen}
                 onClose={handleTagsModalToggle}
               />
-            </p>
+            </span>
             <span className="text-dark100_light500 ml-3 text-sm">
               {getTimestamp(createdAt)}
             </span>

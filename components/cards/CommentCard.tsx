@@ -179,7 +179,7 @@ const CommentCard = ({
         },
       };
 
-      setCommentsData((prev: any) => [enrichedComment, ...prev]);
+      setReplies((prev) => [enrichedComment, ...prev]);
 
       if (comment.userId._id !== profile._id) {
         const notificationParams = {
