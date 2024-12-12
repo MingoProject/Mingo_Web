@@ -63,6 +63,7 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
                   comments: post.comments || [],
                   shares: post.shares || [],
                   location: post.location,
+                  tags: post.tags,
                   privacy: post.privacy,
                 }));
 
@@ -102,6 +103,7 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
                 shares={post.shares || []}
                 location={post.location}
                 privacy={post.privacy}
+                tags={post.tags}
                 profile={profile}
               />
             ))

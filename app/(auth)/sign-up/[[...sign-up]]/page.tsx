@@ -39,8 +39,8 @@ const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
 };
 
 const SignUp = () => {
-  const [username, setUsername] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [birthday, setBirthday] = useState("");
@@ -61,8 +61,8 @@ const SignUp = () => {
     setErrorMessage("");
 
     const userData = {
-      firstName: username,
-      lastName: fullName,
+      firstName,
+      lastName,
       nickName: "",
       phoneNumber,
       email,
@@ -77,8 +77,8 @@ const SignUp = () => {
 
       if (newUser) {
         setSuccessMessage("Registration successful! Please log in.");
-        setUsername("");
-        setFullName("");
+        setFirstName("");
+        setLastName("");
         setEmail("");
         setPhoneNumber("");
         setBirthday("");
@@ -112,18 +112,18 @@ const SignUp = () => {
 
         <form className="mt-[20px]" onSubmit={handleSubmit}>
           <FloatingLabelInput
-            id="username"
-            label="Username"
+            id="firstName"
+            label="First Name"
             type="text"
-            value={username}
-            setValue={setUsername}
+            value={firstName}
+            setValue={setFirstName}
           />
           <FloatingLabelInput
-            id="fullName"
-            label="Full Name"
+            id="lastName"
+            label="Last Name"
             type="text"
-            value={fullName}
-            setValue={setFullName}
+            value={lastName}
+            setValue={setLastName}
           />
           <FloatingLabelInput
             id="email"
@@ -176,7 +176,6 @@ const SignUp = () => {
                 </option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
-                <option value="other">Other</option>
               </select>
             </div>
           </div>
