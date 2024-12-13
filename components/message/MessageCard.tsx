@@ -1,6 +1,10 @@
 "use client";
 
-import { PusherDelete, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import {
+  PusherDelete,
+  PusherRevoke,
+  ResponseMessageDTO,
+} from "@/dtos/MessageDTO";
 import { format, isSameDay } from "date-fns";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
@@ -8,7 +12,11 @@ import ChatActions from "./ChatActions";
 import { useParams } from "next/navigation";
 import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
-import { removeMessage, revokeMessage } from "@/lib/services/message.service";
+import {
+  removeMessage,
+  revokeMessage,
+  unsendMessage,
+} from "@/lib/services/message.service";
 
 const MessageCard = ({
   chat,
@@ -31,7 +39,20 @@ const MessageCard = ({
   const handleDelete = async (messageId: string) => {
     try {
       await removeMessage(messageId);
-      setMessages(messages.filter((msg) => msg.id !== messageId));
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
+    } catch (error) {
+      alert("Xóa chat thất bại. Vui lòng thử lại.");
+    }
+  };
+
+  const handleUnsend = async (messageId: string) => {
+    try {
+      await unsendMessage(messageId);
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
     } catch (error) {
       alert("Xóa chat thất bại. Vui lòng thử lại.");
     }
@@ -40,10 +61,8 @@ const MessageCard = ({
   const handleRevoke = async (messageId: string) => {
     try {
       await revokeMessage(messageId);
-      setMessages(
-        messages.map((msg) =>
-          msg.id === messageId ? { ...msg, revoked: true } : msg
-        )
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
       );
     } catch (error) {
       alert("Khôi phục thất bại. Vui lòng thử lại.");
@@ -55,15 +74,23 @@ const MessageCard = ({
       console.error("boxId is missing or invalid");
       return;
     }
-
-    pusherClient.subscribe(`private-${id}`);
-
     const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
       console.log("Successfully deleted message: ", messageId);
-      setMessages(messages.filter((msg) => msg.id !== messageId));
+      // setMessages(messages.filter((msg) => msg.id !== messageId));
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
     };
 
-    const handleRevokeMessage = ({ id: messageId }: PusherDelete) => {
+    const handleUnsendMessage = ({ id: messageId }: PusherDelete) => {
+      console.log("Successfully unsend message: ", messageId);
+      // setMessages(messages.filter((msg) => msg.id !== messageId));
+      setMessages((prevMessages) =>
+        prevMessages.filter((msg) => msg.id !== messageId)
+      );
+    };
+
+    const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
       console.log("Successfully revoked message: ", messageId);
       setMessages(
         messages.map((msg) =>
@@ -72,15 +99,17 @@ const MessageCard = ({
       );
     };
 
+    pusherClient.subscribe(`private-${id}`);
     pusherClient.bind("delete-message", handleDeleteMessage);
+    pusherClient.bind("unsend-message", handleUnsendMessage);
     pusherClient.bind("revoke-message", handleRevokeMessage);
 
     return () => {
-      pusherClient.unsubscribe(`private-${id}`);
-      pusherClient.unbind("delete-message", handleDeleteMessage);
+      pusherClient.bind("delete-message", handleDeleteMessage);
+      pusherClient.unbind("unsend-message", handleUnsendMessage);
       pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
-  }, []);
+  }, [chat.id, setMessages]);
 
   return (
     <>
@@ -90,16 +119,16 @@ const MessageCard = ({
           {format(new Date(chat.createAt), "dd/MM/yyyy")}
         </div>
       )}
-
       <div
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
-        <div className="flex ">
+        <div className="flex">
           {isSender ? (
             <>
-              <div className=" w-fit self-center">
+              <div className="w-fit self-center">
                 <ChatActions
                   onDelete={() => handleDelete(chat.id)}
+                  onUnsend={() => handleUnsend(chat.id)}
                   onRevoke={() => handleRevoke(chat.id)}
                 />
               </div>
@@ -111,40 +140,49 @@ const MessageCard = ({
                       : "bg-gray-200 text-black rounded-bl-none"
                   }`}
                 >
-                  {/* Hiển thị text nếu không có file */}
-                  {hasText && <p className="text-sm">{chat.text}</p>}
+                  {/* Kiểm tra flag và visibility */}
+                  {!chat.flag ? (
+                    <p className="text-sm italic text-gray-500">
+                      Tin nhắn đã được thu hồi
+                    </p>
+                  ) : (
+                    <>
+                      {/* Hiển thị text nếu không có file */}
+                      {hasText && <p className="text-sm">{chat.text}</p>}
 
-                  {/* Hiển thị file nếu contentId có dữ liệu */}
-                  {hasFiles && (
-                    <div className="my-2">
-                      {chat.contentId.type === "Image" ? (
-                        <Image
-                          src={chat.contentId.url} // URL của file ảnh
-                          alt={chat.contentId.fileName || "Image"}
-                          width={
-                            chat.contentId.width
-                              ? parseInt(chat.contentId.width)
-                              : 300
-                          }
-                          height={
-                            chat.contentId.height
-                              ? parseInt(chat.contentId.height)
-                              : 300
-                          }
-                          className="rounded-lg"
-                        />
-                      ) : (
-                        <a
-                          href={chat.contentId.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary-200 underline text-sm"
-                          download={chat.contentId.fileName || true} // Tên file tải xuống hoặc sử dụng tên mặc định
-                        >
-                          {chat.contentId.fileName || "Download File"}
-                        </a>
+                      {/* Hiển thị file nếu contentId có dữ liệu */}
+                      {hasFiles && (
+                        <div className="my-2">
+                          {chat.contentId.type === "Image" ? (
+                            <Image
+                              src={chat.contentId.url} // URL của file ảnh
+                              alt={chat.contentId.fileName || "Image"}
+                              width={
+                                chat.contentId.width
+                                  ? parseInt(chat.contentId.width)
+                                  : 300
+                              }
+                              height={
+                                chat.contentId.height
+                                  ? parseInt(chat.contentId.height)
+                                  : 300
+                              }
+                              className="rounded-lg"
+                            />
+                          ) : (
+                            <a
+                              href={chat.contentId.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary-200 underline text-sm"
+                              download={chat.contentId.fileName || true} // Tên file tải xuống hoặc sử dụng tên mặc định
+                            >
+                              {chat.contentId.fileName || "Download File"}
+                            </a>
+                          )}
+                        </div>
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -152,7 +190,6 @@ const MessageCard = ({
           ) : (
             <>
               <div className="flex items-start gap-2">
-                {/* Avatar hiển thị nếu không phải sender */}
                 {!isSender && (
                   <Image
                     src="/assets/images/capy.jpg" // Avatar mặc định
@@ -169,40 +206,49 @@ const MessageCard = ({
                       : "bg-gray-200 text-black rounded-bl-none"
                   }`}
                 >
-                  {/* Hiển thị text nếu không có file */}
-                  {hasText && <p className="text-sm">{chat.text}</p>}
+                  {/* Kiểm tra flag và visibility */}
+                  {!chat.flag ? (
+                    <p className="text-sm italic text-gray-500">
+                      Tin nhắn đã được thu hồi
+                    </p>
+                  ) : (
+                    <>
+                      {/* Hiển thị text nếu không có file */}
+                      {hasText && <p className="text-sm">{chat.text}</p>}
 
-                  {/* Hiển thị file nếu contentId có dữ liệu */}
-                  {hasFiles && (
-                    <div className="my-2">
-                      {chat.contentId.type === "Image" ? (
-                        <Image
-                          src={chat.contentId.url} // URL của file ảnh
-                          alt={chat.contentId.fileName || "Image"}
-                          width={
-                            chat.contentId.width
-                              ? parseInt(chat.contentId.width)
-                              : 300
-                          }
-                          height={
-                            chat.contentId.height
-                              ? parseInt(chat.contentId.height)
-                              : 300
-                          }
-                          className="rounded-lg"
-                        />
-                      ) : (
-                        <a
-                          href={chat.contentId.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary-200 underline text-sm"
-                          download={chat.contentId.fileName || true} // Tên file tải xuống hoặc sử dụng tên mặc định
-                        >
-                          {chat.contentId.fileName || "Download File"}
-                        </a>
+                      {/* Hiển thị file nếu contentId có dữ liệu */}
+                      {hasFiles && (
+                        <div className="my-2">
+                          {chat.contentId.type === "Image" ? (
+                            <Image
+                              src={chat.contentId.url} // URL của file ảnh
+                              alt={chat.contentId.fileName || "Image"}
+                              width={
+                                chat.contentId.width
+                                  ? parseInt(chat.contentId.width)
+                                  : 300
+                              }
+                              height={
+                                chat.contentId.height
+                                  ? parseInt(chat.contentId.height)
+                                  : 300
+                              }
+                              className="rounded-lg"
+                            />
+                          ) : (
+                            <a
+                              href={chat.contentId.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="text-primary-200 underline text-sm"
+                              download={chat.contentId.fileName || true} // Tên file tải xuống hoặc sử dụng tên mặc định
+                            >
+                              {chat.contentId.fileName || "Download File"}
+                            </a>
+                          )}
+                        </div>
                       )}
-                    </div>
+                    </>
                   )}
                 </div>
               </div>

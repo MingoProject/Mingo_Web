@@ -206,6 +206,60 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     });
   };
 
+  const handleUnsendMessage = (data: any) => {
+    if (data.boxId !== itemChat.id) return;
+
+    setMessages((prevMessages) => {
+      // Filter out the deleted message
+      const updatedMessages = prevMessages.filter(
+        (chat) => chat.id !== data.id
+      );
+
+      const fileContent: FileContent = {
+        fileName: "",
+        bytes: "",
+        format: "",
+        height: "",
+        publicId: "",
+        type: "Đã thu hồi",
+        url: "",
+        width: "",
+      };
+
+      // Cập nhật `lastMessage` và trạng thái (`status`)
+
+      // If the deleted message was the last one, update the lastMessage
+      if (updatedMessages.length >= 0) {
+        const latestMessage = updatedMessages.sort(
+          (a, b) =>
+            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+        )[0]; // Get the latest message from the updated list
+
+        // Update the `lastMessage` state with the new last message
+        setLastMessage({
+          id: latestMessage.boxId,
+          text: latestMessage.text || "Đã thu hồi tin nhắn ",
+          contentId: latestMessage.contentId || fileContent,
+          createBy: latestMessage.createBy,
+          timestamp: new Date(latestMessage.createAt),
+          status: false, // Cập nhật trạng thái dựa vào `readedId`
+        });
+      } else {
+        // If no messages left after deletion, clear the lastMessage
+        setLastMessage({
+          id: "",
+          text: "",
+          contentId: fileContent,
+          createBy: "",
+          timestamp: new Date(),
+          status: false,
+        });
+      }
+
+      return updatedMessages;
+    });
+  };
+
   useEffect(() => {
     if (!itemChat.id) {
       console.error("ID is missing or invalid");
@@ -216,14 +270,16 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
+    pusherClient.bind("unsend-message", handleUnsendMessage);
 
     // Dọn dẹp khi component bị unmount
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
+      pusherClient.unbind("unsend-message", handleUnsendMessage);
       pusherClient.unsubscribe(pusherChannel);
     };
-  }, [itemChat.id]);
+  }, []);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();
