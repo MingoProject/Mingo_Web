@@ -21,7 +21,6 @@ const MessageContent = () => {
   const [isRightSideVisible, setIsRightSideVisible] = useState(false); // Trạng thái hiển thị của RightSide
   const { id } = useParams(); // Lấy ID từ URL
   const [user, setUser] = useState<FindUserDTO | null>(null);
-  const userId = localStorage.getItem("userId");
   const router = useRouter();
   // Fetch user nếu không có chatItem
   useEffect(() => {
@@ -84,6 +83,8 @@ const MessageContent = () => {
   const handleUnBlockChat = async () => {
     try {
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
+
       // Kiểm tra xem receiverId và senderId có tồn tại hay không
       if (!chatItem?.receiverId || !userId) {
         alert("Lỗi: Không có ID người nhận hoặc người gửi.");
@@ -108,6 +109,8 @@ const MessageContent = () => {
       return; // Nếu chưa có chatItem, không thực hiện gì
     }
     let isMounted = true;
+    const userId = localStorage.getItem("userId");
+
     const check = async () => {
       try {
         // const userId = localStorage.getItem("userId");
@@ -160,7 +163,7 @@ const MessageContent = () => {
     return () => {
       isMounted = false;
     };
-  }, [chatItem, userId]);
+  }, [chatItem]);
 
   if (!chatItem && id) {
     return (

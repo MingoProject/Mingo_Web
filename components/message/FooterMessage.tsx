@@ -20,13 +20,10 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
   const { id } = useParams(); // Lấy ID từ URL
-  // const [relation, setRelation] = useState<string>("");
-  const { allChat, setAllChat } = useChatItemContext();
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -53,7 +50,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     // Tạo đối tượng SegmentMessageDTO
     handleMarkAsRead();
     const messageData = {
-      boxId: id.toString(),
+      boxId: id?.toString() || "",
       content: value, // content is now a string
     };
 
@@ -124,7 +121,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
       const userId = localStorage.getItem("userId");
 
       const mark = await MarkMessageAsRead(
-        id.toString(),
+        id?.toString() || "",
         userId?.toString() || ""
       );
       console.log(mark, "this is mark");

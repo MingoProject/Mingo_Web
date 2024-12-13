@@ -79,7 +79,7 @@ const RightSide = ({
       setIsLoading(true);
 
       // Gọi API xóa chat
-      await removeChatBox(id.toString());
+      await removeChatBox(id?.toString() || "");
 
       // Lấy danh sách chat sau khi xóa
       const normalChats = await getListChat();
