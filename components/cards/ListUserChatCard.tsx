@@ -18,6 +18,7 @@ import {
   getAllChat,
   MarkMessageAsRead,
 } from "@/lib/services/message.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
 
 interface Text {
   id: string;
@@ -44,6 +45,8 @@ export function getDisplayName(name: string): string {
 
 const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
+  const { allChat, setAllChat } = useChatItemContext();
+
   // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
   const userId = localStorage.getItem("userId");
@@ -59,46 +62,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     }
   };
 
-  // const handleNewMessage = (data: ResponseMessageDTO) => {
-  //   console.log("Successfully received message: ", data);
-  //   if (data.boxId !== itemChat.id) return;
-
-  //   // Cập nhật mảng tin nhắn
-  //   setMessages((prevMessages) => {
-  //     const updatedMessages = [...prevMessages, data];
-
-  //     // Lấy tin nhắn mới nhất
-  //     const latestMessage = updatedMessages.sort(
-  //       (a, b) =>
-  //         new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-  //     )[0];
-
-  //     // Cập nhật `lastMessage`
-  //     setLastMessage({
-  //       id: latestMessage.boxId, // Include the 'id' from latestMessage
-  //       text: latestMessage.text
-  //         ? latestMessage.text // Lấy phần tử đầu tiên nếu có text
-  //         : latestMessage.contentId
-  //           ? "" // Nếu không có text, kiểm tra tệp
-  //           : "",
-  //       createBy: latestMessage.createBy,
-  //       timestamp: new Date(latestMessage.createAt),
-  //       status: false,
-  //     });
-
-  //     console.log(updatedMessages, "updatedMessages");
-
-  //     return updatedMessages;
-  //   });
-  // };
-
   const handleNewMessage = async (data: ResponseMessageDTO) => {
-    console.log("Received new message: ", data);
     if (data.boxId !== itemChat.id) return;
-
-    console.log(userId, "userId");
-    console.log(data.boxId, "data.boxId");
-    console.log(itemChat.id, "itemChat.id");
 
     try {
       const mark = await MarkMessageAsRead(
@@ -152,59 +117,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
     // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
   };
-
-  // const handleDeleteMessage = (data: any) => {
-  //   if (data.boxId !== itemChat.id) return;
-
-  //   setMessages((prevMessages) => {
-  //     // Filter out the deleted message
-  //     const updatedMessages = prevMessages.filter(
-  //       (chat) => chat.id !== data.id
-  //     );
-  //     const fileContent: FileContent = {
-  //       fileName: "",
-  //       bytes: "",
-  //       format: "",
-  //       height: "",
-  //       publicId: "",
-  //       type: "",
-  //       url: "",
-  //       width: "",
-  //     };
-
-  //     // Cập nhật `lastMessage` và trạng thái (`status`)
-
-  //     // If the deleted message was the last one, update the lastMessage
-  //     if (updatedMessages.length >= 0) {
-  //       const latestMessage = updatedMessages.sort(
-  //         (a, b) =>
-  //           new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-  //       )[0]; // Get the latest message from the updated list
-
-  //       // Update the `lastMessage` state with the new last message
-  //       setLastMessage({
-  //         id: latestMessage.boxId,
-  //         text: latestMessage.text || "Đã xóa tin nhắn",
-  //         contentId: latestMessage.contentId || fileContent,
-  //         createBy: latestMessage.createBy,
-  //         timestamp: new Date(latestMessage.createAt),
-  //         status: false, // Cập nhật trạng thái dựa vào `readedId`
-  //       });
-  //     } else {
-  //       // If no messages left after deletion, clear the lastMessage
-  //       setLastMessage({
-  //         id: "",
-  //         text: "Bắt đầu đoạn chat",
-  //         contentId: fileContent,
-  //         createBy: "",
-  //         timestamp: new Date(),
-  //         status: false,
-  //       });
-  //     }
-
-  //     return updatedMessages;
-  //   });
-  // };
 
   const handleDeleteMessage = (data: any) => {
     if (data.boxId !== itemChat.id) return;
@@ -342,8 +254,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       return;
     }
     myChat();
-    const pusherChannel = `private-${itemChat.id}`;
-    pusherClient.subscribe(pusherChannel);
+    //const pusherChannel = `private-${itemChat.id}`;
+    //pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
     pusherClient.bind("revoke-message", handleRevokeMessage);
@@ -353,8 +265,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unbind("revoke-message", handleRevokeMessage);
-
-      pusherClient.unsubscribe(pusherChannel);
     };
   }, [itemChat.id, setMessages]);
 
@@ -414,68 +324,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 {itemChat.userName}
               </span>
               <span className={`truncate text-sm font-medium `}>
-                {/* {isReceiver ? (
-                  <div className="flex gap-1">
-                    <p
-                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                    >
-                      {itemChat.userName.trim().split(" ").pop()}:{" "}
-                    </p>
-                    {lastMessage.text.trim() !== "" ? (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        {lastMessage.text}
-                      </p>
-                    ) : lastMessage.contentId.type === "Image" ? (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        Gửi 1 ảnh
-                      </p>
-                    ) : lastMessage.contentId.type === "Video" ? (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        Gửi 1 video
-                      </p>
-                    ) : lastMessage.contentId.type === "Other" ? (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        Gửi 1 file
-                      </p>
-                    ) : (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        Bắt đầu đoạn chat
-                      </p>
-                    )}
-                  </div>
-                ) : (
-                  <div className="flex items-center gap-1">
-                    <p
-                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                    >
-                      Bạn:{" "}
-                    </p>
-
-                    {lastMessage.text.trim() !== "" ? (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        {lastMessage.text}
-                      </p>
-                    ) : (
-                      <p
-                        className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                      >
-                        Gửi 1 file
-                      </p>
-                    )}
-                  </div>
-                )} */}
                 {isReceiver ? (
                   <div className="flex gap-1">
                     <p

@@ -25,6 +25,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   >([]);
   const { id } = useParams(); // Lấy ID từ URL
   // const [relation, setRelation] = useState<string>("");
+  const { allChat, setAllChat } = useChatItemContext();
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -47,42 +48,9 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
-  // useEffect(() => {
-  //   const check = async () => {
-  //     try {
-  //       const userId = localStorage.getItem("userId");
-  //       console.log(userId, "this is usid");
-  //       if (userId) {
-  //         const res: any = await checkRelation(
-  //           userId.toString(),
-  //           item?.receiverId?.toString()
-  //         );
-  //         if (!res) {
-  //           setRelation("stranger");
-  //         } else {
-  //           const { relation, sender, receiver } = res;
-  //           if (relation === "block") {
-  //             if (userId === sender) {
-  //               setRelation("blocked"); //
-  //             } else if (userId === receiver) {
-  //               setRelation("blockedBy");
-  //             }
-  //           } else {
-  //             setRelation("friend");
-  //           }
-  //         }
-  //       }
-  //     } catch (error) {
-  //       console.error("Error fetching relation:", error);
-  //     }
-  //   };
-
-  //   check(); // Gọi hàm `check` một lần tại đây
-  // }, []);
-
   const handleSendTextMessage = async () => {
     // Tạo đối tượng SegmentMessageDTO
-
+    handleMarkAsRead();
     const messageData = {
       boxId: id.toString(),
       content: value, // content is now a string
@@ -150,6 +118,20 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
   };
 
+  const handleMarkAsRead = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+
+      const mark = await MarkMessageAsRead(
+        id.toString(),
+        userId?.toString() || ""
+      );
+      console.log(mark, "this is mark");
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
+  };
+
   useEffect(() => {
     if (!id) {
       console.error("boxId is missing or invalid");
@@ -158,24 +140,20 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
 
     const handleNewMessage = (data: ResponseMessageDTO) => {
       console.log("Successfully received message: ", data);
-
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      console.log(data.boxId);
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
       });
     };
 
-    console.log(`Đang đăng ký kênh private-${id}`);
     pusherClient.subscribe(`private-${id}`);
-    console.log(`Đã đăng ký thành công kênh private-${id}`);
-
-    // Bind the new-message event
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("pusher:subscription_error", (error: any) => {
       console.log("Subscription error:", error);
     });
     // Cleanup function to unsubscribe and unbind when component unmounts or boxId changes
     return () => {
-      pusherClient.unsubscribe(`private-${id}`);
       pusherClient.unbind("new-message", handleNewMessage);
       console.log(`Unsubscribed from private-${id} channel`);
     };
@@ -195,13 +173,14 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     // Giao diện footer thông thường
     <div className="sticky bottom-0 w-full bg-white px-6 py-2 flex items-center gap-4">
       <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-gray-100">
-        <div className="flex-1">
+        <div className="flex-1" onClick={handleMarkAsRead}>
           <input
             type="text"
             placeholder="Aa"
             className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
             onChange={(e) => setValue(e.target.value)}
             value={value}
+            onFocus={handleMarkAsRead}
           />
         </div>
         <div className="flex gap-3">

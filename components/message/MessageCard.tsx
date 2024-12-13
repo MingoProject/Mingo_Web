@@ -13,6 +13,7 @@ import { useParams } from "next/navigation";
 import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { removeMessage, revokeMessage } from "@/lib/services/message.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
 
 const MessageCard = ({
   chat,
@@ -24,6 +25,7 @@ const MessageCard = ({
   const isSender = chat.createBy === localStorage.getItem("userId");
   const { id } = useParams();
   const { messages, setMessages } = useChatContext();
+  const { allChat, setAllChat } = useChatItemContext();
 
   const isNewDay =
     !previousChat ||
@@ -81,13 +83,19 @@ const MessageCard = ({
       );
     };
 
-    pusherClient.subscribe(`private-${id}`);
-    pusherClient.bind("delete-message", handleDeleteMessage);
-    pusherClient.bind("revoke-message", handleRevokeMessage);
+    const channels: any[] = allChat.map((chat) => {
+      const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
+      channel.bind("delete-message", handleDeleteMessage);
+      channel.bind("revoke-message", handleRevokeMessage);
+      return channel;
+    });
 
+    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
     return () => {
-      pusherClient.unbind("delete-message", handleDeleteMessage);
-      pusherClient.unbind("revoke-message", handleRevokeMessage);
+      channels.forEach((channel: any) => {
+        channel.bind("delete-message", handleDeleteMessage);
+        channel.bind("revoke-message", handleRevokeMessage);
+      });
     };
   }, [id, setMessages]);
 

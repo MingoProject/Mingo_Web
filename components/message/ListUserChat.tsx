@@ -1,5 +1,5 @@
 "use client";
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   createGroup,
   getListChat,
@@ -38,7 +38,7 @@ const ListUserChat = () => {
     setIsFormOpen(!isFormOpen);
   };
   const [user, setUser] = useState<FindUserDTO | null>(null);
-
+  const channelRefs = useRef<any[]>([]);
   useEffect(() => {
     const handleGroupCreationAndNavigation = async () => {
       if (!id) return;
@@ -102,6 +102,9 @@ const ListUserChat = () => {
 
   useEffect(() => {
     const handleNewMessage = (data: any) => {
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      console.log(data.boxId);
+
       setAllChat((prevChats: any) => {
         const updatedChats = prevChats.map((chat: any) => {
           if (chat.id === data.boxId) {
@@ -191,12 +194,28 @@ const ListUserChat = () => {
       });
     };
 
-    pusherClient.subscribe("chat-channel");
-    pusherClient.bind("new-message", handleNewMessage);
+    // Đảm bảo hủy đăng ký kênh cũ
+    channelRefs.current.forEach((channel) => {
+      channel.unbind("new-message", handleNewMessage);
+      pusherClient.unsubscribe(channel.name);
+    });
 
+    // Đăng ký kênh mới
+    const channels: any[] = allChat.map((chat) => {
+      const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
+      channel.bind("new-message", handleNewMessage); // Đảm bảo lại bind sự kiện
+      return channel;
+    });
+
+    // Lưu lại các kênh đã đăng ký
+    channelRefs.current = channels;
+
+    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
     return () => {
-      pusherClient.unbind("new-message", handleNewMessage);
-      pusherClient.unsubscribe("chat-channel");
+      channels.forEach((channel: any) => {
+        channel.unbind("new-message", handleNewMessage);
+        pusherClient.unsubscribe(channel.name); // Hủy đăng ký kênh
+      });
     };
   }, [id, allChat]);
 

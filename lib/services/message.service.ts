@@ -567,11 +567,13 @@ export async function MarkMessageAsRead(boxId: string, userId: string) {
   }
 
   try {
+    console.log(boxId, userId, "THIS IS MarkMessageAsRead");
+
     const response = await fetch(
       `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}&&userId=${userId}`,
       {
+        method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `${token}`, // Kiểm tra format Authorization
         },
       }
