@@ -123,6 +123,7 @@ const ProfilePage = () => {
 
       // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
       const existChat = allChat.find((item) => item?.receiverId === id);
+
       if (existChat) {
         router.push(`/message/${existChat.id}`);
       } else {

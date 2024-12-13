@@ -156,7 +156,7 @@ const MessageContent = () => {
     };
   }, [chatItem, userId]);
 
-  if (!chatItem) {
+  if (!chatItem && id) {
     return (
       <div className="flex w-full h-full items-center justify-center bg-white">
         <div className="loader"></div>
@@ -168,7 +168,17 @@ const MessageContent = () => {
     <ChatProvider>
       <div className="flex w-full">
         <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
-          {relation === "" ? (
+          {!chatItem && !id ? (
+            // Hiển thị giao diện mặc định khi không có chat hoặc id
+            <div className="flex flex-col items-center justify-center w-full h-full">
+              <p className="text-lg text-gray-600">
+                Chọn một cuộc trò chuyện để bắt đầu.
+              </p>
+              <p className="text-sm text-gray-400">
+                Không có cuộc trò chuyện nào được chọn.
+              </p>
+            </div>
+          ) : relation === "" ? (
             // Hiển thị loader hoặc giao diện chờ trong khi chờ xác định trạng thái relation
             <div className="flex flex-col items-center justify-center w-full h-full">
               <div className="loader"></div>
@@ -178,7 +188,6 @@ const MessageContent = () => {
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                // user={chatItem ? null : user} // Nếu không có chatItem, truyền user
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
               <BodyMessage />
@@ -188,18 +197,14 @@ const MessageContent = () => {
                 </p>
               </div>
             </>
-          ) : // Giao diện thông báo nếu bị block bởi người khác
-
-          relation === "blocked" ? (
-            // Giao diện thông báo nếu bạn đã block người khác
+          ) : relation === "blocked" ? (
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                // user={chatItem ? null : user} // Nếu không có chatItem, truyền user
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
               <BodyMessage />
-              <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700 ">
+              <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
                 <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
                 <button
                   className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4"
@@ -216,7 +221,6 @@ const MessageContent = () => {
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                // user={chatItem ? null : user} // Nếu không có chatItem, truyền user
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
               <BodyMessage />
