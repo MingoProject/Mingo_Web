@@ -14,6 +14,8 @@ import RelationModal from "@/components/forms/profile/RelationAction";
 import { useAuth } from "@/context/AuthContext";
 import MyButton from "@/components/shared/MyButton";
 import { faMessage } from "@fortawesome/free-solid-svg-icons";
+import { useChatItemContext } from "@/context/ChatItemContext";
+import { getListChat } from "@/lib/services/message.service";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
@@ -22,7 +24,7 @@ const ProfilePage = () => {
   const [relation, setRelation] = useState<string>("");
   const { profile } = useAuth();
   const [isMe, setIsMe] = useState(false);
-
+  const { allChat, setAllChat } = useChatItemContext();
   const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
 
@@ -113,8 +115,23 @@ const ProfilePage = () => {
 
   if (!profileUser) return <div>Loading...</div>;
 
-  const handleMessage = (id: string) => {
-    router.push(`/message/${id}`);
+  const handleMessage = async (id: string) => {
+    try {
+      const normalChats = await getListChat();
+      console.log(normalChats, "Normal Chats");
+      setAllChat(normalChats);
+
+      // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
+      const existChat = allChat.find((item) => item?.receiverId === id);
+
+      if (existChat) {
+        router.push(`/message/${existChat.id}`);
+      } else {
+        router.push(`/message/${id}`);
+      }
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
   };
   return (
     <div className="background-light700_dark400 h-full pt-20">

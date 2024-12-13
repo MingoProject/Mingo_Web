@@ -14,16 +14,18 @@ import {
 } from "@/lib/services/message.service";
 import { useParams, useRouter } from "next/navigation";
 import SearchMessage from "./SearchMessage";
-import { block } from "@/lib/services/friend.service";
+import { block, unblock } from "@/lib/services/friend.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { useChatItemContext } from "@/context/ChatItemContext";
 
 const RightSide = ({
   item,
-  user,
+  setRelation,
+  // user,
 }: {
   item: ItemChat | null;
-  user: FindUserDTO | null;
+  setRelation: any;
+  // user: FindUserDTO | null;
 }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
@@ -34,6 +36,8 @@ const RightSide = ({
   const { id } = useParams();
   const { allChat, setAllChat } = useChatItemContext();
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
+  const router = useRouter();
+
   const handleIsReport = () => {
     setIsReport(true);
   };
@@ -73,17 +77,35 @@ const RightSide = ({
   const handleDeleteChat = async () => {
     try {
       setIsLoading(true);
-      await removeChatBox(id.toString()); // Gọi API xóa chat
+
+      // Gọi API xóa chat
+      await removeChatBox(id?.toString() || "");
+
+      // Lấy danh sách chat sau khi xóa
       const normalChats = await getListChat();
       const groupChats = await getListGroupChat();
-
       const combinedChats = [...normalChats, ...groupChats];
+
+      // Cập nhật danh sách chat
       setAllChat(combinedChats);
       setFilteredChat(combinedChats);
+
       alert("Đoạn chat đã được xóa thành công!");
-      closeDelete(); // Đóng modal sau khi xóa
+
+      // Đóng modal
+      closeDelete();
+
+      // Kiểm tra và điều hướng sang chat đầu tiên
+      if (combinedChats.length >= 0) {
+        const firstChat = combinedChats[0];
+        router.push(`/message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
+      } else {
+        router.push("/message"); // Nếu không còn chat, điều hướng về trang tin nhắn chính
+      }
     } catch (error) {
+      console.error("Error deleting chat:", error);
       alert("Xóa chat thất bại. Vui lòng thử lại.");
+    } finally {
       setIsLoading(false);
     }
   };
@@ -104,8 +126,6 @@ const RightSide = ({
         sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
         receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
       };
-
-      console.log(params, "this is param");
 
       await block(params, token); // Gọi API block
       alert("Đã block thành công!");
@@ -132,12 +152,15 @@ const RightSide = ({
         ) : null;
 
       default:
+        if (!item) {
+          return <div>Loading chat...</div>;
+        }
         return (
           <>
             <div className="h-[45px] w-full border-b border-gray-200 px-8">
               <p className="text-lg">Chi tiết</p>
             </div>
-            {item ? (
+            {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
                 <Image
                   src={item.avatarUrl || "/assets/images/capy.jpg"}
@@ -148,21 +171,6 @@ const RightSide = ({
                   style={{ objectFit: "cover", width: "80px", height: "80px" }}
                 />
                 <p className="text-lg">{item.userName}</p>
-              </div>
-            ) : (
-              <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
-                <Image
-                  src={user?.avatar || "/assets/images/capy.jpg"}
-                  alt="Avatar"
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
-                />
-                <p className="text-lg">
-                  {" "}
-                  {`${user?.firstName || ""} ${user?.lastName || ""}`}
-                </p>
               </div>
             )}
             <div className="flex items-center px-8 ">
@@ -280,10 +288,7 @@ const RightSide = ({
           onClose={closeReport}
           content="báo cáo"
           label="Báo cáo"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
         />
       )}
       {isBlock && (
@@ -291,10 +296,7 @@ const RightSide = ({
           onClose={closeBlock}
           content="chặn"
           label="Chặn"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           onConfirmBlock={handleBlockChat}
           type="block"
         />
@@ -304,10 +306,7 @@ const RightSide = ({
           onClose={closeDelete}
           content="xóa đoạn chat với"
           label="Xóa"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           onConfirmDelete={handleDeleteChat} // Thêm hàm gọi API xóa vào đây
           type="delete"
         />
@@ -317,10 +316,7 @@ const RightSide = ({
           onClose={closeNoNotification}
           content="tắt thông báo đoạn chat với"
           label="Tắt thông báo"
-          userName={
-            item?.userName ||
-            `${user?.firstName || ""} ${user?.lastName || ""}`.trim()
-          }
+          userName={item?.userName || ""}
           type="disableNotifications"
         />
       )}

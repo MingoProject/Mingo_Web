@@ -487,3 +487,42 @@ export async function revokeMessage(messageId: string | null) {
     throw error;
   }
 }
+
+export async function MarkMessageAsRead(boxId: string, userId: string) {
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    console.log(boxId, userId, "THIS IS MarkMessageAsRead");
+
+    const response = await fetch(
+      `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}&&userId=${userId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(
+        `Error fetching mark as read list by boxId: ${response.status}`
+      );
+    }
+
+    const data = await response.json();
+    console.log(data, "MarkMessageAsRead");
+
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch mark as read list by boxId:", error);
+    throw error;
+  }
+}
