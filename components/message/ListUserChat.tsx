@@ -89,8 +89,6 @@ const ListUserChat = () => {
         );
       });
 
-      console.log(combinedChats, "combinedChats");
-
       setAllChat(combinedChats);
       setFilteredChat(combinedChats);
     } catch (error) {

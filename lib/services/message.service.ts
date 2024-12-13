@@ -492,37 +492,6 @@ export async function removeMessage(messageId: string | null) {
   }
 }
 
-export async function unsendMessage(messageId: string | null) {
-  const token = localStorage.getItem("token");
-  if (!token) {
-    console.error("No token found");
-    throw new Error("Authentication token is missing.");
-  }
-
-  try {
-    const response = await fetch(
-      `${BASE_URL}/message/unsendMessage?messageId=${messageId}`,
-      {
-        method: "DELETE",
-        headers: {
-          Authorization: `${token}`,
-        },
-      }
-    );
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.message || "Error deleting message");
-    }
-
-    const data = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Failed to delete message:", error);
-    throw error;
-  }
-}
-
 export async function revokeMessage(messageId: string | null) {
   const token = localStorage.getItem("token");
   if (!token) {

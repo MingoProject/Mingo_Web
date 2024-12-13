@@ -153,7 +153,137 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
   };
 
+  // const handleDeleteMessage = (data: any) => {
+  //   if (data.boxId !== itemChat.id) return;
+
+  //   setMessages((prevMessages) => {
+  //     // Filter out the deleted message
+  //     const updatedMessages = prevMessages.filter(
+  //       (chat) => chat.id !== data.id
+  //     );
+  //     const fileContent: FileContent = {
+  //       fileName: "",
+  //       bytes: "",
+  //       format: "",
+  //       height: "",
+  //       publicId: "",
+  //       type: "",
+  //       url: "",
+  //       width: "",
+  //     };
+
+  //     // Cập nhật `lastMessage` và trạng thái (`status`)
+
+  //     // If the deleted message was the last one, update the lastMessage
+  //     if (updatedMessages.length >= 0) {
+  //       const latestMessage = updatedMessages.sort(
+  //         (a, b) =>
+  //           new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+  //       )[0]; // Get the latest message from the updated list
+
+  //       // Update the `lastMessage` state with the new last message
+  //       setLastMessage({
+  //         id: latestMessage.boxId,
+  //         text: latestMessage.text || "Đã xóa tin nhắn",
+  //         contentId: latestMessage.contentId || fileContent,
+  //         createBy: latestMessage.createBy,
+  //         timestamp: new Date(latestMessage.createAt),
+  //         status: false, // Cập nhật trạng thái dựa vào `readedId`
+  //       });
+  //     } else {
+  //       // If no messages left after deletion, clear the lastMessage
+  //       setLastMessage({
+  //         id: "",
+  //         text: "Bắt đầu đoạn chat",
+  //         contentId: fileContent,
+  //         createBy: "",
+  //         timestamp: new Date(),
+  //         status: false,
+  //       });
+  //     }
+
+  //     return updatedMessages;
+  //   });
+  // };
+
   const handleDeleteMessage = (data: any) => {
+    if (data.boxId !== itemChat.id) return;
+
+    setMessages((prevMessages) => {
+      // Lọc ra các tin nhắn thuộc box chat hiện tại
+      const boxChatMessages = prevMessages.filter(
+        (msg) => msg.boxId === itemChat.id
+      );
+
+      // Loại bỏ tin nhắn bị xóa
+      const updatedMessages = boxChatMessages.filter(
+        (chat) => chat.id !== data.id
+      );
+
+      // Khởi tạo giá trị mặc định cho fileContent
+      const fileContent = {
+        fileName: "",
+        bytes: "",
+        format: "",
+        height: "",
+        publicId: "",
+        type: "",
+        url: "",
+        width: "",
+      };
+
+      // Xử lý cập nhật lastMessage
+      if (updatedMessages.length > 0) {
+        // Lấy tin nhắn mới nhất từ updatedMessages
+        const latestMessage = updatedMessages.sort(
+          (a, b) =>
+            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+        )[0];
+
+        setLastMessage({
+          id: latestMessage.boxId,
+          text: latestMessage.text || "",
+          contentId: latestMessage.contentId || fileContent,
+          createBy: latestMessage.createBy,
+          timestamp: new Date(latestMessage.createAt),
+          status: false, // Có thể cập nhật trạng thái theo logic
+        });
+      } else if (boxChatMessages.length > 0) {
+        // Nếu không còn tin nhắn trong updatedMessages, lấy từ prevMessages
+        const latestMessage = boxChatMessages.sort(
+          (a, b) =>
+            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+        )[0];
+
+        if (latestMessage) {
+          setLastMessage({
+            id: latestMessage.boxId,
+            text: latestMessage.text || "",
+            contentId: latestMessage.contentId || fileContent,
+            createBy: latestMessage.createBy,
+            timestamp: new Date(latestMessage.createAt),
+            status: false,
+          });
+        }
+      } else {
+        // Nếu không còn tin nhắn nào
+        setLastMessage({
+          id: itemChat.id,
+          text: "",
+          contentId: fileContent,
+          createBy: "",
+          timestamp: new Date(),
+          status: false,
+        });
+      }
+
+      return prevMessages
+        .filter((msg) => msg.boxId !== itemChat.id)
+        .concat(updatedMessages);
+    });
+  };
+
+  const handleRevokeMessage = (data: any) => {
     if (data.boxId !== itemChat.id) return;
 
     setMessages((prevMessages) => {
@@ -184,7 +314,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         // Update the `lastMessage` state with the new last message
         setLastMessage({
           id: latestMessage.boxId,
-          text: latestMessage.text || "",
+          text: latestMessage.text || "Đã thu hồi",
           contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,
           timestamp: new Date(latestMessage.createAt),
@@ -194,61 +324,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         // If no messages left after deletion, clear the lastMessage
         setLastMessage({
           id: "",
-          text: "",
-          contentId: fileContent,
-          createBy: "",
-          timestamp: new Date(),
-          status: false,
-        });
-      }
-
-      return updatedMessages;
-    });
-  };
-
-  const handleUnsendMessage = (data: any) => {
-    if (data.boxId !== itemChat.id) return;
-
-    setMessages((prevMessages) => {
-      // Filter out the deleted message
-      const updatedMessages = prevMessages.filter(
-        (chat) => chat.id !== data.id
-      );
-
-      const fileContent: FileContent = {
-        fileName: "",
-        bytes: "",
-        format: "",
-        height: "",
-        publicId: "",
-        type: "Đã thu hồi",
-        url: "",
-        width: "",
-      };
-
-      // Cập nhật `lastMessage` và trạng thái (`status`)
-
-      // If the deleted message was the last one, update the lastMessage
-      if (updatedMessages.length >= 0) {
-        const latestMessage = updatedMessages.sort(
-          (a, b) =>
-            new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-        )[0]; // Get the latest message from the updated list
-
-        // Update the `lastMessage` state with the new last message
-        setLastMessage({
-          id: latestMessage.boxId,
-          text: latestMessage.text || "Đã thu hồi tin nhắn ",
-          contentId: latestMessage.contentId || fileContent,
-          createBy: latestMessage.createBy,
-          timestamp: new Date(latestMessage.createAt),
-          status: false, // Cập nhật trạng thái dựa vào `readedId`
-        });
-      } else {
-        // If no messages left after deletion, clear the lastMessage
-        setLastMessage({
-          id: "",
-          text: "",
+          text: "Đã thu hồi",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -270,16 +346,17 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
-    pusherClient.bind("unsend-message", handleUnsendMessage);
+    pusherClient.bind("revoke-message", handleRevokeMessage);
 
     // Dọn dẹp khi component bị unmount
     return () => {
       pusherClient.unbind("new-message", handleNewMessage);
       pusherClient.unbind("delete-message", handleDeleteMessage);
-      pusherClient.unbind("unsend-message", handleUnsendMessage);
+      pusherClient.unbind("revoke-message", handleRevokeMessage);
+
       pusherClient.unsubscribe(pusherChannel);
     };
-  }, []);
+  }, [itemChat.id, setMessages]);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();
@@ -313,8 +390,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   // Kiểm tra nếu receiverId là người nhận, không phải người gửi (userId)
   const isReceiver = lastMessage.createBy !== userId;
-
-  console.log(lastMessage.contentId?.type, "lastMessage.status");
 
   return (
     <ContextMenu>

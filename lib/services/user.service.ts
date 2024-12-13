@@ -16,7 +16,6 @@ export async function fetchUsers(): Promise<UserResponseDTO[]> {
       throw new Error("Error fetching users");
     }
     const data = await response.json();
-    console.log(data);
     return data;
   } catch (error) {
     console.error("Failed to fetch users:", error);
@@ -63,8 +62,6 @@ export async function login(userData: UserLoginDTO) {
     }
 
     const data = await response.json();
-    console.log("token", data.token);
-
     localStorage.setItem("token", data.token);
 
     return data;
@@ -306,10 +303,6 @@ export async function getUserById(userId: string): Promise<FindUserDTO> {
   }
 
   try {
-    console.log(
-      `${BASE_URL}/user/get-user-by-id?userId=${userId}`,
-      "this is url"
-    );
     const response = await fetch(
       `${BASE_URL}/user/get-user-by-id?userId=${userId}`,
       {
@@ -329,8 +322,6 @@ export async function getUserById(userId: string): Promise<FindUserDTO> {
 
     const data: { userProfile: UserResponseDTO } = await response.json(); // Lấy toàn bộ đối tượng trả về
     const rawData = data.userProfile; // Truy cập vào userProfile
-
-    console.log(rawData, "this is result");
 
     // Chuyển đổi dữ liệu từ UserResponseDTO sang FindUserDTO
     const result: FindUserDTO = {

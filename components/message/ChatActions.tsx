@@ -3,12 +3,10 @@ import React, { useState } from "react";
 
 function ChatActions({
   onDelete,
-  onUnsend,
   onRevoke,
 }: {
   onDelete: () => void;
   onRevoke: () => void;
-  onUnsend: () => void;
 }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -33,15 +31,7 @@ function ChatActions({
           >
             Delete
           </button>
-          <button
-            className="block w-full text-center px-4 py-2 rounded-md text-sm text-red-600 hover:bg-red-50"
-            onClick={() => {
-              onUnsend();
-              setIsMenuOpen(false);
-            }}
-          >
-            Unsend
-          </button>
+
           <button
             className="block w-full text-center px-4 py-2 rounded-md text-sm text-blue-600 hover:bg-blue-50"
             onClick={() => {
