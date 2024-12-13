@@ -1,6 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { ItemChat } from "@/dtos/MessageDTO";
 import BodyMessage from "@/components/message/BodyMessage";
 import FooterMessage from "@/components/message/FooterMessage";
@@ -22,6 +22,7 @@ const MessageContent = () => {
   const { id } = useParams(); // Lấy ID từ URL
   const [user, setUser] = useState<FindUserDTO | null>(null);
   const userId = localStorage.getItem("userId");
+  const router = useRouter();
   // Fetch user nếu không có chatItem
   useEffect(() => {
     if (id && !allChat.find((chat) => chat.id === id)) {
@@ -46,25 +47,30 @@ const MessageContent = () => {
     }
   }, []);
 
-  // Fetch danh sách chat khi component mount
   useEffect(() => {
     const fetchChats = async () => {
       try {
-        // Lấy danh sách chat thường
         const normalChats = await getListChat();
-        // Lấy danh sách group chat
         const groupChats = await getListGroupChat();
-
-        // Kết hợp cả hai danh sách
         const combinedChats = [...normalChats, ...groupChats];
-        setAllChat(combinedChats); // Cập nhật danh sách chat
-        setFilteredChat(combinedChats); // Cập nhật danh sách chat đã lọc ban đầu
+        setAllChat(combinedChats);
+        setFilteredChat(combinedChats);
+
+        // Kiểm tra nếu không có id trong URL và danh sách chat có ít nhất 1 cuộc trò chuyện
+        if (!id && combinedChats.length > 0) {
+          const firstChat = combinedChats[0]; // Lấy cuộc trò chuyện đầu tiên
+          router.push(`/message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
+        } else if (combinedChats.length === 0) {
+          // Nếu không có chat nào, điều hướng về trang chính
+          router.push("/message");
+        }
       } catch (error) {
         console.error("Error loading chats:", error);
       }
     };
+
     fetchChats();
-  }, []);
+  }, [id, router]);
 
   if (!allChat) {
     return (

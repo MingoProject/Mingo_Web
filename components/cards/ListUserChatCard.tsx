@@ -118,6 +118,83 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     // Đánh dấu tin nhắn là đã đọc nếu người dùng là receiver
   };
 
+  // const handleDeleteMessage = (data: any) => {
+  //   if (data.boxId !== itemChat.id) return;
+
+  //   setMessages((prevMessages) => {
+  //     // Lọc ra các tin nhắn thuộc box chat hiện tại
+  //     const boxChatMessages = prevMessages.filter(
+  //       (msg) => msg.boxId === itemChat.id
+  //     );
+
+  //     // Loại bỏ tin nhắn bị xóa
+  //     const updatedMessages = boxChatMessages.filter(
+  //       (chat) => chat.id !== data.id
+  //     );
+
+  //     // Khởi tạo giá trị mặc định cho fileContent
+  //     const fileContent = {
+  //       fileName: "",
+  //       bytes: "",
+  //       format: "",
+  //       height: "",
+  //       publicId: "",
+  //       type: "",
+  //       url: "",
+  //       width: "",
+  //     };
+
+  //     // Xử lý cập nhật lastMessage
+  //     if (updatedMessages.length > 0) {
+  //       // Lấy tin nhắn mới nhất từ updatedMessages
+  //       const latestMessage = updatedMessages.sort(
+  //         (a, b) =>
+  //           new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+  //       )[0];
+
+  //       setLastMessage({
+  //         id: latestMessage.boxId,
+  //         text: latestMessage.text || "",
+  //         contentId: latestMessage.contentId || fileContent,
+  //         createBy: latestMessage.createBy,
+  //         timestamp: new Date(latestMessage.createAt),
+  //         status: false, // Có thể cập nhật trạng thái theo logic
+  //       });
+  //     } else if (boxChatMessages.length > 0) {
+  //       // Nếu không còn tin nhắn trong updatedMessages, lấy từ prevMessages
+  //       const latestMessage = boxChatMessages.sort(
+  //         (a, b) =>
+  //           new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+  //       )[0];
+
+  //       if (latestMessage) {
+  //         setLastMessage({
+  //           id: latestMessage.boxId,
+  //           text: latestMessage.text || "",
+  //           contentId: latestMessage.contentId || fileContent,
+  //           createBy: latestMessage.createBy,
+  //           timestamp: new Date(latestMessage.createAt),
+  //           status: false,
+  //         });
+  //       }
+  //     } else {
+  //       // Nếu không còn tin nhắn nào
+  //       setLastMessage({
+  //         id: itemChat.id,
+  //         text: "",
+  //         contentId: fileContent,
+  //         createBy: "",
+  //         timestamp: new Date(),
+  //         status: false,
+  //       });
+  //     }
+
+  //     return prevMessages
+  //       .filter((msg) => msg.boxId !== itemChat.id)
+  //       .concat(updatedMessages);
+  //   });
+  // };
+
   const handleDeleteMessage = (data: any) => {
     if (data.boxId !== itemChat.id) return;
 
@@ -209,7 +286,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         format: "",
         height: "",
         publicId: "",
-        type: "",
+        type: "Đã thu hồi tin nhắn",
         url: "",
         width: "",
       };
@@ -226,7 +303,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         // Update the `lastMessage` state with the new last message
         setLastMessage({
           id: latestMessage.boxId,
-          text: latestMessage.text || "Đã thu hồi",
+          text: latestMessage.text || "Đã thu hồi tin nhắn",
           contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,
           timestamp: new Date(latestMessage.createAt),
@@ -236,7 +313,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         // If no messages left after deletion, clear the lastMessage
         setLastMessage({
           id: "",
-          text: "Đã thu hồi",
+          text: "Đã thu hồi tin nhắn",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -338,7 +415,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         ? "font-normal"
                         : "font-bold";
 
-                      if (lastMessage.text.trim() !== "") {
+                      if (lastMessage.text !== "") {
                         return (
                           <p className={messageStatusClass}>
                             {lastMessage.text}
@@ -382,7 +459,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         ? "font-normal"
                         : "font-bold";
 
-                      if (lastMessage.text.trim() !== "") {
+                      if (lastMessage.text !== "") {
                         return (
                           <p className={messageStatusClass}>
                             {lastMessage.text}

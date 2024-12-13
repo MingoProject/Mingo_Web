@@ -20,6 +20,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
@@ -132,6 +133,14 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
   };
 
+  const handleKeyDown = (e: any) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      // Ngăn không cho nhấn Enter thực hiện hành động mặc định (tạo dòng mới)
+      e.preventDefault();
+      handleSendTextMessage(); // Gửi tin nhắn khi nhấn Enter
+    }
+  };
+
   useEffect(() => {
     if (!id) {
       console.error("boxId is missing or invalid");
@@ -180,7 +189,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
             className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
             onChange={(e) => setValue(e.target.value)}
             value={value}
-            onFocus={handleMarkAsRead}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="flex gap-3">

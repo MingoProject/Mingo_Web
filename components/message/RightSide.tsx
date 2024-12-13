@@ -96,7 +96,7 @@ const RightSide = ({
       closeDelete();
 
       // Kiểm tra và điều hướng sang chat đầu tiên
-      if (combinedChats.length > 0) {
+      if (combinedChats.length >= 0) {
         const firstChat = combinedChats[0];
         router.push(`/message/${firstChat.id}`); // Điều hướng sang chat đầu tiên
       } else {
