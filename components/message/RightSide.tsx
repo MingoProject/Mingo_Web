@@ -17,6 +17,7 @@ import SearchMessage from "./SearchMessage";
 import { block, unblock } from "@/lib/services/friend.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { useChatItemContext } from "@/context/ChatItemContext";
+import ReportCard from "../cards/ReportCard";
 
 const RightSide = ({
   item,
@@ -283,14 +284,7 @@ const RightSide = ({
   return (
     <div className="flex w-full flex-col py-4">
       {RenderTag()}
-      {isReport && (
-        <Format
-          onClose={closeReport}
-          content="báo cáo"
-          label="Báo cáo"
-          userName={item?.userName || ""}
-        />
-      )}
+      {isReport && <ReportCard onClose={closeReport} />}
       {isBlock && (
         <Format
           onClose={closeBlock}

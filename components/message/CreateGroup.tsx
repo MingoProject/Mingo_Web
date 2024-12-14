@@ -87,6 +87,7 @@ const CreateGroup = ({ onClose, me }: any) => {
       };
 
       const res = await createGroup(groupData);
+
       if (res) {
         const fetchChats = async () => {
           try {

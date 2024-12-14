@@ -4,13 +4,9 @@ import { pusherClient } from "@/lib/pusher";
 import { MarkMessageAsRead, sendMessage } from "@/lib/services/message.service";
 import { checkRelation } from "@/lib/services/relation.service";
 import { getFileFormat } from "@/lib/utils";
-import {
-  faMicrophone,
-  faFaceSmile,
-  faImage,
-  faPaperPlane,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Icon } from "@iconify/react/dist/iconify.js";
 import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
@@ -22,7 +18,14 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
   const { id } = useParams(); // Lấy ID từ URL
-  const [relation, setRelation] = useState<string>("");
+  const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
+  const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [currentContentType, setCurrentContentType] = useState<
+    "text" | "voice" | "file" | null
+  >(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -45,6 +48,31 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
+  const resetContent = () => {
+    setValue("");
+    setAudioBlob(null);
+    setSelectedFiles([]);
+    setCurrentContentType(null);
+  };
+
+  const handleSend = async () => {
+    switch (currentContentType) {
+      case "text":
+        await handleSendTextMessage();
+        break;
+      case "voice":
+        await handleSendVoiceMessage();
+        break;
+      case "file":
+        await handleSendMultipleFiles(selectedFiles);
+        break;
+      default:
+        console.log("No content to send");
+    }
+    // Reset trạng thái sau khi gửi
+    resetContent();
+  };
+
   const handleMarkAsRead = async () => {
     try {
       const userId = localStorage.getItem("userId");
@@ -59,7 +87,88 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
   };
 
+  const startRecording = () => {
+    setIsRecording(true);
+    setCurrentContentType("voice");
+    console.log("Recording started...");
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+
+        const audioChunks: Blob[] = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setAudioUrl(audioUrl); // Lưu URL của file audio
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true); // Đánh dấu trạng thái ghi âm
+      })
+      .catch((err) => {
+        console.error("Error accessing audio: ", err);
+      });
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    // Giả lập audioBlob (thay bằng logic thực)
+    const mockBlob = new Blob(["audio data"], { type: "audio/wav" });
+    setAudioBlob(mockBlob);
+    console.log("Recording stopped");
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false); // Đánh dấu ghi âm đã dừng
+    }
+  };
+
+  const handleSendVoiceMessage = async () => {
+    if (!audioBlob) return;
+    console.log("Sending voice message:", audioBlob);
+    if (!audioUrl || !id) return;
+
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("boxId", id.toString());
+
+      // Đọc file từ audio URL và gửi lên server
+      const response = await fetch(audioUrl);
+      const audioBlob = await response.blob();
+
+      const fileContent: FileContent = {
+        fileName: "voice-message.wav",
+        url: "",
+        publicId: "", // Cloudinary Public ID
+        bytes: audioBlob.size.toString(),
+        width: "0",
+        height: "0",
+        format: "wav",
+        type: "audio",
+      };
+
+      formData.append("content", JSON.stringify(fileContent));
+      formData.append("file", audioBlob, "voice-message.wav");
+
+      const messageResponse = await sendMessage(formData);
+      console.log("Voice message sent successfully:", messageResponse);
+    } catch (error) {
+      console.error("Error sending voice message: ", error);
+    }
+  };
+
   const handleSendTextMessage = async () => {
+    if (!value.trim()) return;
+    console.log("Sending text message:", value);
     handleMarkAsRead();
     // Tạo đối tượng SegmentMessageDTO
     const messageData = {
@@ -166,11 +275,19 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
   };
 
-  const handleKeyDown = (e: any) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      setCurrentContentType("file");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
-      // Ngăn không cho nhấn Enter thực hiện hành động mặc định (tạo dòng mới)
       e.preventDefault();
-      handleSendTextMessage(); // Gửi tin nhắn khi nhấn Enter
+      setCurrentContentType("text");
+      handleSendTextMessage();
     }
   };
 
@@ -188,21 +305,25 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
           />
         </div>
         <div className="flex gap-3">
-          <FontAwesomeIcon
-            icon={faMicrophone}
-            size="lg"
-            className="text-primary-100 cursor-pointer hover:text-primary-200"
+          <Icon
+            icon={
+              isRecording
+                ? "material-symbols:settings-voice"
+                : "material-symbols:keyboard-voice"
+            }
+            className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
+            onClick={isRecording ? stopRecording : startRecording}
           />
-          <FontAwesomeIcon
-            icon={faFaceSmile}
-            size="lg"
-            className="text-primary-100 cursor-pointer hover:text-primary-200"
+
+          <Icon
+            icon={"carbon:face-satisfied-filled"}
+            className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
           />
+
           <label htmlFor="image-upload">
-            <FontAwesomeIcon
-              icon={faImage}
-              size="lg"
-              className="text-primary-100 cursor-pointer hover:text-primary-200"
+            <Icon
+              icon={"material-symbols:image"}
+              className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
               onClick={handleIconClick}
             />
           </label>
@@ -211,17 +332,13 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
             ref={fileInputRef}
             style={{ display: "none" }}
             multiple
-            onChange={(e) => {
-              if (e.target.files) {
-                handleSendMultipleFiles(Array.from(e.target.files));
-              }
-            }}
+            onChange={handleFileChange}
           />
         </div>
       </div>
       <div
         className="bg-primary-100 flex items-center justify-center rounded-full w-10 h-10 p-2 cursor-pointer hover:bg-primary-200"
-        onClick={handleSendTextMessage}
+        onClick={handleSend}
       >
         <FontAwesomeIcon icon={faPaperPlane} size="lg" className="text-white" />
       </div>
