@@ -24,6 +24,10 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const { id } = useParams(); // Lấy ID từ URL
   const [relation, setRelation] = useState<string>("");
 
+  const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
+  const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance
+
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
 
@@ -45,6 +49,34 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
+  // Hàm ghi âm voice
+  const startRecording = () => {
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+
+        const audioChunks: Blob[] = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setAudioUrl(audioUrl); // Lưu URL của file audio
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true); // Đánh dấu trạng thái ghi âm
+      })
+      .catch((err) => {
+        console.error("Error accessing audio: ", err);
+      });
+  };
+
   const handleMarkAsRead = async () => {
     try {
       const userId = localStorage.getItem("userId");
@@ -56,6 +88,49 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
       console.log(mark, "this is mark");
     } catch (error) {
       console.error("Error marking message as read:", error);
+    }
+  };
+  // Dừng ghi âm
+  const stopRecording = () => {
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false); // Đánh dấu ghi âm đã dừng
+    }
+  };
+
+  // Hàm gửi voice message
+  const handleSendVoiceMessage = async () => {
+    if (!audioUrl || !id) return;
+
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("boxId", id.toString());
+
+      // Đọc file từ audio URL và gửi lên server
+      const response = await fetch(audioUrl);
+      const audioBlob = await response.blob();
+
+      const fileContent: FileContent = {
+        fileName: "voice-message.wav",
+        url: "",
+        publicId: "", // Cloudinary Public ID
+        bytes: audioBlob.size.toString(),
+        width: "0",
+        height: "0",
+        format: "wav",
+        type: "audio",
+      };
+
+      formData.append("content", JSON.stringify(fileContent));
+      formData.append("file", audioBlob, "voice-message.wav");
+
+      const messageResponse = await sendMessage(formData);
+      console.log("Voice message sent successfully:", messageResponse);
+    } catch (error) {
+      console.error("Error sending voice message: ", error);
     }
   };
 
@@ -174,6 +249,15 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
   };
 
+  const handleMicrophoneClick = () => {
+    if (isRecording) {
+      stopRecording();
+      handleSendVoiceMessage();
+    } else {
+      startRecording();
+    }
+  };
+
   return (
     <div className="sticky bottom-0 w-full bg-white px-6 py-2 flex items-center gap-4">
       <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-gray-100">
@@ -192,7 +276,9 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
             icon={faMicrophone}
             size="lg"
             className="text-primary-100 cursor-pointer hover:text-primary-200"
+            onClick={handleMicrophoneClick}
           />
+
           <FontAwesomeIcon
             icon={faFaceSmile}
             size="lg"

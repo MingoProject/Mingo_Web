@@ -39,6 +39,7 @@ const ListUserChat = () => {
   };
   const [user, setUser] = useState<FindUserDTO | null>(null);
   const channelRefs = useRef<any[]>([]);
+
   useEffect(() => {
     const handleGroupCreationAndNavigation = async () => {
       if (!id) return;
