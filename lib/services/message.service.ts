@@ -10,6 +10,17 @@ import { create } from "domain";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+const fileContent: FileContent = {
+  fileName: "",
+  url: "",
+  publicId: "",
+  bytes: "",
+  width: "0",
+  height: "0",
+  format: "",
+  type: "",
+};
+
 export async function getAllChat(boxId: string): Promise<ChatResponse> {
   const token = localStorage.getItem("token");
   const userId = localStorage.getItem("userId");
@@ -89,10 +100,17 @@ export async function getListChat(): Promise<ItemChat[]> {
               text: box.responseLastMessage.text
                 ? box.responseLastMessage.text
                 : box.responseLastMessage.text || "",
+              contentId: box.responseLastMessage.contentId || fileContent,
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,
             }
-          : { id: "", text: "", timestamp: new Date(), createBy: "" };
+          : {
+              id: "",
+              text: "",
+              timestamp: new Date(),
+              createBy: "",
+              contentId: fileContent,
+            };
         return {
           id: box._id,
           userName:
@@ -163,10 +181,17 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
               text: box.responseLastMessage.text
                 ? box.responseLastMessage.text
                 : box.responseLastMessage.text || "",
+              contentId: box.responseLastMessage.contentId || fileContent,
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,
             }
-          : { id: "", text: "", timestamp: new Date(), createBy: "" };
+          : {
+              id: "",
+              text: "",
+              timestamp: new Date(),
+              createBy: "",
+              contentId: fileContent,
+            };
 
         return {
           id: box._id,

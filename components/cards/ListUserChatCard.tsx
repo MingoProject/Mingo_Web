@@ -43,6 +43,9 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
   const { allChat, setAllChat } = useChatItemContext();
 
+  const [activeAction, setActiveAction] = useState("");
+  const [activeLabel, setActiveLabel] = useState("");
+
   // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
   const userId = localStorage.getItem("userId");
@@ -279,9 +282,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     return `${diffInSeconds} giây`;
   }
 
-  const [activeAction, setActiveAction] = useState("");
-  const [activeLabel, setActiveLabel] = useState("");
-
   const handleAction = (action: string, label: string) => {
     setActiveAction(action);
     setActiveLabel(label);
@@ -292,11 +292,10 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     setActiveLabel("");
   };
 
-  // Lấy ID người đăng nhập (giả sử lưu trữ trong localStorage)
-
-  // Kiểm tra nếu receiverId là người nhận, không phải người gửi (userId)
   const isReceiver = lastMessage.createBy !== userId;
 
+  console.log(lastMessage.contentId || "", "this is type");
+  console.log(lastMessage, "this is last mes");
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -345,15 +344,21 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                       switch (type) {
                         case "image":
                           return (
-                            <p className={messageStatusClass}>Gửi 1 ảnh</p>
+                            <p className={messageStatusClass}>đã gửi 1 ảnh</p>
                           );
                         case "video":
                           return (
-                            <p className={messageStatusClass}>Gửi 1 video</p>
+                            <p className={messageStatusClass}>đã gửi 1 video</p>
+                          );
+                        case "audio":
+                          return (
+                            <p className={messageStatusClass}>
+                              đã gửi 1 âm thanh
+                            </p>
                           );
                         case "other":
                           return (
-                            <p className={messageStatusClass}>Gửi 1 file</p>
+                            <p className={messageStatusClass}>đã gửi 1 file</p>
                           );
                         default:
                           return <p className={messageStatusClass}></p>;
@@ -386,6 +391,12 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         case "video":
                           return (
                             <p className={messageStatusClass}>Gửi 1 video</p>
+                          );
+                        case "audio":
+                          return (
+                            <p className={messageStatusClass}>
+                              đã gửi 1 âm thanh
+                            </p>
                           );
                         case "other":
                           return (

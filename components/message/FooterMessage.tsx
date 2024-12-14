@@ -4,12 +4,7 @@ import { pusherClient } from "@/lib/pusher";
 import { MarkMessageAsRead, sendMessage } from "@/lib/services/message.service";
 import { checkRelation } from "@/lib/services/relation.service";
 import { getFileFormat } from "@/lib/utils";
-import {
-  faMicrophone,
-  faFaceSmile,
-  faImage,
-  faPaperPlane,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useParams } from "next/navigation";
