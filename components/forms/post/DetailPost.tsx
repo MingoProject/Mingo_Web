@@ -10,6 +10,9 @@ import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
 import { getCommentsByPostId } from "@/lib/services/post.service";
+import { CldImage } from "next-cloudinary";
+import DetailsImage from "../personalPage/DetailsImage";
+import DetailsVideo from "../personalPage/DetailsVideo";
 
 interface DetailPostProps {
   postId: string;
@@ -48,6 +51,9 @@ const DetailPost = ({
   const [getComments, setGetComments] = useState<any[]>([]);
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
+  const [isDetailVisible, setIsDetailVisible] = useState(true);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
@@ -106,6 +112,14 @@ const DetailPost = ({
         token,
         postId
       );
+      const currentTime = new Date();
+      const isoStringWithOffset = currentTime
+        .toISOString()
+        .replace("Z", "+00:00");
+      console.log(
+        "Current Time (new Date()):",
+        currentTime.toISOString().replace("Z", "+00:00")
+      );
 
       const enrichedComment = {
         ...newCommentData,
@@ -114,8 +128,8 @@ const DetailPost = ({
           avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
-          createAt: "Now",
         },
+        createAt: isoStringWithOffset,
       };
 
       // Cập nhật state commentsData
@@ -139,150 +153,197 @@ const DetailPost = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
-        <div className="p-4">
-          <div className="flex">
-            <div className="ml-4 mt-3 flex items-center">
-              <Image
-                src={
-                  author?.avatar
-                    ? author.avatar
-                    : "/assets/images/default-avatar.jpg"
-                }
-                alt="Avatar"
-                width={45}
-                height={45}
-                className="size-11 rounded-full object-cover"
-              />
-              <div>
-                <p className="text-dark100_light500 ml-3 text-base">
-                  {author?.firstName ? author.firstName : ""}
-                  {tags.length > 0 && (
-                    <span>
-                      <span className="">{" with "}</span>
-
-                      {tags.map((tag, index) => (
-                        <span key={tag._id}>
-                          {tag.firstName}
-                          {index < tags.length - 1 ? ", " : ""}
-                        </span>
-                      ))}
-                    </span>
-                  )}
-                  {location && (
-                    <div className="flex">
-                      <Icon icon="mi:location" className="" />
-                      <span>
-                        <span className="">{" - "}</span>
-
-                        {location}
-                      </span>
-                    </div>
-                  )}
-                </p>
-                <span className="text-dark100_light500 ml-3 text-sm">
-                  {getTimestamp(createdAt)}
-                </span>
-              </div>
-            </div>
-
-            <button
-              onClick={onClose}
-              className="ml-auto mt-5 pl-2 text-3xl text-primary-100"
-            >
-              x
-            </button>
-          </div>
-
-          <div className="ml-4 mt-5">
-            <p className="text-dark100_light500">{content}</p>
-          </div>
-
-          {media && media.length > 0 && (
-            <div className="mx-auto ml-5 flex h-[400px] w-full justify-center">
-              <Swiper spaceBetween={10} slidesPerView={1}>
-                {media.map((item, index) => (
-                  <SwiperSlide key={index}>
-                    {item.type === "image" ? (
-                      <Image
-                        src={item.url}
-                        alt={`Image ${index + 1}`}
-                        width={250}
-                        height={250}
-                        className="h-[400px] w-auto object-cover"
-                      />
-                    ) : (
-                      <video width={250} height={250} controls>
-                        <source src={item.url} type="video/mp4" />
-                        Your browser does not support the video tag.
-                      </video>
-                    )}
-                  </SwiperSlide>
-                ))}
-              </Swiper>
-            </div>
-          )}
-
-          <div className="mx-10 my-5">
-            <Action
-              likes={likes}
-              postId={postId}
-              comments={commentsData}
-              shares={shares}
-              author={author}
-              profile={profile}
-            />
-            <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
-
-            <div className="my-4">
-              {commentsData.length > 0 ? (
-                commentsData.map((comment) => (
-                  <div
-                    key={comment._id}
-                    className="group mb-3 flex items-start"
-                  >
-                    <CommentCard
-                      comment={comment}
-                      setCommentsData={setCommentsData}
-                      profile={profile}
-                      author={author}
-                      postId={postId}
-                    />
-                  </div>
-                ))
-              ) : (
-                <p className="text-dark100_light500">No comments yet.</p>
-              )}
-            </div>
+      {isDetailVisible && (
+        <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
+          <div className="p-4">
             <div className="flex">
-              <div className="size-[40px] overflow-hidden rounded-full">
+              <div className="ml-4 mt-3 flex items-center">
                 <Image
                   src={
-                    profile?.avatar ? profile.avatar : "/assets/images/capy.jpg"
+                    author?.avatar
+                      ? author.avatar
+                      : "/assets/images/default-avatar.jpg"
                   }
                   alt="Avatar"
-                  width={40}
-                  height={40}
-                  className="size-10 rounded-full object-cover"
+                  width={45}
+                  height={45}
+                  className="size-11 rounded-full object-cover"
                 />
+                <div>
+                  <p className="text-dark100_light500 ml-3 text-base">
+                    {author?.firstName ? author.firstName : ""}
+                    {tags.length > 0 && (
+                      <span>
+                        <span className="">{" with "}</span>
+
+                        {tags.map((tag, index) => (
+                          <span key={tag._id}>
+                            {tag.firstName}
+                            {index < tags.length - 1 ? ", " : ""}
+                          </span>
+                        ))}
+                      </span>
+                    )}
+                    {location && (
+                      <div className="flex">
+                        <Icon icon="mi:location" className="" />
+                        <span>
+                          <span className="">{" - "}</span>
+
+                          {location}
+                        </span>
+                      </div>
+                    )}
+                  </p>
+                  <span className="text-dark100_light500 ml-3 text-sm">
+                    {getTimestamp(createdAt)}
+                  </span>
+                </div>
               </div>
-              <input
-                type="text"
-                placeholder="Write a comment..."
-                className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full pl-3 text-base"
-                value={newComment}
-                onChange={handleInputChange}
-              />
+
               <button
-                onClick={handleAddComment}
-                className="rounded-full bg-primary-100 p-2 px-5 text-white"
+                onClick={onClose}
+                className="ml-auto mt-5 pl-2 text-3xl text-primary-100"
               >
-                Post
+                x
               </button>
+            </div>
+
+            <div className="ml-4 mt-5">
+              <p className="text-dark100_light500">{content}</p>
+            </div>
+
+            {media && media.length > 0 && (
+              <div className="mx-5 mt-3 flex h-auto justify-around">
+                <Swiper
+                  spaceBetween={10}
+                  slidesPerView={1}
+                  navigation
+                  pagination={{ clickable: true }}
+                  className="h-auto w-[300px]"
+                >
+                  {media.map((item) => (
+                    <SwiperSlide key={item.url}>
+                      {item.type === "image" ? (
+                        <CldImage
+                          src={item.url} // Use this sample image or upload your own via the Media Explorer
+                          width="500" // Transform the image: auto-crop to square aspect_ratio
+                          height="500"
+                          alt=""
+                          crop={{
+                            type: "auto",
+                            source: true,
+                          }}
+                          onClick={() => {
+                            setSelectedImage(item);
+                            setIsDetailVisible(false); // Ẩn DetailPost
+                          }}
+                        />
+                      ) : (
+                        <video
+                          width={250}
+                          height={250}
+                          controls
+                          onClick={() => {
+                            setSelectedVideo(item);
+                            setIsDetailVisible(false); // Ẩn DetailPost
+                          }}
+                        >
+                          <source src={item.url} type="video/mp4" />
+                          Your browser does not support the video tag.
+                        </video>
+                      )}
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+            )}
+
+            <div className="mx-10 my-5">
+              <Action
+                likes={likes}
+                postId={postId}
+                comments={commentsData}
+                shares={shares}
+                author={author}
+                profile={profile}
+              />
+              <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
+
+              <div className="my-4">
+                {commentsData.length > 0 ? (
+                  commentsData.map((comment) => (
+                    <div
+                      key={comment._id}
+                      className="group mb-3 flex items-start"
+                    >
+                      <CommentCard
+                        comment={comment}
+                        setCommentsData={setCommentsData}
+                        profile={profile}
+                        author={author}
+                        postId={postId}
+                      />
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-dark100_light500">No comments yet.</p>
+                )}
+              </div>
+              <div className="flex">
+                <div className="size-[40px] overflow-hidden rounded-full">
+                  <Image
+                    src={
+                      profile?.avatar
+                        ? profile.avatar
+                        : "/assets/images/capy.jpg"
+                    }
+                    alt="Avatar"
+                    width={40}
+                    height={40}
+                    className="size-10 rounded-full object-cover"
+                  />
+                </div>
+                <input
+                  type="text"
+                  placeholder="Write a comment..."
+                  className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full pl-3 text-base"
+                  value={newComment}
+                  onChange={handleInputChange}
+                />
+                <button
+                  onClick={handleAddComment}
+                  className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
+                >
+                  Post
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
+      {selectedImage && (
+        <DetailsImage
+          image={selectedImage}
+          onClose={() => {
+            setSelectedImage(null);
+            setIsDetailVisible(true); // Hiển thị lại DetailPost
+          }}
+          profileUser={author}
+          me={profile}
+        />
+      )}
+      {selectedVideo && (
+        <DetailsVideo
+          video={selectedVideo}
+          onClose={() => {
+            setSelectedVideo(null);
+            setIsDetailVisible(true); // Hiển thị lại DetailPost
+          }}
+          profileUser={author}
+          me={profile}
+        />
+      )}
     </div>
   );
 };

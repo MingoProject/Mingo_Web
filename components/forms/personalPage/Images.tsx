@@ -8,9 +8,6 @@ import DetailsImage from "./DetailsImage";
 const Images = ({ me, profileUser }: any) => {
   const [images, setImages] = useState<any[]>([]);
   const [selectedImage, setSelectedImage] = useState<any>(null);
-  useEffect(() => {
-    console.log("meImage", me);
-  }, [me]);
 
   useEffect(() => {
     let isMounted = true;
@@ -18,6 +15,7 @@ const Images = ({ me, profileUser }: any) => {
       try {
         const data: MediaResponseDTO[] = await getMyImages(profileUser._id);
         const detailsImage = await fetchDetailedMedias(data);
+        // console.log(detailsImage);
         if (isMounted) {
           setImages(detailsImage);
         }

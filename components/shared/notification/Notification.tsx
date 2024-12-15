@@ -186,7 +186,6 @@ const Notification = () => {
         alert("Bạn cần đăng nhập để thực hiện hành động này.");
         return;
       }
-
       await acceptAddBff(
         {
           sender: id,
@@ -354,7 +353,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleAcceptFriend(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -366,7 +365,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleRefuseFriend(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -382,7 +381,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleAcceptBff(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -394,7 +393,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleRefuseBff(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )

@@ -8,6 +8,7 @@ import CommentCard from "@/components/cards/CommentCard";
 import fetchDetailedComments from "@/hooks/useComments";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
+import { getTimestamp } from "@/lib/utils";
 
 // import { getTimestamp } from "@/lib/utils";
 
@@ -88,8 +89,8 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="background-light700_dark300 text-dark100_light500 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="background-light700_dark300 text-dark100_light500 z-50 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
         <div className="block lg:flex">
           <div className="w-full lg:w-3/5">
             <div className="ml-4 mt-3 flex items-center">
@@ -108,7 +109,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                     {profileUser?.firstName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
-                    {/* {getTimestamp(image.createdAt)} */}
+                    {getTimestamp(image.createAt)}
                   </span>
                 </div>
               </div>
@@ -182,7 +183,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                 />
                 <button
                   onClick={handleAddComment}
-                  className="rounded-full bg-primary-100 p-2 px-5 text-white"
+                  className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
                 >
                   Đăng
                 </button>

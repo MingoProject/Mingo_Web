@@ -213,7 +213,7 @@ const CreatePost = ({ onClose, me }: any) => {
                 accept="image/*,video/*"
                 multiple
                 onChange={handleFileChange}
-                className="text-dark100_light500 mt-1 block w-full"
+                className="text-dark100_light500 mt-1 block w-full bg-transparent"
               />
               {files.map((file, index) => (
                 <div key={index} className="mt-2 flex items-center space-x-4">
@@ -238,7 +238,7 @@ const CreatePost = ({ onClose, me }: any) => {
                     placeholder="Caption"
                     value={captions[index]}
                     onChange={(e) => handleCaptionChange(index, e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className=" text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
                   />
                 </div>
               ))}
@@ -273,7 +273,7 @@ const CreatePost = ({ onClose, me }: any) => {
                   {friends.map((friend) => (
                     <div
                       key={friend._id}
-                      className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
+                      className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-black/50"
                       onClick={() => toggleTagFriend(friend)}
                     >
                       <input
