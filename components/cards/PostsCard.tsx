@@ -12,6 +12,8 @@ import Link from "next/link";
 import PostMenu from "../forms/post/PostMenu";
 import { createNotification } from "@/lib/services/notification.service";
 import TagModal from "../forms/post/TagModal";
+import DetailsImage from "../forms/personalPage/DetailsImage";
+import DetailsVideo from "../forms/personalPage/DetailsVideo";
 
 const PostsCard = ({
   postId,
@@ -48,6 +50,8 @@ const PostsCard = ({
   const [menuModal, setMenuModal] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+  const [selectedImage, setSelectedImage] = useState(null);
+  const [selectedVideo, setSelectedVideo] = useState(null);
 
   const handleTagsModalToggle = () => {
     setIsTagsModalOpen((prev) => !prev);
@@ -129,25 +133,14 @@ const PostsCard = ({
 
   const toggleLike = async () => {
     if (isLiked) {
-      // Dislike
       await handleDislikePost();
       setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      // Like
       await handleLikePost();
       setNumberOfLikes((prev: any) => prev + 1);
     }
     setIsLiked(!isLiked);
   };
-  // const toggleLike = () => {
-  //   if (isLiked) {
-  //     handleDislikePost();
-  //     setNumberOfLikes(likes.length - 1);
-  //   } else {
-  //     handleLikePost();
-  //     setNumberOfLikes(likes.length + 1);
-  //   }
-  // };
 
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
@@ -190,7 +183,7 @@ const PostsCard = ({
                 </span>
               )}
               {location && (
-                <div className="flex">
+                <div className="ml-2 flex">
                   <Icon icon="mi:location" className="" />
                   <span>
                     <span className="">{" - "}</span>
@@ -205,6 +198,7 @@ const PostsCard = ({
                 onClose={handleTagsModalToggle}
               />
             </span>
+            <hr className="border-transparent bg-transparent"></hr>
             <span className="text-dark100_light500 ml-3 text-sm">
               {getTimestamp(createdAt)}
             </span>
@@ -239,7 +233,7 @@ const PostsCard = ({
         <p className="text-dark100_light500">{content}</p>
       </div>
       {media && media.length > 0 && (
-        <div className="mx-5 mt-3 flex h-auto justify-around">
+        <div className=" mx-5 mt-3 flex h-auto justify-around">
           <Swiper
             spaceBetween={10}
             slidesPerView={1}
@@ -250,21 +244,31 @@ const PostsCard = ({
             {media.map((item) => (
               <SwiperSlide key={item.url}>
                 {item.type === "image" ? (
-                  <CldImage
-                    src={item.url} // Use this sample image or upload your own via the Media Explorer
-                    width="500" // Transform the image: auto-crop to square aspect_ratio
-                    height="500"
-                    alt=""
-                    crop={{
-                      type: "auto",
-                      source: true,
-                    }}
-                  />
+                  <>
+                    <CldImage
+                      src={item.url} // Use this sample image or upload your own via the Media Explorer
+                      width="500" // Transform the image: auto-crop to square aspect_ratio
+                      height="500"
+                      alt=""
+                      crop={{
+                        type: "auto",
+                        source: true,
+                      }}
+                      onClick={() => setSelectedImage(item)}
+                    />
+                  </>
                 ) : (
-                  <video width={250} height={250} controls>
-                    <source src={item.url} type="video/mp4" />
-                    Your browser does not support the video tag.
-                  </video>
+                  <>
+                    <video
+                      width={250}
+                      height={250}
+                      controls
+                      onClick={() => setSelectedVideo(item)}
+                    >
+                      <source src={item.url} type="video/mp4" />
+                      Your browser does not support the video tag.
+                    </video>
+                  </>
                 )}
               </SwiperSlide>
             ))}
@@ -352,6 +356,22 @@ const PostsCard = ({
           />
         )}
       </div>
+      {selectedImage && (
+        <DetailsImage
+          image={selectedImage}
+          onClose={() => setSelectedImage(null)}
+          profileUser={author}
+          me={profile}
+        />
+      )}
+      {selectedVideo && (
+        <DetailsVideo
+          video={selectedVideo}
+          onClose={() => setSelectedVideo(null)}
+          profileUser={author}
+          me={profile}
+        />
+      )}
     </div>
   );
 };

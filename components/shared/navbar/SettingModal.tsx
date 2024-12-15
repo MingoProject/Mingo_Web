@@ -115,6 +115,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
   const handleLogout = async () => {
     try {
       logout();
+
       router.push("/");
     } catch (error) {
       console.error("Lỗi khi đăng xuất:", error);

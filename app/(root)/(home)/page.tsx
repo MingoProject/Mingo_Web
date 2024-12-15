@@ -37,7 +37,7 @@ export default function Home() {
   useEffect(() => {
     let isMounted = true;
     const fetchPostsData = async () => {
-      const detailedPosts = await fetchDetailedPosts(posts); // Sử dụng hàm chuyển đổi
+      const detailedPosts = await fetchDetailedPosts(posts);
       console.log(detailedPosts);
       if (isMounted) {
         setPostsData(detailedPosts);

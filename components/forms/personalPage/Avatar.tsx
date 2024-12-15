@@ -83,7 +83,7 @@ const Avatar = ({ profileUser, setProfileUser }: any) => {
       {avatarMenuOpen && (
         <div
           ref={avatarMenuRef}
-          className="absolute z-10 mb-10 ml-[20%] mt-5 rounded-lg border border-gray-300 bg-white shadow-lg"
+          className="background-light800_dark400 absolute z-10 mb-10 ml-[20%] mt-5 rounded-lg border border-gray-300 shadow-lg"
         >
           <button
             onClick={() => console.log("View Avatar")}

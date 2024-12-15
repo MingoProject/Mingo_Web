@@ -122,6 +122,7 @@ const EditPost = ({
     }
 
     try {
+      console.log("Tagged friends before submitting: ", taggedFriends);
       let mediaIds: string[] = existingMedia.map((media) => media._id);
 
       if (files.length > 0) {
@@ -230,7 +231,7 @@ const EditPost = ({
                 accept="image/*,video/*"
                 multiple
                 onChange={handleFileChange}
-                className="text-dark100_light500 mt-1 block w-full"
+                className="text-dark100_light500 mt-1 block w-full bg-transparent"
               />
               {/* Hiển thị các media có sẵn */}
               {existingMedia.length > 0 && (
@@ -271,7 +272,7 @@ const EditPost = ({
                           onChange={(e) =>
                             handleCaptionChange(index, e.target.value)
                           }
-                          className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                          className=" text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
                         />
                       </div>
                     </>
@@ -304,7 +305,7 @@ const EditPost = ({
                     placeholder="Caption"
                     value={captions[index]}
                     onChange={(e) => handleCaptionChange(index, e.target.value)}
-                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm"
+                    className="text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
                   />
                 </div>
               ))}
@@ -318,7 +319,7 @@ const EditPost = ({
                   placeholder="Location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="text-dark100_light500 w-full rounded border border-gray-300 p-2"
+                  className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
                 />
               </div>
             </div>
@@ -335,12 +336,12 @@ const EditPost = ({
                 </button>
                 <div
                   id="friendsDropdown"
-                  className="absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg bg-white shadow-lg"
+                  className="background-light800_dark400 absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg shadow-lg"
                 >
                   {friends.map((friend) => (
                     <div
                       key={friend._id}
-                      className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100"
+                      className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-black/50"
                       onClick={() => toggleTagFriend(friend)}
                     >
                       <input

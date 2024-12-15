@@ -12,6 +12,7 @@ const Videos = ({ me, profileUser }: any) => {
     const getVideos = async () => {
       try {
         const data: MediaResponseDTO[] = await getMyVideos(profileUser._id);
+        // console.log(data);
         if (isMounted) {
           setVideos(data);
         }

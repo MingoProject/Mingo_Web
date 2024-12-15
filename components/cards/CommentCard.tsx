@@ -168,6 +168,15 @@ const CommentCard = ({
         await addReplyToComment(replyingTo, newCommentData._id, token);
       }
 
+      const currentTime = new Date();
+      const isoStringWithOffset = currentTime
+        .toISOString()
+        .replace("Z", "+00:00");
+      console.log(
+        "Current Time (new Date()):",
+        currentTime.toISOString().replace("Z", "+00:00")
+      );
+
       const enrichedComment = {
         ...newCommentData,
         userId: {
@@ -175,8 +184,8 @@ const CommentCard = ({
           avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
-          createAt: "Now",
         },
+        createAt: isoStringWithOffset,
       };
 
       setReplies((prev) => [enrichedComment, ...prev]);
@@ -210,6 +219,20 @@ const CommentCard = ({
       console.error("Failed to reply to comment:", error);
     }
   };
+  function timeSinceMessage(timestamp: Date | string) {
+    const now = new Date();
+    const messageTimestamp = new Date(timestamp);
+    const diffInMs = now.getTime() - messageTimestamp.getTime();
+    const diffInSeconds = Math.floor(diffInMs / 1000);
+    const diffInMinutes = Math.floor(diffInSeconds / 60);
+    const diffInHours = Math.floor(diffInMinutes / 60);
+    const diffInDays = Math.floor(diffInHours / 24);
+
+    if (diffInDays > 0) return `${diffInDays} ngày`;
+    if (diffInHours > 0) return `${diffInHours} giờ`;
+    if (diffInMinutes > 0) return `${diffInMinutes} phút`;
+    return `${diffInSeconds} giây`;
+  }
 
   return (
     <div>
@@ -239,7 +262,7 @@ const CommentCard = ({
 
           <div className="mt-2 flex items-center text-sm text-gray-500">
             <span className="mx-2 text-gray-600">
-              {getTimestamp(comment.createAt)}
+              {timeSinceMessage(comment.createAt)}
             </span>
 
             <div className="flex">

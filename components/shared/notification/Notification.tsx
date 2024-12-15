@@ -13,6 +13,12 @@ import {
   unfollowOrRefuseFriendRequest,
   unrequestBffOrRefuseBffRequest,
 } from "@/lib/services/friend.service";
+import { getPostByPostId } from "@/lib/services/post.service";
+import DetailPost from "@/components/forms/post/DetailPost";
+import { useAuth } from "@/context/AuthContext";
+import { getMediaByMediaId } from "@/lib/services/media.service";
+import DetailsImage from "@/components/forms/personalPage/DetailsImage";
+import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
 
 const getNotificationContent = (notification: any) => {
   switch (notification.type) {
@@ -47,6 +53,13 @@ const getNotificationContent = (notification: any) => {
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [post, setPost] = useState<any>();
+  const [image, setImage] = useState<any>();
+  const [video, setVideo] = useState<any>();
+  const [openDetailPost, setOpenDetailPost] = useState(false);
+  const [openDetailImage, setOpenDetailImage] = useState(false);
+  const [openDetailVideo, setOpenDetailVideo] = useState(false);
+  const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -89,7 +102,7 @@ const Notification = () => {
         },
         token
       );
-      await deleteNotification(notificationId, token); // Delete the notification
+      await deleteNotification(notificationId, token);
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif._id !== notificationId)
       );
@@ -153,7 +166,7 @@ const Notification = () => {
         },
         token
       );
-      await deleteNotification(notificationId, token); // Delete the notification
+      await deleteNotification(notificationId, token);
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif._id !== notificationId)
       );
@@ -173,7 +186,6 @@ const Notification = () => {
         alert("Bạn cần đăng nhập để thực hiện hành động này.");
         return;
       }
-
       await acceptAddBff(
         {
           sender: id,
@@ -196,6 +208,113 @@ const Notification = () => {
     } catch (error: any) {
       console.error("Error:", error);
       alert(error.message || "Đã xảy ra lỗi.");
+    }
+  };
+
+  const handleClick = async (notification: any) => {
+    switch (notification.type) {
+      case "like":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "like_comment":
+        try {
+          if (notification.postId) {
+            const data = await getPostByPostId(notification.postId);
+            setPost(data);
+            setOpenDetailPost(true);
+          } else {
+            const data = await getMediaByMediaId(notification.mediaId);
+
+            if (data.type === "image") {
+              setImage(data);
+              setOpenDetailImage(true);
+            } else {
+              setVideo(data);
+              setOpenDetailVideo(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "like_media":
+        try {
+          const data = await getMediaByMediaId(notification.mediaId);
+
+          if (data.type === "image") {
+            setImage(data);
+            setOpenDetailImage(true);
+          } else {
+            setVideo(data);
+            setOpenDetailVideo(true);
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "comment":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "comment_media":
+        try {
+          const data = await getMediaByMediaId(notification.mediaId);
+
+          if (data.type === "image") {
+            setImage(data);
+            setOpenDetailImage(true);
+          } else {
+            setVideo(data);
+            setOpenDetailVideo(true);
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "reply_comment":
+        try {
+          if (notification.postId) {
+            const data = await getPostByPostId(notification.postId);
+            setPost(data);
+            setOpenDetailPost(true);
+          } else {
+            const data = await getMediaByMediaId(notification.mediaId);
+
+            if (data.type === "image") {
+              setImage(data);
+              setOpenDetailImage(true);
+            } else {
+              setVideo(data);
+              setOpenDetailVideo(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "tags":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      default:
+        console.log("Notification type not handled");
+        break;
     }
   };
 
@@ -222,7 +341,10 @@ const Notification = () => {
               height={50}
               className="size-16 rounded-full object-cover"
             />
-            <div className="ml-2 flex-1 pr-4">
+            <div
+              className="ml-2 flex-1 pr-4"
+              onClick={() => handleClick(notification)}
+            >
               <p className="text-dark100_light500 font-light">
                 {getNotificationContent(notification)}
               </p>
@@ -231,7 +353,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleAcceptFriend(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -243,7 +365,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleRefuseFriend(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -259,7 +381,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleAcceptBff(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -271,7 +393,7 @@ const Notification = () => {
                   <Button
                     onClick={() =>
                       handleRefuseBff(
-                        notification.senderId,
+                        notification.senderId._id,
                         notification.receiverId,
                         notification._id
                       )
@@ -286,6 +408,38 @@ const Notification = () => {
                 {getTimestamp(notification.createAt)}
               </p>
             </div>
+            {openDetailPost && (
+              <DetailPost
+                postId={post?._id}
+                author={post?.author}
+                content={post?.content}
+                media={post?.media}
+                createdAt={post?.createdAt}
+                likes={post?.likes}
+                comments={post?.comments}
+                shares={post?.shares}
+                privacy={post?.privacy}
+                tags={post?.tags}
+                onClose={() => setOpenDetailPost(false)}
+                profile={profile}
+              />
+            )}
+            {openDetailImage && (
+              <DetailsImage
+                image={image}
+                onClose={() => setOpenDetailImage(false)}
+                profileUser={image.createBy}
+                me={profile}
+              />
+            )}
+            {openDetailVideo && (
+              <DetailsVideo
+                video={video}
+                onClose={() => setOpenDetailVideo(false)}
+                profileUser={video.createBy}
+                me={profile}
+              />
+            )}
           </div>
         ))}
       </div>
