@@ -1,6 +1,6 @@
 "use client";
 
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getMyProfile } from "@/lib/services/user.service";
 import Background from "@/components/forms/personalPage/Background";
@@ -12,6 +12,10 @@ import RenderContentPage from "@/components/forms/personalPage/RenderContent";
 import { checkRelation } from "@/lib/services/relation.service";
 import RelationModal from "@/components/forms/profile/RelationAction";
 import { useAuth } from "@/context/AuthContext";
+import MyButton from "@/components/shared/MyButton";
+import { faMessage } from "@fortawesome/free-solid-svg-icons";
+import { useChatItemContext } from "@/context/ChatItemContext";
+import { getListChat } from "@/lib/services/message.service";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
@@ -20,8 +24,9 @@ const ProfilePage = () => {
   const [relation, setRelation] = useState<string>("");
   const { profile } = useAuth();
   const [isMe, setIsMe] = useState(false);
-
+  const { allChat, setAllChat } = useChatItemContext();
   const [isModalOpen, setModalOpen] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     let isMounted = true;
@@ -110,6 +115,24 @@ const ProfilePage = () => {
 
   if (!profileUser) return <div>Loading...</div>;
 
+  const handleMessage = async (id: string) => {
+    try {
+      const normalChats = await getListChat();
+      console.log(normalChats, "Normal Chats");
+      setAllChat(normalChats);
+
+      // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
+      const existChat = allChat.find((item) => item?.receiverId === id);
+
+      if (existChat) {
+        router.push(`/message/${existChat.id}`);
+      } else {
+        router.push(`/message/${id}`);
+      }
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  };
   return (
     <div className="background-light700_dark400 h-full pt-20">
       <Background profileUser={profileUser} setProfileUser={setProfileUser} />
@@ -124,6 +147,18 @@ const ProfilePage = () => {
           </h1>
           <Bio profileUser={profileUser} setProfileUser={setProfileUser} />
         </div>
+        {!isMe ? (
+          <MyButton
+            title="Message"
+            backgroundColor="bg-primary-100"
+            color="text-white"
+            width="w-22"
+            height="h-10"
+            onClick={() => handleMessage(id)}
+          />
+        ) : (
+          ""
+        )}
       </div>
 
       {!isMe && (

@@ -1,24 +1,31 @@
 import { useChatContext } from "@/context/ChatContext";
-import { FileContent, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import { FileContent, ItemChat, ResponseMessageDTO } from "@/dtos/MessageDTO";
 import { pusherClient } from "@/lib/pusher";
-import { sendMessage } from "@/lib/services/message.service";
+import { MarkMessageAsRead, sendMessage } from "@/lib/services/message.service";
+import { checkRelation } from "@/lib/services/relation.service";
 import { getFileFormat } from "@/lib/utils";
-import {
-  faMicrophone,
-  faFaceSmile,
-  faImage,
-  faPaperPlane,
-} from "@fortawesome/free-solid-svg-icons";
+import { faPaperPlane } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { useParams } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 
-const FooterMessage = ({ boxId }: { boxId: string }) => {
+const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const [value, setValue] = useState("");
   const { messages, setMessages } = useChatContext();
   const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
+  const { id } = useParams(); // Lấy ID từ URL
+  const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
+  const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance
+  const [audioBlob, setAudioBlob] = useState<Blob | null>(null);
+  const [currentContentType, setCurrentContentType] = useState<
+    "text" | "voice" | "file" | null
+  >(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   useEffect(() => {
     if (temporaryToCloudinaryMap.length === 0) return;
@@ -41,10 +48,131 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     setTemporaryToCloudinaryMap([]);
   }, [temporaryToCloudinaryMap]);
 
+  const resetContent = () => {
+    setValue("");
+    setAudioBlob(null);
+    setSelectedFiles([]);
+    setCurrentContentType(null);
+  };
+
+  const handleSend = async () => {
+    switch (currentContentType) {
+      case "text":
+        await handleSendTextMessage();
+        break;
+      case "voice":
+        await handleSendVoiceMessage();
+        break;
+      case "file":
+        await handleSendMultipleFiles(selectedFiles);
+        break;
+      default:
+        console.log("No content to send");
+    }
+    // Reset trạng thái sau khi gửi
+    resetContent();
+  };
+
+  const handleMarkAsRead = async () => {
+    try {
+      const userId = localStorage.getItem("userId");
+
+      const mark = await MarkMessageAsRead(
+        id?.toString() || "",
+        userId?.toString() || ""
+      );
+      console.log(mark, "this is mark");
+    } catch (error) {
+      console.error("Error marking message as read:", error);
+    }
+  };
+
+  const startRecording = () => {
+    setIsRecording(true);
+    setCurrentContentType("voice");
+    console.log("Recording started...");
+    navigator.mediaDevices
+      .getUserMedia({ audio: true })
+      .then((stream) => {
+        const mediaRecorder = new MediaRecorder(stream);
+        mediaRecorderRef.current = mediaRecorder;
+
+        const audioChunks: Blob[] = [];
+
+        mediaRecorder.ondataavailable = (event) => {
+          audioChunks.push(event.data);
+        };
+
+        mediaRecorder.onstop = () => {
+          const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+          const audioUrl = URL.createObjectURL(audioBlob);
+          setAudioUrl(audioUrl); // Lưu URL của file audio
+        };
+
+        mediaRecorder.start();
+        setIsRecording(true); // Đánh dấu trạng thái ghi âm
+      })
+      .catch((err) => {
+        console.error("Error accessing audio: ", err);
+      });
+  };
+
+  const stopRecording = () => {
+    setIsRecording(false);
+    // Giả lập audioBlob (thay bằng logic thực)
+    const mockBlob = new Blob(["audio data"], { type: "audio/wav" });
+    setAudioBlob(mockBlob);
+    console.log("Recording stopped");
+    if (mediaRecorderRef.current) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false); // Đánh dấu ghi âm đã dừng
+    }
+  };
+
+  const handleSendVoiceMessage = async () => {
+    if (!audioBlob) return;
+    console.log("Sending voice message:", audioBlob);
+    if (!audioUrl || !id) return;
+
+    const storedToken = localStorage.getItem("token");
+    if (!storedToken) return;
+
+    try {
+      const formData = new FormData();
+      formData.append("boxId", id.toString());
+
+      // Đọc file từ audio URL và gửi lên server
+      const response = await fetch(audioUrl);
+      const audioBlob = await response.blob();
+
+      const fileContent: FileContent = {
+        fileName: "voice-message.wav",
+        url: "",
+        publicId: "", // Cloudinary Public ID
+        bytes: audioBlob.size.toString(),
+        width: "0",
+        height: "0",
+        format: "wav",
+        type: "audio",
+      };
+
+      formData.append("content", JSON.stringify(fileContent));
+      formData.append("file", audioBlob, "voice-message.wav");
+
+      const messageResponse = await sendMessage(formData);
+      console.log("Voice message sent successfully:", messageResponse);
+    } catch (error) {
+      console.error("Error sending voice message: ", error);
+    }
+  };
+
   const handleSendTextMessage = async () => {
+    if (!value.trim()) return;
+    console.log("Sending text message:", value);
+    handleMarkAsRead();
     // Tạo đối tượng SegmentMessageDTO
     const messageData = {
-      boxId: boxId,
+      boxId: id.toString(),
       content: value, // content is now a string
     };
 
@@ -63,7 +191,7 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     }
 
     const formData = new FormData();
-    formData.append("boxId", messageData.boxId);
+    formData.append("boxId", messageData.boxId.toString());
     formData.append("content", JSON.stringify(messageData.content)); // Directly append the string
 
     // Gửi API
@@ -79,7 +207,7 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
   };
 
   const handleSendMultipleFiles = async (files: File[]) => {
-    if (!files.length || !boxId) return;
+    if (!files.length || !id) return;
 
     const storedToken = localStorage.getItem("token");
     if (!storedToken) return;
@@ -99,15 +227,9 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
         };
 
         const formData = new FormData();
-        formData.append("boxId", boxId);
+        formData.append("boxId", id.toString());
         formData.append("content", JSON.stringify(fileContent));
         formData.append("file", file);
-
-        // await axios.post(`${process.env.BASE_URL}message/send`, formData, {
-        //   headers: {
-        //     Authorization: storedToken,
-        //   },
-        // });
 
         await sendMessage(formData);
       }
@@ -117,28 +239,22 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
   };
 
   useEffect(() => {
-    console.log(`private-${boxId}`, "Attempting to subscribe to the channel");
-
-    // Ensure boxId is not undefined or null
-    if (!boxId) {
+    if (!id) {
       console.error("boxId is missing or invalid");
       return;
     }
 
     const handleNewMessage = (data: ResponseMessageDTO) => {
       console.log("Successfully received message: ", data);
-
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
       setMessages((prevMessages) => {
-        const currentMessages = prevMessages || [];
-        return [...currentMessages, data]; // Add new message to the list
+        return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
       });
     };
-    console.log("Updated messages:", messages); // Kiểm tra giá trị mới của messages
 
-    // Ensure Pusher client is initialized and subscribed
-    console.log(`Đang đăng ký kênh private-${boxId}`);
-    pusherClient.subscribe(`private-${boxId}`);
-    console.log(`Đã đăng ký thành công kênh private-${boxId}`);
+    console.log(`Đang đăng ký kênh private-${id}`);
+    pusherClient.subscribe(`private-${id}`);
+    console.log(`Đã đăng ký thành công kênh private-${id}`);
 
     // Bind the new-message event
     pusherClient.bind("new-message", handleNewMessage);
@@ -147,19 +263,31 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
     });
     // Cleanup function to unsubscribe and unbind when component unmounts or boxId changes
     return () => {
-      pusherClient.unsubscribe(`private-${boxId}`);
+      pusherClient.unsubscribe(`private-${id}`);
       pusherClient.unbind("new-message", handleNewMessage);
-      console.log(`Unsubscribed from private-${boxId} channel`);
+      console.log(`Unsubscribed from private-${id} channel`);
     };
-  }, [boxId, setMessages]); // Re-run if boxId or setMessages changes
-
-  useEffect(() => {
-    console.log("Updated messages:", messages); // Kiểm tra giá trị mới của messages
-  }, [messages]); // Mỗi khi messages thay đổi, effect này sẽ được gọi
+  }, [id, setMessages]); // Re-run if boxId or setMessages changes
 
   const handleIconClick = () => {
     if (fileInputRef.current) {
       fileInputRef.current.click();
+    }
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      setSelectedFiles(files);
+      setCurrentContentType("file");
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      setCurrentContentType("text");
+      handleSendTextMessage();
     }
   };
 
@@ -173,48 +301,46 @@ const FooterMessage = ({ boxId }: { boxId: string }) => {
             className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
             onChange={(e) => setValue(e.target.value)}
             value={value}
+            onKeyDown={handleKeyDown}
           />
         </div>
         <div className="flex gap-3">
-          <FontAwesomeIcon
-            icon={faMicrophone}
-            size="lg"
-            className="text-primary-100 cursor-pointer hover:text-primary-200"
+          <Icon
+            icon={
+              isRecording
+                ? "material-symbols:settings-voice"
+                : "material-symbols:keyboard-voice"
+            }
+            className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
+            onClick={isRecording ? stopRecording : startRecording}
           />
-          <FontAwesomeIcon
-            icon={faFaceSmile}
-            size="lg"
-            className="text-primary-100 cursor-pointer hover:text-primary-200"
+
+          <Icon
+            icon={"carbon:face-satisfied-filled"}
+            className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
           />
+
           <label htmlFor="image-upload">
-            <FontAwesomeIcon
-              icon={faImage}
-              size="lg"
-              className="text-primary-100 cursor-pointer hover:text-primary-200"
+            <Icon
+              icon={"material-symbols:image"}
+              className="text-primary-100 cursor-pointer hover:text-primary-200 text-[24px]"
               onClick={handleIconClick}
             />
           </label>
-          {/* Input ẩn để chọn ảnh */}
           <input
             type="file"
             ref={fileInputRef}
             style={{ display: "none" }}
             multiple
-            onChange={(e) => {
-              if (e.target.files) {
-                handleSendMultipleFiles(Array.from(e.target.files));
-              }
-            }}
+            onChange={handleFileChange}
           />
         </div>
       </div>
-      <div className="bg-primary-100 flex items-center justify-center rounded-full w-10 h-10 p-2 cursor-pointer hover:bg-primary-200">
-        <FontAwesomeIcon
-          icon={faPaperPlane}
-          size="lg"
-          className="text-white"
-          onClick={handleSendTextMessage}
-        />
+      <div
+        className="bg-primary-100 flex items-center justify-center rounded-full w-10 h-10 p-2 cursor-pointer hover:bg-primary-200"
+        onClick={handleSend}
+      >
+        <FontAwesomeIcon icon={faPaperPlane} size="lg" className="text-white" />
       </div>
     </div>
   );

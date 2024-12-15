@@ -1,144 +1,12 @@
-// "use client";
-
-// import React, { useEffect, useState } from "react";
-// import { ItemChat } from "@/dtos/MessageDTO";
-// import { getListChat } from "@/lib/services/message.service";
-// import ListUserChatCard from "../cards/ListUserChatCard";
-// import {
-//   Menubar,
-//   MenubarMenu,
-//   MenubarTrigger,
-//   MenubarContent,
-//   MenubarItem,
-//   MenubarSeparator,
-// } from "@radix-ui/react-menubar";
-// import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
-// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-// import { useRouter } from "next/navigation";
-// import BodyMessage from "./BodyMessage";
-// import HeaderMessageContent from "./HeaderMessageContent";
-// import FooterMessage from "./FooterMessage";
-// import RightSide from "./RightSide";
-// import MessageSearch from "./MessageSearch";
-
-// const ListUserChat = () => {
-//   const [allChat, setAllChat] = useState<ItemChat[]>([]);
-//   const router = useRouter(); // Khởi tạo useRouter
-//   const [selectedChat, setSelectedChat] = useState<ItemChat | null>(null);
-//   useEffect(() => {
-//     let isMounted = true;
-//     const myChat = async () => {
-//       try {
-//         const data = await getListChat();
-//         if (isMounted) {
-//           setAllChat(data); // Cập nhật danh sách chat
-//         }
-//       } catch (error) {
-//         console.error("Error loading posts:", error);
-//       }
-//     };
-//     myChat();
-
-//     return () => {
-//       isMounted = false; // Cleanup
-//     };
-//   }, []);
-
-//   console.log(allChat, "this is all chat");
-
-//   const handleChatClick = (id: string) => {
-//     const chat = allChat.find((chat) => chat.id === id);
-//     setSelectedChat(chat || null); // Set the selected chat
-//     router.push(`/message/${id}`); // Điều hướng đến trang chat theo ID
-//   };
-
-//   return (
-//     <>
-//       {selectedChat ? (
-//         <div className="w-full h-full flex ">
-//           {/* <div className="flex flex-col w-1/5 h-full">
-//             <Menubar className="relative border-none bg-transparent py-4 shadow-none">
-//               <MenubarMenu>
-//                 <MenubarTrigger className="flex items-center gap-2">
-//                   <span className="ml-1 whitespace-nowrap text-xs font-semibold md:text-base">
-//                     Đoạn chat
-//                   </span>
-//                   <FontAwesomeIcon icon={faChevronDown} />
-//                 </MenubarTrigger>
-//                 <MenubarContent className="text-dark100_light500 background-light700_dark300 absolute top-full z-50 ml-20 mt-2 h-auto w-40 font-sans text-sm shadow-md">
-//                   <MenubarItem className="mb-4 flex w-full cursor-pointer items-center justify-center text-center hover:bg-primary-100 hover:text-white">
-//                     <p className="p-1 pt-2">Tin nhắn đang chờ</p>
-//                   </MenubarItem>
-//                   <MenubarItem className="flex w-full cursor-pointer items-center justify-center text-center hover:bg-primary-100 hover:text-white">
-//                     <p className="p-1 pb-2">Lưu trữ đoạn chat</p>
-//                   </MenubarItem>
-//                   <MenubarSeparator />
-//                 </MenubarContent>
-//               </MenubarMenu>
-//             </Menubar>
-
-//             <div className="h-[75vh] w-full">
-//               {allChat.map((item) => (
-//                 <div key={item.id} onClick={() => handleChatClick(item.id)}>
-//                   <ListUserChatCard itemChat={item} />
-//                 </div>
-//               ))}
-//             </div>
-//           </div> */}
-//           <div className="flex flex-col w-3/5 h-full px-2">
-//             <HeaderMessageContent item={selectedChat} />
-//             <BodyMessage boxId={selectedChat.id} />
-//             <FooterMessage />
-//           </div>
-//           <div className="text-dark100_light500 h-full hidden w-1/5 flex-col gap-2 overflow-y-auto lg:block ">
-//             <RightSide />
-//           </div>
-//         </div>
-//       ) : (
-//         <div className="flex flex-col w-full px-2">
-//           <Menubar className="relative border-none bg-transparent py-4 shadow-none">
-//             <MenubarMenu>
-//               <MenubarTrigger className="flex items-center gap-2">
-//                 <span className="ml-1 whitespace-nowrap text-xs font-semibold md:text-base">
-//                   Đoạn chat
-//                 </span>
-//                 <FontAwesomeIcon icon={faChevronDown} />
-//               </MenubarTrigger>
-//               <MenubarContent className="text-dark100_light500 background-light700_dark300 absolute top-full z-50 ml-20 mt-2 h-auto w-40 font-sans text-sm shadow-md">
-//                 <MenubarItem className="mb-4 flex w-full cursor-pointer items-center justify-center text-center hover:bg-primary-100 hover:text-white">
-//                   <p className="p-1 pt-2">Tin nhắn đang chờ</p>
-//                 </MenubarItem>
-//                 <MenubarItem className="flex w-full cursor-pointer items-center justify-center text-center hover:bg-primary-100 hover:text-white">
-//                   <p className="p-1 pb-2">Lưu trữ đoạn chat</p>
-//                 </MenubarItem>
-//                 <MenubarSeparator />
-//               </MenubarContent>
-//             </MenubarMenu>
-//           </Menubar>
-
-//           <div className="h-[75vh] w-full">
-//             {allChat.map((item) => (
-//               <div key={item.id} onClick={() => handleChatClick(item.id)}>
-//                 <ListUserChatCard itemChat={item} />
-//               </div>
-//             ))}
-//           </div>
-//         </div>
-//       )}
-//     </>
-//   );
-// };
-
-// export default ListUserChat;
-
-// components/message/ListUserChat.tsx
 "use client";
-
-import React, { useEffect, useState } from "react";
-import { ItemChat } from "@/dtos/MessageDTO";
-import { getListChat } from "@/lib/services/message.service";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import {
+  createGroup,
+  getListChat,
+  getListGroupChat,
+} from "@/lib/services/message.service";
 import ListUserChatCard from "../cards/ListUserChatCard";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import {
   Menubar,
   MenubarMenu,
@@ -149,59 +17,277 @@ import {
 } from "@radix-ui/react-menubar";
 import { faChevronDown } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import MessageSearch from "./MessageSearch";
+import CreateGroup from "./CreateGroup";
+import { useAuth } from "@/context/AuthContext";
+import { useChatItemContext } from "@/context/ChatItemContext";
+import { ChatProvider } from "@/context/ChatContext";
+import { pusherClient } from "@/lib/pusher";
+import { getUserById } from "@/lib/services/user.service";
+import { FindUserDTO } from "@/dtos/UserDTO";
 
 const ListUserChat = () => {
-  const [allChat, setAllChat] = useState<ItemChat[]>([]);
-  const router = useRouter(); // Use router for navigation
-  const [chat, setChat] = useState<ItemChat | null>(null);
+  const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext();
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const router = useRouter();
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const { profile } = useAuth();
+  const { id } = useParams();
+  const toggleForm = () => {
+    setIsFormOpen(!isFormOpen);
+  };
+  const [user, setUser] = useState<FindUserDTO | null>(null);
+  const channelRefs = useRef<any[]>([]);
 
   useEffect(() => {
-    const fetchChats = async () => {
-      try {
-        const data = await getListChat();
-        setAllChat(data); // Update chat list
-      } catch (error) {
-        console.error("Error loading chats:", error);
+    const handleGroupCreationAndNavigation = async () => {
+      if (!id) return;
+
+      const existChat = allChat.find((item) => item?.receiverId === id);
+
+      if (!existChat) {
+        try {
+          const userId = localStorage.getItem("userId");
+          const groupData = {
+            membersIds: [id, userId],
+            leaderId: userId,
+            groupName: `${user?.firstName || ""} ${user?.lastName || ""}`,
+            groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
+          };
+
+          const newGroup = await createGroup(groupData);
+
+          if (newGroup && newGroup.id) {
+            // Điều hướng đến nhóm mới tạo
+            router.push(`/message/${newGroup.id}`);
+          }
+        } catch (error) {
+          console.error("Error creating group chat:", error);
+        }
+      } else {
+        // Điều hướng đến nhóm đã tồn tại
+        router.push(`/message/${existChat.id}`);
       }
     };
+
+    handleGroupCreationAndNavigation();
+  }, [id, user, allChat]);
+
+  const fetchChats = useCallback(async () => {
+    try {
+      const [normalChats, groupChats] = await Promise.all([
+        getListChat(),
+        getListGroupChat(),
+      ]);
+      const combinedChats = [
+        ...(normalChats || []),
+        ...(groupChats || []),
+      ].sort((a, b) => {
+        return (
+          new Date(b.lastMessage.timestamp).getTime() -
+          new Date(a.lastMessage.timestamp).getTime()
+        );
+      });
+
+      setAllChat(combinedChats);
+      setFilteredChat(combinedChats);
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  }, [setAllChat, setFilteredChat]);
+
+  useEffect(() => {
     fetchChats();
   }, []);
 
-  // Handle chat selection and navigation
+  useEffect(() => {
+    const handleNewMessage = (data: any) => {
+      if (id !== data.boxId) return; // Kiểm tra đúng kênh
+      console.log(data.boxId);
+
+      setAllChat((prevChats: any) => {
+        const updatedChats = prevChats.map((chat: any) => {
+          if (chat.id === data.boxId) {
+            return {
+              ...chat,
+              lastMessage: {
+                text: data.text || "Đã gửi 1 file",
+                timestamp: new Date(data.createAt),
+              },
+            };
+          }
+          return chat;
+        });
+
+        const isNewChat = !updatedChats.find(
+          (chat: any) => chat.id === data.boxId
+        );
+        if (isNewChat) {
+          updatedChats.unshift({
+            id: id,
+            userName: data.userName || "Người dùng mới",
+            avatarUrl:
+              data.avatarUrl ||
+              "/assets/images/0d80fa84f049bc902d6786a7d5574ca6.jpg",
+            lastMessage: {
+              text: "Bắt đầu đoạn chat",
+              timestamp: new Date(data.createAt),
+            },
+            status: false,
+            isRead: false,
+          });
+        }
+
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
+      });
+
+      setFilteredChat((prevFiltered) => {
+        const updatedChats = prevFiltered.map((chat) => {
+          if (chat.id === data.boxId) {
+            return {
+              ...chat,
+              lastMessage: {
+                ...chat.lastMessage,
+                text: data.text || "Đã gửi 1 file",
+                timestamp: new Date(data.createAt),
+              },
+            };
+          }
+          return chat;
+        });
+
+        const isNewChat = !updatedChats.find((chat) => chat.id === data.boxId);
+        if (isNewChat) {
+          updatedChats.unshift({
+            id: data.boxId,
+            userName: data.userName || "Người dùng mới",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
+            lastMessage: {
+              id: "unique-id",
+              createBy: "system",
+              text: "Bắt đầu đoạn chat",
+              timestamp: new Date(data.createAt),
+              status: false,
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
+            },
+            status: "active",
+            isRead: false,
+            senderId: profile._id,
+            receiverId: data.receiverIds,
+          });
+        }
+
+        return updatedChats.sort(
+          (a: any, b: any) => b.lastMessage.timestamp - a.lastMessage.timestamp
+        );
+      });
+    };
+
+    // Đảm bảo hủy đăng ký kênh cũ
+    channelRefs.current.forEach((channel) => {
+      channel.unbind("new-message", handleNewMessage);
+      pusherClient.unsubscribe(channel.name);
+    });
+
+    // Đăng ký kênh mới
+    const channels: any[] = allChat.map((chat) => {
+      const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
+      channel.bind("new-message", handleNewMessage); // Đảm bảo lại bind sự kiện
+      return channel;
+    });
+
+    // Lưu lại các kênh đã đăng ký
+    channelRefs.current = channels;
+
+    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
+    return () => {
+      channels.forEach((channel: any) => {
+        channel.unbind("new-message", handleNewMessage);
+        pusherClient.unsubscribe(channel.name); // Hủy đăng ký kênh
+      });
+    };
+  }, [id, allChat]);
+
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const searchValue = e.target.value;
+    setSearchTerm(searchValue);
+
+    // Filter the chats by username
+    const filtered = allChat.filter((chat) =>
+      chat.userName.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
+    // Sort the filtered chats by lastMessage timestamp (createAt)
+    const sortedFilteredChats = filtered.sort((a, b) => {
+      const timestampA = new Date(a.lastMessage.timestamp).getTime();
+      const timestampB = new Date(b.lastMessage.timestamp).getTime();
+      return timestampB - timestampA; // Sorting in descending order
+    });
+
+    setFilteredChat(sortedFilteredChats);
+  };
+
   const handleChatClick = (id: string) => {
-    router.push(`/message/${id}`); // Navigate to chat details page
+    router.push(`/message/${id}`);
   };
 
   return (
-    <div className="flex flex-col w-full">
-      <Menubar className="relative border-none bg-transparent py-4 shadow-none">
-        <MenubarMenu>
-          <MenubarTrigger className="flex items-center gap-2">
-            <span className="ml-1 text-xs font-semibold md:text-base">
-              Đoạn chat
-            </span>
-            <FontAwesomeIcon icon={faChevronDown} />
-          </MenubarTrigger>
-          <MenubarContent className="absolute top-full z-50 ml-20 mt-2 w-40 font-sans text-sm shadow-md">
-            <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white">
-              Tin nhắn đang chờ
-            </MenubarItem>
-            <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white">
-              Lưu trữ đoạn chat
-            </MenubarItem>
-            <MenubarSeparator />
-          </MenubarContent>
-        </MenubarMenu>
-      </Menubar>
-
-      <div className="h-[75vh] w-full overflow-y-auto">
-        {allChat.map((item) => (
-          <div key={item.id} onClick={() => handleChatClick(item.id)}>
-            <ListUserChatCard itemChat={item} />
-          </div>
-        ))}
+    <ChatProvider>
+      <div className="flex flex-col w-full">
+        <MessageSearch value={searchTerm} onChange={handleSearch} />
+        <Menubar className="relative border-none bg-transparent py-4 shadow-none z-50">
+          <MenubarMenu>
+            <MenubarTrigger className="flex items-center gap-2">
+              <span className="ml-1 text-xs font-semibold md:text-base">
+                Đoạn chat
+              </span>
+              <FontAwesomeIcon icon={faChevronDown} />
+            </MenubarTrigger>
+            <MenubarContent className="absolute top-full z-1000 ml-20 mt-2 w-40 font-sans text-sm shadow-md bg-white ">
+              <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md">
+                Tin nhắn đang chờ
+              </MenubarItem>
+              <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md">
+                Lưu trữ đoạn chat
+              </MenubarItem>
+              <MenubarItem
+                onClick={toggleForm}
+                className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md"
+              >
+                Tạo nhóm
+              </MenubarItem>
+              <MenubarSeparator />
+            </MenubarContent>
+          </MenubarMenu>
+        </Menubar>
+        <div className="h-[75vh] w-full overflow-y-auto">
+          {filteredChat.length === 0 ? (
+            <p>Không tìm thấy cuộc trò chuyện nào!</p>
+          ) : (
+            filteredChat.map((item) => (
+              <div key={item.id} onClick={() => handleChatClick(item.id)}>
+                <ListUserChatCard itemChat={item} />
+              </div>
+            ))
+          )}
+        </div>
+        {isFormOpen && (
+          <CreateGroup onClose={() => setIsFormOpen(false)} me={profile} />
+        )}
       </div>
-    </div>
+    </ChatProvider>
   );
 };
 

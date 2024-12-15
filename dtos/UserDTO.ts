@@ -99,4 +99,5 @@ export interface FindUserDTO {
   nickName: string;
   avatar: string;
   relation: string;
+  status: boolean;
 }
