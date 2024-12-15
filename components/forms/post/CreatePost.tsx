@@ -251,7 +251,7 @@ const CreatePost = ({ onClose, me }: any) => {
                   placeholder="Location"
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  className="text-dark100_light500 w-full rounded border border-gray-300 p-2"
+                  className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
                 />
               </div>
             </div>
@@ -268,7 +268,7 @@ const CreatePost = ({ onClose, me }: any) => {
                 </button>
                 <div
                   id="friendsDropdown"
-                  className="absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg bg-white shadow-lg"
+                  className="background-light800_dark400 absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg shadow-lg"
                 >
                   {friends.map((friend) => (
                     <div

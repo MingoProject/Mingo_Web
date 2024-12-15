@@ -277,7 +277,7 @@ const DetailPost = ({
                 onClick={handleAddComment}
                 className="rounded-full bg-primary-100 p-2 px-5 text-white"
               >
-                Đăng
+                Post
               </button>
             </div>
           </div>

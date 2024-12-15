@@ -1,4 +1,5 @@
 "use client";
+import { updateUserStatus } from "@/lib/services/user.service";
 import React, { createContext, useContext, useState, ReactNode } from "react";
 
 interface AuthContextProps {
@@ -12,7 +13,9 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [profile, setProfile] = useState<any>(null);
 
-  const logout = () => {
+  const logout = async () => {
+    const token = localStorage.getItem("token");
+    await updateUserStatus(token);
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     setProfile(null);

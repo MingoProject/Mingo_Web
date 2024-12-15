@@ -97,7 +97,7 @@ const Background = ({ profileUser, setProfileUser }: any) => {
       {backgroundMenuOpen && (
         <div
           ref={backgroundMenuRef}
-          className="absolute z-10 ml-[50%] rounded-lg border border-gray-300 bg-white shadow-lg"
+          className="background-light800_dark400 absolute z-10 ml-[50%] rounded-lg border border-gray-300 shadow-lg"
         >
           <button
             onClick={() => console.log("View Avatar")}

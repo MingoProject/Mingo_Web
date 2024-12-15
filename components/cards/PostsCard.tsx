@@ -129,25 +129,14 @@ const PostsCard = ({
 
   const toggleLike = async () => {
     if (isLiked) {
-      // Dislike
       await handleDislikePost();
       setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      // Like
       await handleLikePost();
       setNumberOfLikes((prev: any) => prev + 1);
     }
     setIsLiked(!isLiked);
   };
-  // const toggleLike = () => {
-  //   if (isLiked) {
-  //     handleDislikePost();
-  //     setNumberOfLikes(likes.length - 1);
-  //   } else {
-  //     handleLikePost();
-  //     setNumberOfLikes(likes.length + 1);
-  //   }
-  // };
 
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">

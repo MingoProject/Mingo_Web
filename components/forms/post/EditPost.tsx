@@ -335,7 +335,7 @@ const EditPost = ({
                 </button>
                 <div
                   id="friendsDropdown"
-                  className="absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg bg-white shadow-lg"
+                  className="background-light800_dark400 absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg shadow-lg"
                 >
                   {friends.map((friend) => (
                     <div

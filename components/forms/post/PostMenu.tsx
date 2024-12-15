@@ -1,6 +1,7 @@
-import { deletePost } from "@/lib/services/post.service";
+import { deletePost, savePost, unsavePost } from "@/lib/services/post.service";
 import React, { useEffect, useRef, useState } from "react";
 import EditPost from "./EditPost";
+import { useAuth } from "@/context/AuthContext";
 
 const PostMenu = ({
   postId,
@@ -33,6 +34,8 @@ const PostMenu = ({
   const menuRef = useRef(null);
   const [userId, setUserId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isSaved, setIsSaved] = useState(false);
+  const { profile } = useAuth();
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -61,6 +64,38 @@ const PostMenu = ({
     }
   };
 
+  useEffect(() => {
+    if (profile?.saveIds?.includes(postId)) {
+      setIsSaved(true);
+    } else {
+      setIsSaved(false);
+    }
+  }, [profile, postId]);
+
+  const handleSavePost = async (postId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await savePost(postId, token);
+      onClose();
+    } catch (error) {
+      console.error("Failed to save comment:", error);
+    }
+  };
+
+  const handleUnsavePost = async (postId: string) => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    try {
+      await unsavePost(postId, token);
+      onClose();
+    } catch (error) {
+      console.error("Failed to save comment:", error);
+    }
+  };
+
   return (
     <div
       ref={menuRef}
@@ -72,7 +107,7 @@ const PostMenu = ({
             onClick={handleOpenEditPost}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
-            Sửa
+            Edit
           </button>
           {isEditing && (
             <EditPost postId={postId} onClose={() => setIsEditing(false)} />
@@ -81,13 +116,30 @@ const PostMenu = ({
             onClick={() => handleDeletePost(postId)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
-            Xóa
+            Delete
           </button>
         </>
       ) : (
-        <button className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200">
-          Báo cáo
-        </button>
+        <>
+          {isSaved ? (
+            <button
+              onClick={() => handleUnsavePost(postId)}
+              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            >
+              Unsave post
+            </button>
+          ) : (
+            <button
+              onClick={() => handleSavePost(postId)}
+              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            >
+              Save post
+            </button>
+          )}
+          <button className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200">
+            Report
+          </button>
+        </>
       )}
     </div>
   );

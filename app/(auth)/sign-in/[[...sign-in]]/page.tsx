@@ -2,7 +2,11 @@
 import React, { useState } from "react";
 import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
-import { getMyProfile, login } from "@/lib/services/user.service";
+import {
+  getMyProfile,
+  login,
+  updateUserStatus,
+} from "@/lib/services/user.service";
 import { useAuth } from "@/context/AuthContext";
 
 const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
@@ -61,7 +65,7 @@ const SignIn = () => {
 
     try {
       const user = await login(userData);
-
+      await updateUserStatus(user.token);
       if (user) {
         localStorage.setItem("token", user.token);
         const decodedToken = JSON.parse(atob(user.token.split(".")[1]));

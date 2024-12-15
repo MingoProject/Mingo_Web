@@ -13,6 +13,12 @@ import {
   unfollowOrRefuseFriendRequest,
   unrequestBffOrRefuseBffRequest,
 } from "@/lib/services/friend.service";
+import { getPostByPostId } from "@/lib/services/post.service";
+import DetailPost from "@/components/forms/post/DetailPost";
+import { useAuth } from "@/context/AuthContext";
+import { getMediaByMediaId } from "@/lib/services/media.service";
+import DetailsImage from "@/components/forms/personalPage/DetailsImage";
+import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
 
 const getNotificationContent = (notification: any) => {
   switch (notification.type) {
@@ -47,6 +53,13 @@ const getNotificationContent = (notification: any) => {
 
 const Notification = () => {
   const [notifications, setNotifications] = useState<any[]>([]);
+  const [post, setPost] = useState<any>();
+  const [image, setImage] = useState<any>();
+  const [video, setVideo] = useState<any>();
+  const [openDetailPost, setOpenDetailPost] = useState(false);
+  const [openDetailImage, setOpenDetailImage] = useState(false);
+  const [openDetailVideo, setOpenDetailVideo] = useState(false);
+  const { profile } = useAuth();
 
   useEffect(() => {
     let isMounted = true;
@@ -89,7 +102,7 @@ const Notification = () => {
         },
         token
       );
-      await deleteNotification(notificationId, token); // Delete the notification
+      await deleteNotification(notificationId, token);
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif._id !== notificationId)
       );
@@ -153,7 +166,7 @@ const Notification = () => {
         },
         token
       );
-      await deleteNotification(notificationId, token); // Delete the notification
+      await deleteNotification(notificationId, token);
       setNotifications((prevNotifications) =>
         prevNotifications.filter((notif) => notif._id !== notificationId)
       );
@@ -199,6 +212,113 @@ const Notification = () => {
     }
   };
 
+  const handleClick = async (notification: any) => {
+    switch (notification.type) {
+      case "like":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "like_comment":
+        try {
+          if (notification.postId) {
+            const data = await getPostByPostId(notification.postId);
+            setPost(data);
+            setOpenDetailPost(true);
+          } else {
+            const data = await getMediaByMediaId(notification.mediaId);
+
+            if (data.type === "image") {
+              setImage(data);
+              setOpenDetailImage(true);
+            } else {
+              setVideo(data);
+              setOpenDetailVideo(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "like_media":
+        try {
+          const data = await getMediaByMediaId(notification.mediaId);
+
+          if (data.type === "image") {
+            setImage(data);
+            setOpenDetailImage(true);
+          } else {
+            setVideo(data);
+            setOpenDetailVideo(true);
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "comment":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "comment_media":
+        try {
+          const data = await getMediaByMediaId(notification.mediaId);
+
+          if (data.type === "image") {
+            setImage(data);
+            setOpenDetailImage(true);
+          } else {
+            setVideo(data);
+            setOpenDetailVideo(true);
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "reply_comment":
+        try {
+          if (notification.postId) {
+            const data = await getPostByPostId(notification.postId);
+            setPost(data);
+            setOpenDetailPost(true);
+          } else {
+            const data = await getMediaByMediaId(notification.mediaId);
+
+            if (data.type === "image") {
+              setImage(data);
+              setOpenDetailImage(true);
+            } else {
+              setVideo(data);
+              setOpenDetailVideo(true);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      case "tags":
+        try {
+          const data = await getPostByPostId(notification.postId);
+          setPost(data);
+          setOpenDetailPost(true);
+        } catch (error) {
+          console.error("Error fetching post data:", error);
+        }
+        break;
+      default:
+        console.log("Notification type not handled");
+        break;
+    }
+  };
+
   return (
     <div>
       <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
@@ -222,7 +342,10 @@ const Notification = () => {
               height={50}
               className="size-16 rounded-full object-cover"
             />
-            <div className="ml-2 flex-1 pr-4">
+            <div
+              className="ml-2 flex-1 pr-4"
+              onClick={() => handleClick(notification)}
+            >
               <p className="text-dark100_light500 font-light">
                 {getNotificationContent(notification)}
               </p>
@@ -286,6 +409,38 @@ const Notification = () => {
                 {getTimestamp(notification.createAt)}
               </p>
             </div>
+            {openDetailPost && (
+              <DetailPost
+                postId={post?._id}
+                author={post?.author}
+                content={post?.content}
+                media={post?.media}
+                createdAt={post?.createdAt}
+                likes={post?.likes}
+                comments={post?.comments}
+                shares={post?.shares}
+                privacy={post?.privacy}
+                tags={post?.tags}
+                onClose={() => setOpenDetailPost(false)}
+                profile={profile}
+              />
+            )}
+            {openDetailImage && (
+              <DetailsImage
+                image={image}
+                onClose={() => setOpenDetailImage(false)}
+                profileUser={image.createBy}
+                me={profile}
+              />
+            )}
+            {openDetailVideo && (
+              <DetailsVideo
+                video={video}
+                onClose={() => setOpenDetailVideo(false)}
+                profileUser={video.createBy}
+                me={profile}
+              />
+            )}
           </div>
         ))}
       </div>
