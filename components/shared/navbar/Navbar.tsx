@@ -191,7 +191,7 @@ const Navbar = () => {
       </div>
 
       {isDrawerOpen && (
-        <div className="background-light700_dark300 fixed left-0 top-16 z-50 size-full bg-white shadow-lg md:w-1/2 lg:w-2/5">
+        <div className="background-light700_dark300 fixed left-0 top-16 z-50 size-full shadow-lg md:w-1/2 lg:w-2/5">
           <div className="p-6">
             <button
               className="absolute right-4 top-4 text-lg"

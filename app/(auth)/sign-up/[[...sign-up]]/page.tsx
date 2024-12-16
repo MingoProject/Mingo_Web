@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { register } from "@/lib/services/user.service"; // Import the service function
+import { sendOTP } from "@/lib/services/auth.service";
 
 const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -26,10 +27,8 @@ const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
       />
       <label
         htmlFor={id}
-        className={`absolute left-2 transition-all duration-200 ${
-          isFocused || value
-            ? "text-dark100_light500 top-0 text-xs"
-            : "text-dark100_light500 top-2 text-sm"
+        className={`text-dark100_light500 absolute left-2 transition-all duration-200 ${
+          isFocused || value ? "top-0 text-xs" : "top-2 text-sm"
         }`}
       >
         {label}
@@ -49,12 +48,15 @@ const SignUp = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [isOtpStep, setIsOtpStep] = useState(false);
 
-  const handleSubmit = async (e: any) => {
+  const handleOtpSubmit = async (e: any) => {
     e.preventDefault();
 
-    if (password !== confirmPassword) {
-      setErrorMessage("Passwords do not match!");
+    if (otp !== generatedOtp.toString()) {
+      setErrorMessage("Invalid OTP!");
       return;
     }
 
@@ -85,6 +87,7 @@ const SignUp = () => {
         setGender("");
         setPassword("");
         setConfirmPassword("");
+        setIsOtpStep(false);
       } else {
         setErrorMessage("Registration failed!");
       }
@@ -94,11 +97,31 @@ const SignUp = () => {
     }
   };
 
+  const handleOtpRequest = async (e: any) => {
+    if (password !== confirmPassword) {
+      setErrorMessage("Passwords do not match!");
+      return;
+    }
+
+    setSuccessMessage("");
+    e.preventDefault();
+    setErrorMessage("");
+
+    try {
+      const otpResponse = await sendOTP(phoneNumber);
+      setGeneratedOtp(otpResponse.otp);
+      setIsOtpStep(true);
+    } catch (error: any) {
+      console.error("Error during OTP request:", error);
+      setErrorMessage(error.message || "Failed to send OTP.");
+    }
+  };
+
   return (
     <div className="background-light800_dark400 flex h-screen w-full items-center justify-center">
       <div className="background-light700_dark300 my-[110px] w-[549px] rounded-lg px-[55px] py-[30px] shadow-md">
         <h2 className="text-dark100_light500 mb-6 text-center text-2xl font-bold">
-          Sign Up
+          {isOtpStep ? "Verify OTP" : "Sign Up"}
         </h2>
 
         {errorMessage && (
@@ -110,100 +133,133 @@ const SignUp = () => {
           </div>
         )}
 
-        <form className="mt-[20px]" onSubmit={handleSubmit}>
-          <FloatingLabelInput
-            id="firstName"
-            label="First Name"
-            type="text"
-            value={firstName}
-            setValue={setFirstName}
-          />
-          <FloatingLabelInput
-            id="lastName"
-            label="Last Name"
-            type="text"
-            value={lastName}
-            setValue={setLastName}
-          />
-          <FloatingLabelInput
-            id="email"
-            label="Email"
-            type="email"
-            value={email}
-            setValue={setEmail}
-          />
-          <FloatingLabelInput
-            id="phoneNumber"
-            label="Phone Number"
-            type="tel"
-            value={phoneNumber}
-            setValue={setPhoneNumber}
-          />
+        {!isOtpStep ? (
+          <form className="mt-[20px]" onSubmit={handleOtpRequest}>
+            <FloatingLabelInput
+              id="firstName"
+              label="First Name"
+              type="text"
+              value={firstName}
+              setValue={setFirstName}
+            />
+            <FloatingLabelInput
+              id="lastName"
+              label="Last Name"
+              type="text"
+              value={lastName}
+              setValue={setLastName}
+            />
+            <FloatingLabelInput
+              id="email"
+              label="Email"
+              type="email"
+              value={email}
+              setValue={setEmail}
+            />
+            <FloatingLabelInput
+              id="phoneNumber"
+              label="Phone Number"
+              type="tel"
+              value={phoneNumber}
+              setValue={setPhoneNumber}
+            />
 
-          <div className="mb-6 flex justify-between">
-            <div className="mr-2 w-full">
-              <label
-                htmlFor="birthday"
-                className="text-dark100_light500 block text-sm font-medium"
-              >
-                Birthday
-              </label>
-              <input
-                type="date"
-                id="birthday"
-                value={birthday}
-                onChange={(e) => setBirthday(e.target.value)}
-                className="text-dark100_light500 w-full border-b-2 bg-transparent p-2 focus:outline-none"
-                required
+            <div className="mb-6 flex justify-between">
+              <div className="mr-2 w-full">
+                <label
+                  htmlFor="birthday"
+                  className="text-dark100_light500 block text-sm font-medium"
+                >
+                  Birthday
+                </label>
+                <input
+                  type="date"
+                  id="birthday"
+                  value={birthday}
+                  onChange={(e) => setBirthday(e.target.value)}
+                  className="text-dark100_light500 background-light700_dark300 w-full border-b-2 p-2 focus:outline-none"
+                  required
+                />
+              </div>
+              <div className="ml-2 w-full">
+                <label
+                  htmlFor="gender"
+                  className="text-dark100_light500 mb-2 block text-sm font-medium"
+                >
+                  Gender
+                </label>
+                <select
+                  id="gender"
+                  value={gender}
+                  onChange={(e) => setGender(e.target.value)}
+                  className="text-dark100_light500 w-full border-b-2 bg-transparent p-2 focus:outline-none"
+                  required
+                >
+                  <option
+                    value=""
+                    disabled
+                    className="text-dark100_light500 background-light800_dark400"
+                  >
+                    Select your gender
+                  </option>
+                  <option
+                    value="male"
+                    className="text-dark100_light500 background-light800_dark400"
+                  >
+                    Male
+                  </option>
+                  <option
+                    value="female"
+                    className="text-dark100_light500 background-light800_dark400"
+                  >
+                    Female
+                  </option>
+                </select>
+              </div>
+            </div>
+
+            <div className="mb-6 flex w-full justify-around">
+              <FloatingLabelInput
+                id="password"
+                label="Password"
+                type="password"
+                value={password}
+                setValue={setPassword}
+              />
+              <FloatingLabelInput
+                id="confirmPassword"
+                label="Confirm Password"
+                type="password"
+                value={confirmPassword}
+                setValue={setConfirmPassword}
               />
             </div>
-            <div className="ml-2 w-full">
-              <label
-                htmlFor="gender"
-                className="text-dark100_light500 mb-2 block text-sm font-medium"
-              >
-                Gender
-              </label>
-              <select
-                id="gender"
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="text-dark100_light500 w-full border-b-2 bg-transparent p-2 focus:outline-none"
-                required
-              >
-                <option value="" disabled>
-                  Select your gender
-                </option>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
-              </select>
-            </div>
-          </div>
 
-          <div className="mb-6 flex justify-between">
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-primary-100 py-2 text-white transition duration-200"
+            >
+              Send OTP
+            </button>
+          </form>
+        ) : (
+          <form className="mt-[20px]" onSubmit={handleOtpSubmit}>
+            {/* Form nhập OTP */}
             <FloatingLabelInput
-              id="password"
-              label="Password"
-              type="password"
-              value={password}
-              setValue={setPassword}
+              id="otp"
+              label="Enter OTP"
+              type="text"
+              value={otp}
+              setValue={setOtp}
             />
-            <FloatingLabelInput
-              id="confirmPassword"
-              label="Confirm Password"
-              type="password"
-              value={confirmPassword}
-              setValue={setConfirmPassword}
-            />
-          </div>
-
-          <button
-            type="submit"
-            className="w-full rounded-lg bg-primary-100 py-2 text-white transition duration-200"
-          >
-            Sign Up
-          </button>
-        </form>
+            <button
+              type="submit"
+              className="w-full rounded-lg bg-primary-100 py-2 text-white transition duration-200"
+            >
+              Verify OTP
+            </button>
+          </form>
+        )}
         <div className="mt-5 text-center">
           <p className="text-dark100_light500 text-sm">
             Already have an account?{" "}

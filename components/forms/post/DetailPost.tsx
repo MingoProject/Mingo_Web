@@ -79,6 +79,7 @@ const DetailPost = ({
     let isMounted = true;
     const fetchCommentsData = async () => {
       const detailedComments = await fetchDetailedComments(getComments);
+      console.log(detailedComments);
       if (isMounted) {
         setCommentsData(detailedComments);
       }
@@ -205,7 +206,12 @@ const DetailPost = ({
                 onClick={onClose}
                 className="ml-auto mt-5 pl-2 text-3xl text-primary-100"
               >
-                x
+                <Icon
+                  icon="ic:round-close"
+                  width="28"
+                  height="28"
+                  className="text-primary-100"
+                />
               </button>
             </div>
 
@@ -272,20 +278,23 @@ const DetailPost = ({
 
               <div className="my-4">
                 {commentsData.length > 0 ? (
-                  commentsData.map((comment) => (
-                    <div
-                      key={comment._id}
-                      className="group mb-3 flex items-start"
-                    >
-                      <CommentCard
-                        comment={comment}
-                        setCommentsData={setCommentsData}
-                        profile={profile}
-                        author={author}
-                        postId={postId}
-                      />
-                    </div>
-                  ))
+                  commentsData.map(
+                    (comment) =>
+                      comment.parentId === null && (
+                        <div
+                          key={comment._id}
+                          className="group mb-3 flex items-start"
+                        >
+                          <CommentCard
+                            comment={comment}
+                            setCommentsData={setCommentsData}
+                            profile={profile}
+                            author={author}
+                            postId={postId}
+                          />
+                        </div>
+                      )
+                  )
                 ) : (
                   <p className="text-dark100_light500">No comments yet.</p>
                 )}

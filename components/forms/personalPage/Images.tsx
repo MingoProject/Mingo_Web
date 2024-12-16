@@ -1,23 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMyImages } from "@/lib/services/user.service";
-import { MediaResponseDTO } from "@/dtos/MediaDTO";
-import fetchDetailedMedias from "@/hooks/useMedias";
 import DetailsImage from "./DetailsImage";
+import { getMediaByMediaId } from "@/lib/services/media.service";
+// import { getMediaByMediaId } from "@/lib/services/media.service";
 
 const Images = ({ me, profileUser }: any) => {
   const [images, setImages] = useState<any[]>([]);
-  const [selectedImage, setSelectedImage] = useState<any>(null);
+  // const [selectedImage, setSelectedImage] = useState<any>(null);
+  const [detailSelectedImage, setDetailSelectedImage] = useState<any>(null);
+  const [openModal, setOpenModal] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     const getImages = async () => {
       try {
-        const data: MediaResponseDTO[] = await getMyImages(profileUser._id);
-        const detailsImage = await fetchDetailedMedias(data);
-        // console.log(detailsImage);
+        const data = await getMyImages(profileUser._id);
+        console.log(data);
+
         if (isMounted) {
-          setImages(detailsImage);
+          setImages(data);
         }
       } catch (error) {
         console.error("Error loading posts:", error);
@@ -25,9 +27,19 @@ const Images = ({ me, profileUser }: any) => {
     };
     getImages();
     return () => {
-      isMounted = false; // Cleanup: Mark the component as unmounted
+      isMounted = false;
     };
   }, [profileUser._id]);
+
+  const handleClick = async (image: any) => {
+    try {
+      const data = await getMediaByMediaId(image._id);
+      setDetailSelectedImage(data);
+      setOpenModal(true);
+    } catch (error) {
+      console.error("Error loading image details:", error);
+    }
+  };
 
   return (
     <div className="flex ">
@@ -39,17 +51,17 @@ const Images = ({ me, profileUser }: any) => {
           {images.map((image, index) => (
             <div key={index} className="flex flex-col items-center">
               <Image
-                onClick={() => setSelectedImage(image)}
+                onClick={() => handleClick(image)}
                 width={140}
                 height={140}
                 src={image?.url}
                 alt={`Picture ${index + 1}`}
                 className="mb-2 size-36 rounded-sm object-cover"
               />
-              {selectedImage && (
+              {openModal && (
                 <DetailsImage
-                  image={selectedImage}
-                  onClose={() => setSelectedImage(null)}
+                  image={detailSelectedImage}
+                  onClose={() => setOpenModal(false)}
                   profileUser={profileUser}
                   me={me}
                 />

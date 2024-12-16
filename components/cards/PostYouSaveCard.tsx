@@ -1,55 +1,71 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
-import { format } from "date-fns";
+import { unsavePost } from "@/lib/services/post.service";
 
-interface PostYouLike {
-  _id: string;
-  content: string;
-  posterName: string;
-  posterAva: string;
-  like_at: Date;
-}
+const PostYouSaveCard = ({ postYouSave, setListSavePosts }: any) => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const handleUnsave = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (token) {
+        await unsavePost(postYouSave?._id, token);
+        setListSavePosts((prevPosts: any[]) =>
+          prevPosts.filter((post) => post._id !== postYouSave?._id)
+        );
+      } else {
+        console.warn("User is not authenticated");
+      }
+    } catch (error) {
+      console.error("Error in handleLikePost:", error);
+    }
+    setIsMenuOpen(false);
+  };
 
-const PostYouSaveCard = ({ postYouLike }: { postYouLike: PostYouLike }) => {
   return (
-    <div className="mt-4  flex items-center justify-between text-xs ">
-      <div className="flex w-full items-start gap-4 border-b border-gray-200 pb-3">
+    <div className="mt-4 flex items-center justify-between gap-3 text-xs md:text-sm">
+      <div className="flex flex-1 items-start gap-4 border-b border-gray-200 pb-3">
         <Image
           src={
-            postYouLike.posterAva ||
+            postYouSave?.author?.avatar ||
             "https://i.pinimg.com/236x/3d/22/e2/3d22e2269593b9169e7d74fe222dbab0.jpg"
-          } // Relative path with leading slash
+          }
           alt="Avatar"
-          width={40}
-          height={50}
+          width={55}
+          height={55}
           className="rounded-full"
         />
-        <div className="flex w-full flex-col gap-1 overflow-hidden">
-          {/* <div className="overflow-hidden text-ellipsis pr-3">
-            <span className="line-clamp-3 block text-xs font-semibold">
-              {postYouLike.postContent}
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <div className="flex w-full flex-wrap gap-[2px] text-lg md:gap-1">
+            <span className="text-lg font-bold">You liked</span> post of{" "}
+            <span className="text-lg font-medium">
+              {postYouSave?.author.firName} {postYouSave?.author.lastName}
             </span>
-          </div> */}
+          </div>
           <div className="max-h-10 w-full overflow-hidden">
-            <span className="line-clamp-2 w-full text-xs">
-              {postYouLike.content}
+            <span className="line-clamp-2 w-full text-[12px]">
+              {postYouSave?.content}
             </span>
-          </div>
-
-          <div className="flex gap-1">
-            <p className="whitespace-nowrap text-[10px] md:text-xs">
-              Bài viết:
-            </p>
-            <p className="text-[9px] md:text-xs">{postYouLike.posterName}</p>
-          </div>
-
-          <div className="flex gap-1">
-            <p className="whitespace-nowrap text-[10px] lg:text-xs">Đã lưu:</p>
-            <p className="text-[9px] md:text-xs">
-              {format(postYouLike.like_at, "HH:mm PPP")}
-            </p>
           </div>
         </div>
+        <p className="text-[30px] " onClick={() => setIsMenuOpen(true)}>
+          ...
+        </p>
+        {isMenuOpen && (
+          <div className="background-light700_dark300 absolute right-0 top-6 z-50 w-32 rounded-lg border border-gray-300 shadow-md dark:border-gray-800">
+            <button
+              className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:border-gray-800"
+              onClick={handleUnsave}
+            >
+              Unsave
+            </button>
+            <button
+              className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-gray-100 dark:border-gray-800"
+              onClick={() => setIsMenuOpen(false)} // Đóng menubar
+            >
+              Cancel
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

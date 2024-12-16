@@ -1,30 +1,12 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { format } from "date-fns";
-import React from "react";
+import React, { useEffect } from "react";
 import PostYouSaveCard from "../cards/PostYouSaveCard";
-import { PostYouLikeDTO } from "@/dtos/PostDTO";
 
-interface PostYouLike {
-  id: number;
-  user_id: number;
-  post_id: number;
-  created_at: Date;
-  posts: {
-    id: number;
-    postContent: string;
-    posterAva: string;
-    posterName: string;
-    like_at: Date;
-  }[];
-}
-
-interface FavoritePose {
-  onClose: () => void;
-  post: PostYouLikeDTO[];
-}
-
-const Save = ({ onClose, post }: FavoritePose) => {
+const Save = ({ onClose, post, setListSavePosts }: any) => {
+  useEffect(() => {
+    console.log(post);
+  });
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center">
       {/* Background mờ - khi nhấn vào nền mờ thì đóng component */}
@@ -37,7 +19,7 @@ const Save = ({ onClose, post }: FavoritePose) => {
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white ">
-              Bài viết đã lưu
+              Saved posts
             </span>
             <FontAwesomeIcon
               onClick={onClose}
@@ -45,23 +27,23 @@ const Save = ({ onClose, post }: FavoritePose) => {
               className="mb-2 cursor-pointer"
             />
           </div>
-          {post.map((item) => (
-            <div key={item._id} className="px-4">
-              <div className="flex w-full flex-col  py-2">
-                <p className="text-sm ">
-                  {format(item.created_at, "dd-MM-yyyy")}
-                </p>
+          {post.length > 0 ? (
+            post.map((item: any) => (
+              <div key={item._id} className="flex w-full flex-col py-2">
                 <div>
-                  {item.posts.map((it) => (
-                    <PostYouSaveCard
-                      key={`${item._id}-${it._id}`}
-                      postYouLike={it}
-                    />
-                  ))}
+                  <PostYouSaveCard
+                    key={`${item._id}`}
+                    postYouSave={item}
+                    setListSavePosts={setListSavePosts}
+                  />
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="py-4 text-center">
+              <p className="text-gray-500">No saved posts</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

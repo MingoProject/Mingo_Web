@@ -3,14 +3,14 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { createCommentMedia } from "@/lib/services/comment.service";
+import {
+  createCommentMedia,
+  getCommentByCommentId,
+} from "@/lib/services/comment.service";
 import CommentCard from "@/components/cards/CommentCard";
-import fetchDetailedComments from "@/hooks/useComments";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";
-
-// import { getTimestamp } from "@/lib/utils";
 
 const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
@@ -21,20 +21,27 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
   };
 
   useEffect(() => {
+    let isMounted = true;
     const fetchCommentsData = async () => {
-      const detailedComments = await fetchDetailedComments(image.comments);
+      const detailsComments = await Promise.all(
+        image?.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
 
-      setCommentsData(detailedComments);
+      if (isMounted) {
+        setCommentsData(detailsComments);
+      }
+      // console.log(detailsComments);
     };
 
-    if (image.comments.length > 0) {
+    if (image?.comments.length > 0) {
       fetchCommentsData();
     }
-  }, [image.comments]);
-
-  useEffect(() => {
-    console.log(commentsData);
-  });
+    return () => {
+      isMounted = false;
+    };
+  }, [image?.comments]);
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -56,6 +63,15 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
         token,
         image._id
       );
+
+      const currentTime = new Date();
+      const isoStringWithOffset = currentTime
+        .toISOString()
+        .replace("Z", "+00:00");
+      console.log(
+        "Current Time (new Date()):",
+        currentTime.toISOString().replace("Z", "+00:00")
+      );
       const enrichedComment = {
         ...newCommentData,
         userId: {
@@ -63,11 +79,10 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
           avatar: me?.avatar || "/assets/images/capy.jpg",
           firstName: me?.firstName || "Anonymous",
           lastName: me?.lastName || "Anonymous",
-          createAt: "Now",
         },
+        createAt: isoStringWithOffset,
       };
 
-      // Cập nhật state commentsData
       setCommentsData((prev) => [enrichedComment, ...prev]);
 
       if (profileUser._id !== me._id) {
@@ -92,7 +107,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="background-light700_dark300 text-dark100_light500 z-50 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
         <div className="block lg:flex">
-          <div className="w-full lg:w-3/5">
+          <div className="w-full lg:w-1/2">
             <div className="ml-4 mt-3 flex items-center">
               <div className="flex items-center">
                 <Link href={`/profile/${profileUser._id}`}>
@@ -109,7 +124,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                     {profileUser?.firstName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
-                    {getTimestamp(image.createAt)}
+                    {image?.createAt && getTimestamp(image?.createAt)}
                   </span>
                 </div>
               </div>
@@ -120,7 +135,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                 />
               </div>
             </div>
-            <div className="mt-8 flex w-full items-center justify-center">
+            <div className="mt-20 flex w-full items-center justify-center">
               <div className=" mx-auto flex h-64 w-full items-center justify-center">
                 <Image
                   src={image?.url || "/assets/images/placeholder.jpg"}
@@ -132,33 +147,42 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
               </div>
             </div>
           </div>
-          <div className="w-full lg:w-2/5">
+          <div className="w-full lg:w-1/2">
             <div className="mx-10 my-5">
               <ImageAction
-                likes={image.likes}
-                mediaId={image._id}
-                comments={image.comments}
-                shares={image.shares}
+                likes={image?.likes}
+                mediaId={image?._id}
+                comments={image?.comments}
+                shares={image?.shares}
                 author={profileUser}
                 profile={me}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
-              <div className="my-4 h-80 overflow-y-scroll">
+              <div
+                className=" my-4 h-80 overflow-y-scroll"
+                style={{
+                  scrollbarWidth: "none", // Firefox
+                  msOverflowStyle: "none", // IE và Edge
+                }}
+              >
                 {commentsData.length > 0 ? (
-                  commentsData.map((comment) => (
-                    <div
-                      key={comment._id}
-                      className="group mb-3 flex items-start"
-                    >
-                      <CommentCard
-                        comment={comment}
-                        setCommentsData={setCommentsData}
-                        mediaId={image._id}
-                        profile={me}
-                      />
-                    </div>
-                  ))
+                  commentsData.map(
+                    (comment) =>
+                      comment.parentId === null && (
+                        <div
+                          key={comment._id}
+                          className="group mb-3 flex items-start"
+                        >
+                          <CommentCard
+                            comment={comment}
+                            setCommentsData={setCommentsData}
+                            mediaId={image._id}
+                            profile={me}
+                          />
+                        </div>
+                      )
+                  )
                 ) : (
                   <p className="text-dark100_light500">No comments yet.</p>
                 )}

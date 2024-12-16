@@ -141,7 +141,7 @@ const SignIn = () => {
 
         <div className="mt-4 text-center">
           <p className="text-dark100_light500 text-sm">
-            Chưa có tài khoản?{" "}
+            You don&apos;t have an account yet ?{" "}
             <a href="/sign-up" className="text-primary-100 hover:underline">
               Đăng ký
             </a>

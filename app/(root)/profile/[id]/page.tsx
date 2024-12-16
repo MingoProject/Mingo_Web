@@ -13,7 +13,7 @@ import { checkRelation } from "@/lib/services/relation.service";
 import RelationModal from "@/components/forms/profile/RelationAction";
 import { useAuth } from "@/context/AuthContext";
 import MyButton from "@/components/shared/MyButton";
-import { faMessage } from "@fortawesome/free-solid-svg-icons";
+// import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import { getListChat } from "@/lib/services/message.service";
 

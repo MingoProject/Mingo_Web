@@ -38,7 +38,7 @@ export default function Home() {
     let isMounted = true;
     const fetchPostsData = async () => {
       const detailedPosts = await fetchDetailedPosts(posts);
-      console.log(detailedPosts);
+      // console.log(detailedPosts);
       if (isMounted) {
         setPostsData(detailedPosts);
       }

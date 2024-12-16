@@ -210,7 +210,6 @@ const Notification = () => {
       alert(error.message || "Đã xảy ra lỗi.");
     }
   };
-
   const handleClick = async (notification: any) => {
     switch (notification.type) {
       case "like":
