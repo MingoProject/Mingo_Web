@@ -1,5 +1,4 @@
 import Favorite from "@/components/home/Favorite";
-import Setting from "@/components/home/Setting";
 import ViewProfile from "@/components/home/ViewProfile";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,14 +18,11 @@ import {
 import React, { useEffect, useState } from "react";
 import MobileNav from "./MobileNav";
 import Image from "next/image";
-import { PostYouLikeDTO } from "@/dtos/PostDTO";
-import {
-  getPostsLikedByUser,
-  getPostsSavedByUser,
-} from "@/lib/services/setting.service";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Save from "@/components/home/Save";
+import ChangePassword from "@/components/home/ChangePassword";
+import { getMyLikedPosts, getMySavedPosts } from "@/lib/services/user.service";
 
 const SettingModal = ({ profile, setProfile, logout }: any) => {
   const router = useRouter();
@@ -35,8 +31,8 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  const [listLikePosts, setListLikePosts] = useState<PostYouLikeDTO[]>([]);
-  const [listSavePosts, setListSavePosts] = useState<PostYouLikeDTO[]>([]);
+  const [listLikePosts, setListLikePosts] = useState<any[]>([]);
+  const [listSavePosts, setListSavePosts] = useState<any[]>([]);
 
   useEffect(() => {
     if (!isFavorite || !profile?._id) return;
@@ -45,7 +41,8 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
 
     const fetchPostsData = async () => {
       try {
-        const listPost = await getPostsLikedByUser(profile._id);
+        const listPost = await getMyLikedPosts(profile._id);
+        // console.log(listPost);
         if (isMounted) {
           setListLikePosts(listPost);
         }
@@ -68,7 +65,8 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
 
     const fetchPostsData = async () => {
       try {
-        const listPost = await getPostsSavedByUser(profile._id); // Fetch saved posts
+        const listPost = await getMySavedPosts(profile._id); // Fetch saved posts
+        // console.log(listPost);
         if (isMounted) {
           setListSavePosts(listPost); // Set saved posts if component is still mounted
         }
@@ -168,7 +166,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
                   className="text-dark100_light500"
                 />
                 <p className="text-ellipsis whitespace-nowrap  text-base">
-                  Setting
+                  Change Password
                 </p>
               </div>
             </MenubarItem>
@@ -220,9 +218,21 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
         <MobileNav />
       </div>
       {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
-      {isSetting && <Setting onClose={closeSetting} />}
-      {isFavorite && <Favorite post={listLikePosts} onClose={closeFavorite} />}
-      {isSave && <Save post={listSavePosts} onClose={closeSave} />}
+      {isSetting && <ChangePassword onClose={closeSetting} />}
+      {isFavorite && (
+        <Favorite
+          onClose={closeFavorite}
+          post={listLikePosts}
+          setListLikePosts={setListLikePosts}
+        />
+      )}
+      {isSave && (
+        <Save
+          post={listSavePosts}
+          setListSavePosts={setListSavePosts}
+          onClose={closeSave}
+        />
+      )}
     </>
   );
 };

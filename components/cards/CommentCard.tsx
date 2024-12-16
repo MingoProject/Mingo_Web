@@ -1,11 +1,11 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { getTimestamp } from "@/lib/utils";
 import CommentMenu from "../forms/comment/Modal";
 import {
   addReplyToComment,
-  createReplyComment,
+  createReplyCommentMedia,
+  createReplyCommentPost,
   dislikeComment,
   likeComment,
 } from "@/lib/services/comment.service";
@@ -21,7 +21,7 @@ const CommentCard = ({
   mediaId,
 }: any) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(comment.likes.length);
+  const [numberOfLikes, setNumberOfLikes] = useState(comment?.likes.length);
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
     null
   );
@@ -160,61 +160,117 @@ const CommentCard = ({
     }
 
     try {
-      const newCommentData = await createReplyComment(
-        { content: newComment },
-        token
-      );
-      if (newCommentData) {
-        await addReplyToComment(replyingTo, newCommentData._id, token);
-      }
+      setNewComment("");
+      setReplyingTo(null);
+      if (postId) {
+        const newCommentData = await createReplyCommentPost(
+          { content: newComment, parentId: comment._id },
+          token,
+          postId
+        );
+        if (newCommentData) {
+          await addReplyToComment(replyingTo, newCommentData._id, token);
+        }
 
-      const currentTime = new Date();
-      const isoStringWithOffset = currentTime
-        .toISOString()
-        .replace("Z", "+00:00");
-      console.log(
-        "Current Time (new Date()):",
-        currentTime.toISOString().replace("Z", "+00:00")
-      );
+        const currentTime = new Date();
+        const isoStringWithOffset = currentTime
+          .toISOString()
+          .replace("Z", "+00:00");
+        console.log(
+          "Current Time (new Date()):",
+          currentTime.toISOString().replace("Z", "+00:00")
+        );
 
-      const enrichedComment = {
-        ...newCommentData,
-        userId: {
-          _id: profile?._id,
-          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-          firstName: profile?.firstName || "Anonymous",
-          lastName: profile?.lastName || "Anonymous",
-        },
-        createAt: isoStringWithOffset,
-      };
+        const enrichedComment = {
+          ...newCommentData,
+          userId: {
+            _id: profile?._id,
+            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profile?.firstName || "Anonymous",
+            lastName: profile?.lastName || "Anonymous",
+          },
+          createAt: isoStringWithOffset,
+        };
 
-      setReplies((prev) => [enrichedComment, ...prev]);
+        setReplies((prev) => [enrichedComment, ...prev]);
 
-      if (comment.userId._id !== profile._id) {
-        const notificationParams = {
+        if (comment.userId._id !== profile._id) {
+          const notificationParams = {
+            senderId: profile._id,
+            receiverId: comment.userId._id,
+            type: "reply_comment",
+            commentId: comment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+
+          await createNotification(notificationParams, token);
+        }
+
+        const notificationParams2 = {
           senderId: profile._id,
-          receiverId: comment.userId._id,
-          type: "reply_comment",
-          commentId: comment._id,
+          receiverId: author._id,
+          type: "comment",
           ...(postId && { postId }),
           ...(mediaId && { mediaId }),
         };
 
-        await createNotification(notificationParams, token);
+        await createNotification(notificationParams2, token);
+      } else {
+        const newCommentData = await createReplyCommentMedia(
+          { content: newComment, parentId: comment._id },
+          token,
+          mediaId
+        );
+        if (newCommentData) {
+          await addReplyToComment(replyingTo, newCommentData._id, token);
+        }
+
+        const currentTime = new Date();
+        const isoStringWithOffset = currentTime
+          .toISOString()
+          .replace("Z", "+00:00");
+        console.log(
+          "Current Time (new Date()):",
+          currentTime.toISOString().replace("Z", "+00:00")
+        );
+
+        const enrichedComment = {
+          ...newCommentData,
+          userId: {
+            _id: profile?._id,
+            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profile?.firstName || "Anonymous",
+            lastName: profile?.lastName || "Anonymous",
+          },
+          createAt: isoStringWithOffset,
+        };
+
+        setReplies((prev) => [enrichedComment, ...prev]);
+
+        if (comment.userId._id !== profile._id) {
+          const notificationParams = {
+            senderId: profile._id,
+            receiverId: comment.userId._id,
+            type: "reply_comment",
+            commentId: comment._id,
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
+
+          await createNotification(notificationParams, token);
+        }
+
+        const notificationParams2 = {
+          senderId: profile._id,
+          receiverId: author._id,
+          type: "comment",
+          ...(postId && { postId }),
+          ...(mediaId && { mediaId }),
+        };
+
+        await createNotification(notificationParams2, token);
       }
-
-      const notificationParams2 = {
-        senderId: profile._id,
-        receiverId: author._id,
-        type: "comment",
-        ...(postId && { postId }),
-        ...(mediaId && { mediaId }),
-      };
-
-      await createNotification(notificationParams2, token);
-
-      setNewComment("");
-      setReplyingTo(null);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }
@@ -293,7 +349,7 @@ const CommentCard = ({
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                className="w-full rounded-md border p-2"
+                className="w-full rounded-md border bg-transparent p-2"
                 placeholder="Write a reply..."
               />
               <button
@@ -306,22 +362,27 @@ const CommentCard = ({
                 className="text-2xl text-primary-100"
                 onClick={() => setReplyingTo(null)}
               >
-                x
+                <Icon
+                  icon="ic:round-close"
+                  width="22"
+                  height="22"
+                  className="text-primary-100"
+                />
               </button>
             </div>
           )}
 
-          {replies.length > 0 && (
+          {replies?.length > 0 && (
             <p
               className="mb-1 cursor-pointer text-primary-100"
               onClick={toggleShowReplies}
             >
-              Có {replies.length} phản hồi
+              Có {replies?.length} phản hồi
             </p>
           )}
 
           {showReplies &&
-            replies.map((reply: any) => (
+            replies?.map((reply: any) => (
               <div key={reply._id} className="group mb-3 flex items-start">
                 <ReplyCard
                   reply={reply}

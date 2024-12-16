@@ -1,36 +1,10 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { format } from "date-fns";
 import PostYouLikeCard from "../cards/PostYouLikeCard";
-import { PostYouLikeDTO } from "@/dtos/PostDTO";
 
-interface PostYouLike {
-  id: number;
-  user_id: number;
-  post_id: number;
-  created_at: Date;
-  posts: {
-    id: number;
-    postContent: string;
-    posterAva: string;
-    posterName: string;
-    like_at: Date;
-  }[];
-}
-
-interface FavoritePose {
-  onClose: () => void;
-  post: PostYouLikeDTO[];
-}
-
-const Favorite = ({ onClose, post }: FavoritePose) => {
+const Favorite = ({ onClose, post, setListLikePosts }: any) => {
   // Hàm kiểm tra và phân tích ngày hợp lệ
-  const parseDate = (date: any): Date | null => {
-    const parsedDate = new Date(date);
-    // Nếu ngày không hợp lệ, trả về null
-    return isNaN(parsedDate.getTime()) ? null : parsedDate;
-  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-center">
@@ -44,7 +18,7 @@ const Favorite = ({ onClose, post }: FavoritePose) => {
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white ">
-              Bài viết đã thích
+              Liked posts
             </span>
             <FontAwesomeIcon
               onClick={onClose}
@@ -52,26 +26,25 @@ const Favorite = ({ onClose, post }: FavoritePose) => {
               className="mb-2 cursor-pointer"
             />
           </div>
-          {post.map((item) => (
-            <div key={item._id} className="w-full px-4">
-              <div className="flex w-full flex-col py-2">
-                {/* Kiểm tra và hiển thị ngày tháng */}
-                <p className="text-sm ">
-                  {parseDate(item.created_at)
-                    ? format(parseDate(item.created_at)!, "dd-MM-yyyy")
-                    : "Ngày không hợp lệ"}
-                </p>
-                <div className="w-full">
-                  {item.posts.map((it) => (
+          {post.length > 0 ? (
+            post.map((item: any) => (
+              <div key={item._id} className="w-full px-4">
+                <div className="flex w-full flex-col py-2">
+                  <div className="w-full">
                     <PostYouLikeCard
-                      key={`${item._id}-${it._id}`}
-                      postYouLike={it}
+                      key={`${item._id}`}
+                      postYouLike={item}
+                      setListLikePosts={setListLikePosts}
                     />
-                  ))}
+                  </div>
                 </div>
               </div>
+            ))
+          ) : (
+            <div className="py-4 text-center">
+              <p className="text-gray-500">No liked posts</p>
             </div>
-          ))}
+          )}
         </div>
       </div>
     </div>

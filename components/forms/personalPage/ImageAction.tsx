@@ -12,7 +12,7 @@ const ImageAction = ({
   profile,
 }: any) => {
   const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
+  const [numberOfLikes, setNumberOfLikes] = useState(likes?.length);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -66,10 +66,10 @@ const ImageAction = ({
   const toggleLike = () => {
     if (isLiked) {
       handleDislikeMedia();
-      setNumberOfLikes(likes.length - 1);
+      setNumberOfLikes((prev: any) => prev - 1);
     } else {
       handleLikeMedia();
-      setNumberOfLikes(likes.length + 1);
+      setNumberOfLikes((prev: any) => prev + 1);
     }
   };
   return (
@@ -91,12 +91,12 @@ const ImageAction = ({
             className="text-dark100_light500"
           />
           <span className="text-dark100_light500">
-            {comments.length} Comments
+            {comments?.length} Comments
           </span>
         </div>
         <div className="flex items-center space-x-2">
           <Icon icon="mdi:share-outline" className="text-dark100_light500" />
-          <span className="text-dark100_light500">{shares.length} Shares</span>
+          <span className="text-dark100_light500">{shares?.length} Shares</span>
         </div>
       </div>
     </div>

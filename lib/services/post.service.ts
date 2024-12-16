@@ -20,9 +20,7 @@ export async function fetchPosts(): Promise<PostResponseDTO[]> {
   }
 }
 
-export async function getCommentsByPostId(
-  postId: String
-): Promise<CommentResponseDTO[]> {
+export async function getCommentsByPostId(postId: String) {
   try {
     const response = await fetch(
       `${BASE_URL}/post/get-comments?postId=${postId}`

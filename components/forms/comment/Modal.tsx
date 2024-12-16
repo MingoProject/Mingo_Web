@@ -81,8 +81,8 @@ const CommentMenu = ({
         await deleteCommentMedia(commentId, mediaId, token);
       }
 
-      setCommentsData(
-        (prev: any) => prev.filter((comment: any) => comment._id !== commentId) // Remove deleted comment from state
+      setCommentsData((prev: any) =>
+        prev.filter((comment: any) => comment._id !== commentId)
       );
       handleCloseMenu();
     } catch (error) {

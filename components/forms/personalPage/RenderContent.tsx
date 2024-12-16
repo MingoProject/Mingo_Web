@@ -24,7 +24,7 @@ const RenderContentPage = ({
   isMe: boolean;
 }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
-  const [activeTabFriend, setActiveTabFriend] = useState("friend");
+
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
@@ -165,60 +165,7 @@ const RenderContentPage = ({
         </div>
       );
     case "friends":
-      return (
-        <div className="mx-[8%] ">
-          <div className="flex w-full items-center">
-            <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Friends
-            </div>
-
-            <div className=" ml-[30%] flex grow">
-              {" "}
-              <input
-                type="text"
-                placeholder="Search..."
-                className="background-light800_dark300 w-11/12 rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
-
-            <div className="flex h-[39px] w-[150px] items-center justify-center rounded-lg border border-primary-100 bg-primary-100 text-white">
-              Lời mời kết bạn
-            </div>
-          </div>
-          <div className="mt-5">
-            <div className="mb-4 flex space-x-4">
-              <button
-                className={`w-20 rounded-lg p-2 ${activeTabFriend === "friend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
-                onClick={() => setActiveTabFriend("friend")}
-              >
-                Friend
-              </button>
-              <button
-                className={`w-32 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
-                onClick={() => setActiveTabFriend("bestfriend")}
-              >
-                Best Friend
-              </button>
-              <button
-                className={`w-24 rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
-                onClick={() => setActiveTabFriend("followed")}
-              >
-                Following
-              </button>
-              <button
-                className={`w-24 rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
-                onClick={() => setActiveTabFriend("blocked")}
-              >
-                Blocked
-              </button>
-            </div>
-
-            <div className="mx-[5%] mt-10">
-              <RenderFriend activeTabFriend={activeTabFriend} />
-            </div>
-          </div>
-        </div>
-      );
+      return <RenderFriend />;
     case "photos":
       return <Images me={me} profileUser={profileUser} />;
     case "videos":
