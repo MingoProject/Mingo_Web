@@ -284,7 +284,14 @@ const RightSide = ({
   return (
     <div className="flex w-full flex-col py-4">
       {RenderTag()}
-      {isReport && <ReportCard onClose={closeReport} />}
+      {isReport && (
+        <ReportCard
+          onClose={closeReport}
+          type="message"
+          entityId={id.toString()}
+          reportedId={item?.receiverId || ""}
+        />
+      )}
       {isBlock && (
         <Format
           onClose={closeBlock}

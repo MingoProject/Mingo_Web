@@ -14,6 +14,7 @@ import {
   getListGroupChat,
 } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
+import { useRouter } from "next/navigation";
 
 const CreateGroup = ({ onClose, me }: any) => {
   const [loading, setLoading] = useState(false);
@@ -24,7 +25,7 @@ const CreateGroup = ({ onClose, me }: any) => {
   const [avatar, setAvatar] = useState("");
   const { allChat, setAllChat } = useChatItemContext();
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
-
+  const router = useRouter();
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewName(e.target.value);
   };
@@ -86,9 +87,15 @@ const CreateGroup = ({ onClose, me }: any) => {
         groupAva: avatar || "",
       };
 
-      const res = await createGroup(groupData);
+      const newGroup = await createGroup(groupData);
+      console.log("Creating new group:", newGroup);
 
-      if (res) {
+      if (newGroup && newGroup.messageBoxId) {
+        // Điều hướng đến nhóm mới tạo
+        router.push(`/message/${newGroup.messageBoxId}`);
+      }
+
+      if (newGroup) {
         const fetchChats = async () => {
           try {
             const normalChats = await getListChat();
@@ -109,8 +116,8 @@ const CreateGroup = ({ onClose, me }: any) => {
           const notificationParams = {
             senderId: me._id,
             receiverId: friend._id,
-            type: "tags",
-            postId: res._id,
+            type: "message",
+            postId: newGroup._id,
           };
 
           await createNotification(notificationParams, token);
