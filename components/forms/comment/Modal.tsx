@@ -149,6 +149,7 @@ const CommentMenu = ({
           type="comment"
           entityId={commentId}
           reportedId={commentUserId}
+          postId={postId}
         />
       )}
     </div>
