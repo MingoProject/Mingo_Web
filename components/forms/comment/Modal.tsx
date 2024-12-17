@@ -1,3 +1,4 @@
+import ReportCard from "@/components/cards/ReportCard";
 import {
   deleteComment,
   deleteCommentMedia,
@@ -18,6 +19,7 @@ const CommentMenu = ({
   const [isEditing, setIsEditing] = useState(false);
   const menuRef = useRef(null);
   const [userId, setUserId] = useState("");
+  const [isReport, setIsReport] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -134,9 +136,20 @@ const CommentMenu = ({
           </button>
         </>
       ) : (
-        <button className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200">
+        <button
+          className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+          onClick={() => setIsReport(true)}
+        >
           Báo cáo
         </button>
+      )}
+      {isReport && (
+        <ReportCard
+          onClose={() => setIsReport(false)}
+          type="comment"
+          entityId={commentId}
+          reportedId={commentUserId}
+        />
       )}
     </div>
   );

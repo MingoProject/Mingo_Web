@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { getMyProfile } from "@/lib/services/user.service";
 import Background from "@/components/forms/personalPage/Background";
 import Avatar from "@/components/forms/personalPage/Avatar";
@@ -15,7 +15,14 @@ import { useAuth } from "@/context/AuthContext";
 import MyButton from "@/components/shared/MyButton";
 // import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import { getListChat } from "@/lib/services/message.service";
+import {
+  createGroup,
+  getListChat,
+  getListGroupChat,
+} from "@/lib/services/message.service";
+import ReportCard from "@/components/cards/ReportCard";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import ReportMenu from "@/components/forms/report/MenuReport";
 
 const ProfilePage = () => {
   const { id }: any = useParams();
@@ -25,8 +32,57 @@ const ProfilePage = () => {
   const { profile } = useAuth();
   const [isMe, setIsMe] = useState(false);
   const { allChat, setAllChat } = useChatItemContext();
+  const { filteredChat, setFilteredChat } = useChatItemContext();
   const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
+  const [isReport, setIsReport] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [selectedReport, setSelectedReport] = useState(false);
+
+  const fetchChats = useCallback(async () => {
+    try {
+      const [normalChats, groupChats] = await Promise.all([
+        getListChat(),
+        getListGroupChat(),
+      ]);
+      const combinedChats = [
+        ...(normalChats || []),
+        ...(groupChats || []),
+      ].sort((a, b) => {
+        return (
+          new Date(b.lastMessage.timestamp).getTime() -
+          new Date(a.lastMessage.timestamp).getTime()
+        );
+      });
+
+      setAllChat(combinedChats);
+      setFilteredChat(combinedChats);
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  }, [setAllChat, setFilteredChat]);
+
+  const handleCloseMenu = () => {
+    setSelectedReport(false);
+  };
+
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        handleCloseMenu();
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     let isMounted = true;
@@ -116,23 +172,52 @@ const ProfilePage = () => {
   if (!profileUser) return <div>Loading...</div>;
 
   const handleMessage = async (id: string) => {
+    if (!id) return;
+
     try {
-      const normalChats = await getListChat();
-      console.log(normalChats, "Normal Chats");
-      setAllChat(normalChats);
+      console.log(id, "this is idssssssss");
+      console.log(
+        allChat.map((item) => item.receiverId),
+        "this is idssssssss"
+      );
 
-      // Kiểm tra nếu không có `allChat` nào có boxId trùng với id
-      const existChat = allChat.find((item) => item?.receiverId === id);
+      // Tìm nhóm chat đã tồn tại
+      const existChat = allChat.find((item) => item.receiverId === id);
 
+      console.log(allChat, "all chat ");
+
+      // Nếu nhóm đã tồn tại, điều hướng đến nhóm
       if (existChat) {
-        router.push(`/message/${existChat.id}`);
-      } else {
-        router.push(`/message/${id}`);
+        router.push(`/message/${existChat.id.toString()}`);
+        return;
+      }
+
+      // Nếu nhóm chưa tồn tại, tạo nhóm mới
+      const userId = localStorage.getItem("userId");
+      if (!userId) {
+        console.error("User ID not found in local storage");
+        return;
+      }
+
+      const groupData = {
+        membersIds: [profileUser._id.toString(), userId],
+        leaderId: userId,
+        groupName: `${profileUser?.firstName || ""} ${profileUser?.lastName || ""}`,
+        groupAva: profileUser?.avatar || "/assets/images/default-avatar.jpg",
+      };
+
+      const newGroup = await createGroup(groupData);
+      console.log("Creating new group:", newGroup);
+
+      if (newGroup && newGroup.messageBoxId) {
+        // Điều hướng đến nhóm mới tạo
+        router.push(`/message/${newGroup.messageBoxId}`);
       }
     } catch (error) {
-      console.error("Error loading chats:", error);
+      console.error("Error creating or navigating to group chat:", error);
     }
   };
+
   return (
     <div className="background-light700_dark400 h-full pt-20">
       <Background profileUser={profileUser} setProfileUser={setProfileUser} />
@@ -147,22 +232,63 @@ const ProfilePage = () => {
           </h1>
           <Bio profileUser={profileUser} setProfileUser={setProfileUser} />
         </div>
+
         {!isMe ? (
-          <MyButton
-            title="Message"
-            backgroundColor="bg-primary-100"
-            color="text-white"
-            width="w-22"
-            height="h-10"
-            onClick={() => handleMessage(id)}
-          />
+          <div className="relative flex-1">
+            <div className="flex justify-between items-center">
+              {/* Nút Message */}
+              <MyButton
+                title="Message"
+                backgroundColor="bg-primary-100"
+                color="text-white"
+                width="w-22"
+                height="h-10"
+                onClick={() => handleMessage(id)}
+              />
+
+              {/* Nút ba chấm */}
+              <div className="relative mr-[15%]">
+                <Icon
+                  icon="bi:three-dots"
+                  className="size-4 cursor-pointer"
+                  onClick={() => setSelectedReport(true)}
+                />
+              </div>
+            </div>
+
+            {/* Hiển thị menu */}
+            {selectedReport && (
+              <div ref={menuRef} className="absolute right-0">
+                <ReportMenu isReported={isReport} userId={id} />
+              </div>
+            )}
+          </div>
         ) : (
           ""
         )}
+        {isReport && (
+          <ReportCard
+            onClose={() => setIsReport(false)}
+            type="user"
+            entityId={profileUser._id}
+            reportedId={profileUser._id}
+          />
+        )}
+
+        {/* {selectedReport && (
+          <div ref={menuRef}>
+            <ReportMenu isReported={isReport} userId={id} />
+          </div>
+        )} */}
+        {/* {selectedReport && (
+    <div className="absolute right-0 mt-2">
+      <ReportMenu isReported={isReport} userId={id} />
+    </div>
+  )} */}
       </div>
 
       {!isMe && (
-        <>
+        <div>
           <button
             onClick={() => setModalOpen(true)}
             className={`ml-[13%] mt-3 rounded-lg px-4 py-2 text-white ${
@@ -203,6 +329,7 @@ const ProfilePage = () => {
                             ? "Blocked by"
                             : "Stranger"}
           </button>
+
           {isModalOpen && (
             <RelationModal
               relation={relation}
@@ -211,7 +338,7 @@ const ProfilePage = () => {
               setRelation={setRelation}
             />
           )}
-        </>
+        </div>
       )}
 
       <div>

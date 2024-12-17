@@ -25,6 +25,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { getUserById } from "@/lib/services/user.service";
 import { FindUserDTO } from "@/dtos/UserDTO";
+import { ItemChat } from "@/dtos/MessageDTO";
 
 const ListUserChat = () => {
   const { allChat, setAllChat } = useChatItemContext();
@@ -37,42 +38,9 @@ const ListUserChat = () => {
   const toggleForm = () => {
     setIsFormOpen(!isFormOpen);
   };
-  const [user, setUser] = useState<FindUserDTO | null>(null);
   const channelRefs = useRef<any[]>([]);
 
-  useEffect(() => {
-    const handleGroupCreationAndNavigation = async () => {
-      if (!id) return;
-
-      const existChat = allChat.find((item) => item?.receiverId === id);
-
-      if (!existChat) {
-        try {
-          const userId = localStorage.getItem("userId");
-          const groupData = {
-            membersIds: [id, userId],
-            leaderId: userId,
-            groupName: `${user?.firstName || ""} ${user?.lastName || ""}`,
-            groupAva: user?.avatar || "/assets/images/default-avatar.jpg",
-          };
-
-          const newGroup = await createGroup(groupData);
-
-          if (newGroup && newGroup.id) {
-            // Điều hướng đến nhóm mới tạo
-            router.push(`/message/${newGroup.id}`);
-          }
-        } catch (error) {
-          console.error("Error creating group chat:", error);
-        }
-      } else {
-        // Điều hướng đến nhóm đã tồn tại
-        router.push(`/message/${existChat.id}`);
-      }
-    };
-
-    handleGroupCreationAndNavigation();
-  }, [id, user, allChat]);
+  console.log(allChat, "this is all chat");
 
   const fetchChats = useCallback(async () => {
     try {
@@ -112,6 +80,7 @@ const ListUserChat = () => {
             return {
               ...chat,
               lastMessage: {
+                ...chat.lastMessage,
                 text: data.text || "Đã gửi 1 file",
                 timestamp: new Date(data.createAt),
               },
@@ -125,17 +94,30 @@ const ListUserChat = () => {
         );
         if (isNewChat) {
           updatedChats.unshift({
-            id: id,
+            id: data.boxId,
             userName: data.userName || "Người dùng mới",
-            avatarUrl:
-              data.avatarUrl ||
-              "/assets/images/0d80fa84f049bc902d6786a7d5574ca6.jpg",
+            avatarUrl: data.avatarUrl || "/assets/images/default-avatar.png",
             lastMessage: {
+              id: "unique-id",
+              createBy: "system",
               text: "Bắt đầu đoạn chat",
               timestamp: new Date(data.createAt),
+              status: false,
+              contentId: {
+                fileName: "",
+                bytes: "",
+                format: "",
+                height: "",
+                publicId: "",
+                type: "",
+                url: "",
+                width: "",
+              },
             },
-            status: false,
+            status: "active",
             isRead: false,
+            senderId: profile._id,
+            receiverId: data.receiverIds,
           });
         }
 

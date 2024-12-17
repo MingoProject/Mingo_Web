@@ -56,12 +56,21 @@ const categorizedReportOptions = [
   },
 ];
 
-const ReportCard = ({ onClose }: { onClose: () => void }) => {
+const ReportCard = ({
+  onClose,
+  type,
+  entityId,
+  reportedId,
+}: {
+  onClose: () => void;
+  type: string;
+  entityId: string;
+  reportedId: string;
+}) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const { id } = useParams();
-  const { ObjectId } = Schema.Types;
+
   const handleSubmit = async (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();
     setLoading(true);
@@ -78,11 +87,11 @@ const ReportCard = ({ onClose }: { onClose: () => void }) => {
 
     try {
       const reportPayload: ReportCreateDTO = {
-        title: "Báo cáo về vi phạm tin nhắn",
+        title: "Báo cáo vi phạm",
         content: selectedOption,
-        reportedId: userId || "", // Sử dụng ObjectId đã import
-        reportedEntityId: id.toString(),
-        entityType: "message",
+        reportedId: reportedId || "", // Sử dụng ObjectId đã import
+        reportedEntityId: entityId.toString(),
+        entityType: type,
       };
 
       const res = await createReport(reportPayload, token);
@@ -98,6 +107,7 @@ const ReportCard = ({ onClose }: { onClose: () => void }) => {
       setLoading(false);
     }
   };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div

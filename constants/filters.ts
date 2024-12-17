@@ -39,3 +39,49 @@ export const GlobalSearchFilters = [
   { name: "User", value: "user" },
   { name: "Tag", value: "tag" },
 ];
+
+export const categorizedReportOptions = [
+  {
+    category: "HÀNH VI PHẠM TỘI VÀ BẠO LỰC",
+    options: [
+      "Hành vi phạm tội và bạo lực",
+      "Cấu kết gây hại và cổ xúy tội ác",
+      "Cá nhân và tổ chức nguy hiểm",
+    ],
+  },
+  {
+    category: "SỰ AN TOÀN",
+    options: [
+      "Hành vi gian lận, lừa đảo và lừa gạt",
+      "Hàng hóa và dịch vụ bị hạn chế",
+      "Bạo lực và khích nộ",
+    ],
+  },
+  {
+    category: "NỘI DUNG PHẢN CẢM",
+    options: [
+      "Nội dung phản cảm",
+      "Hoạt động tình dục và ảnh khỏa thân người lớn",
+      "Hành vi gạ gẫm tình dục người lớn và ngôn ngữ khiêu dâm",
+    ],
+  },
+  {
+    category: "TÍNH TOÀN VẸN VÀ TÍNH XÁC THỰC",
+    options: [
+      "Tính toàn vẹn của tài khoản",
+      "Cam đoan về danh tính thực",
+      "An ninh mạng",
+    ],
+  },
+  {
+    category: "TÔN TRỌNG QUYỀN SỞ HỮU TRÍ TUỆ",
+    options: [
+      "Vi phạm quyền sở hữu trí tuệ của bên thứ ba",
+      "Sử dụng giấy phép và quyền sở hữu trí tuệ của Meta",
+    ],
+  },
+  {
+    category: "YÊU CẦU VÀ QUYẾT ĐỊNH LIÊN QUAN ĐẾN NỘI DUNG",
+    options: ["Yêu cầu của người dùng", "Thông tin sai lệch", "Spam"],
+  },
+];

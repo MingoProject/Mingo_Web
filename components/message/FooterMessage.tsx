@@ -299,7 +299,10 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
             type="text"
             placeholder="Aa"
             className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
-            onChange={(e) => setValue(e.target.value)}
+            onChange={(e) => {
+              setValue(e.target.value); // Cập nhật giá trị
+              setCurrentContentType("text"); // Đặt loại nội dung
+            }}
             value={value}
             onKeyDown={handleKeyDown}
           />

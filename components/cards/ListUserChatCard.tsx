@@ -41,7 +41,6 @@ export function getDisplayName(name: string): string {
 
 const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
-  const { allChat, setAllChat } = useChatItemContext();
 
   const [activeAction, setActiveAction] = useState("");
   const [activeLabel, setActiveLabel] = useState("");
@@ -69,7 +68,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         data.boxId,
         userId?.toString() || ""
       );
-      console.log(mark, "this is mark");
     } catch (error) {
       console.error("Error marking message as read:", error);
     }
@@ -294,7 +292,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   const isReceiver = lastMessage.createBy !== userId;
 
-  console.log(lastMessage.contentId || "", "this is type");
   console.log(lastMessage, "this is last mes");
   return (
     <ContextMenu>
@@ -318,11 +315,17 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
               <span className="text-base font-semibold whitespace-nowrap overflow-hidden truncate">
                 {itemChat.userName}
               </span>
-              <span className={`truncate text-sm font-medium `}>
-                {isReceiver ? (
-                  <div className="flex gap-1">
+              <span className={`truncate text-sm font-medium`}>
+                {lastMessage.text === "Bắt đầu đoạn chat" ? (
+                  <p
+                    className={lastMessage.status ? "font-normal" : "font-bold"}
+                  >
+                    {lastMessage.text}
+                  </p>
+                ) : isReceiver ? (
+                  <div className="flex gap-1 text-sm">
                     <p
-                      className={`${lastMessage.status || !isReceiver ? "font-normal" : "font-bold"}`}
+                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
                     >
                       {itemChat.userName.trim().split(" ").pop()}:{" "}
                     </p>
@@ -367,7 +370,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                   </div>
                 ) : (
                   <div className="flex items-center gap-1">
-                    <p className={`"font-normal"`}>Bạn: </p>
+                    <p className="font-normal">Bạn: </p>
                     {(() => {
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
