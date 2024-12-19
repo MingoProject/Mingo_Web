@@ -99,14 +99,14 @@ export async function getListChat(): Promise<ItemChat[]> {
               id: box.responseLastMessage.id,
               text: box.responseLastMessage.text
                 ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "",
+                : box.responseLastMessage.text || "Bắt đầu đoạn chat",
               contentId: box.responseLastMessage.contentId || fileContent,
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,
             }
           : {
               id: "",
-              text: "",
+              text: "Bắt đầu đoạn chat",
               timestamp: new Date(),
               createBy: "",
               contentId: fileContent,
@@ -162,6 +162,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
     const rawData: ResponseMessageBoxDTO = await response.json();
     // console.log(rawData, "raw data");
+    console.log(rawData, "rawData");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -175,19 +176,19 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
         if (!receiver && !box.groupName) return null;
 
         // Xử lý trường hợp lastMessage là null
-        const lastMessage = box.responseLastMessage
+        const lastMessage = box.lastMessage
           ? {
-              id: box.responseLastMessage.id,
-              text: box.responseLastMessage.text
-                ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "",
-              contentId: box.responseLastMessage.contentId || fileContent,
-              timestamp: new Date(box.responseLastMessage.createAt),
-              createBy: box.responseLastMessage.createBy,
+              id: box.lastMessage.id,
+              text: box.lastMessage.text
+                ? box.lastMessage.text
+                : box.lastMessage.text || "Bắt đầu đoạn chat",
+              contentId: box.lastMessage.contentId || fileContent,
+              timestamp: new Date(box.lastMessage.createAt),
+              createBy: box.lastMessage.createBy,
             }
           : {
               id: "",
-              text: "",
+              text: "Bắt đầu đoạn chat",
               timestamp: new Date(),
               createBy: "",
               contentId: fileContent,

@@ -2,6 +2,7 @@ import { deletePost, savePost, unsavePost } from "@/lib/services/post.service";
 import React, { useEffect, useRef, useState } from "react";
 import EditPost from "./EditPost";
 import { useAuth } from "@/context/AuthContext";
+import ReportCard from "@/components/cards/ReportCard";
 
 const PostMenu = ({
   postId,
@@ -36,6 +37,7 @@ const PostMenu = ({
   const [isEditing, setIsEditing] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const { profile } = useAuth();
+  const [isReport, setIsReport] = useState(false);
 
   useEffect(() => {
     const userId = localStorage.getItem("userId");
@@ -136,10 +138,21 @@ const PostMenu = ({
               Save post
             </button>
           )}
-          <button className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200">
+          <button
+            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            onClick={() => setIsReport(true)}
+          >
             Report
           </button>
         </>
+      )}
+      {isReport && (
+        <ReportCard
+          onClose={() => setIsReport(false)}
+          type="post"
+          entityId={postId}
+          reportedId={author._id}
+        />
       )}
     </div>
   );
