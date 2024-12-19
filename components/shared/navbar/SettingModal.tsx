@@ -26,7 +26,6 @@ import { getMyLikedPosts, getMySavedPosts } from "@/lib/services/user.service";
 
 const SettingModal = ({ profile, setProfile, logout }: any) => {
   const router = useRouter();
-
   const [isSetting, setIsSetting] = useState(false);
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);

@@ -4,73 +4,64 @@ import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/PostsCard";
 import UserCard from "./UserCard";
 import { fetchUsers } from "@/lib/services/user.service";
-import { fetchPosts } from "@/lib/services/post.service";
+import { fetchPosts, getPostByPostId } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 
 const RenderSearch = ({ activeTab, query, profile }: any) => {
   const [results, setResults] = useState<any[]>([]);
-  // const router = useRouter();
 
   useEffect(() => {
     const fetchData = async () => {
-      if (query) {
-        try {
-          const users = await fetchUsers();
+      if (!query) return;
 
-          const userResults = users.filter(
-            (user) =>
-              user.lastName.toLowerCase().includes(query.toLowerCase()) ||
-              user.firstName.toLowerCase().includes(query.toLowerCase())
-          );
+      try {
+        const [users, posts] = await Promise.all([fetchUsers(), fetchPosts()]);
 
-          const posts = await fetchPosts();
-          const detailedPosts = await fetchDetailedPosts(posts);
+        const detailedPosts = await Promise.all(
+          posts.map(async (post) => await getPostByPostId(post._id))
+        );
+        // const detailedPosts = await fetchDetailedPosts(posts);
+        // console.log(detailedPosts);
 
-          const postResults = detailedPosts.filter(
-            (post) =>
-              post.content.toLowerCase().includes(query.toLowerCase()) ||
-              userResults.some((user) => user._id === post.author._id)
-          );
+        const userResults = users.filter(
+          (user) =>
+            user.lastName.toLowerCase().includes(query.toLowerCase()) ||
+            user.firstName.toLowerCase().includes(query.toLowerCase())
+        );
 
-          const combinedResults =
-            activeTab === "friends"
-              ? userResults.map((user) => ({
-                  type: "user",
-                  userId: user._id, // Sử dụng user._id để gán đúng giá trị userId
-                  firstName: user.firstName,
-                  lastName: user.lastName,
-                  avatar: user.avatar,
-                }))
-              : postResults.map((post) => ({
-                  type: "post",
-                  postId: post.postId,
-                  author: {
-                    _id: post.author._id || "unknown",
-                    firstName:
-                      users.find((user) => user._id === post.author._id)
-                        ?.firstName || "Unknown",
-                    lastName:
-                      users.find((user) => user._id === post.author._id)
-                        ?.lastName || "unknown",
-                    avatar:
-                      users.find((user) => user._id === post.author._id)
-                        ?.avatar || "unknown",
-                  },
-                  content: post.content,
-                  media: post.media,
-                  createdAt: post.createdAt,
-                  likes: post.likes || [],
-                  comments: post.comments || [],
-                  shares: post.shares || [],
-                  location: post.location,
-                  tags: post.tags,
-                  privacy: post.privacy,
-                }));
+        const postResults = detailedPosts.filter(
+          (post) =>
+            post.content.toLowerCase().includes(query.toLowerCase()) ||
+            userResults.some((user) => user._id === post.author._id)
+        );
 
-          setResults(combinedResults);
-        } catch (error) {
-          console.error("Error fetching data:", error);
-        }
+        const combinedResults =
+          activeTab === "friends"
+            ? userResults.map((user) => ({
+                type: "user",
+                userId: user._id,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                avatar: user.avatar,
+              }))
+            : postResults.map((post) => ({
+                type: "post",
+                postId: post._id,
+                author: post.author,
+                content: post.content,
+                media: post.media,
+                createdAt: post.createdAt,
+                likes: post.likes,
+                comments: post.comments,
+                shares: post.shares,
+                location: post.location,
+                privacy: post.privacy,
+                tags: post.tags,
+              }));
+
+        setResults(combinedResults);
+      } catch (error) {
+        console.error("Error fetching data:", error);
       }
     };
 
@@ -89,11 +80,11 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
           />
         ) : (
           results
-            .filter((result) => result.type === "post") // Filter posts
+            .filter((result) => result.type === "post")
             .map((post) => (
               <PostsCard
-                key={post._id}
-                postId={post._id}
+                key={post.postId}
+                postId={post.postId}
                 author={post.author}
                 content={post.content}
                 media={post.media}
@@ -111,11 +102,11 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
       ) : (
         <div>
           {results
-            .filter((result) => result.type === "user") // Filter users
+            .filter((result) => result.type === "user")
             .map((user) => (
               <UserCard
-                key={user.userId} // Sử dụng userId đã được ánh xạ đúng
-                userId={user.userId}
+                key={user._id}
+                userId={user._id}
                 firstName={user.firstName}
                 lastName={user.lastName}
                 avatar={user.avatar}

@@ -19,6 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import DetailsImage from "@/components/forms/personalPage/DetailsImage";
 import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
+import Link from "next/link";
 
 const getNotificationContent = (notification: any) => {
   switch (notification.type) {
@@ -329,17 +330,20 @@ const Notification = () => {
             key={notification._id}
             className="flex items-center justify-between p-2 "
           >
-            <Image
-              src={
-                notification.senderId.avatar
-                  ? notification.senderId.avatar
-                  : "/assets/images/capy.jpg"
-              }
-              alt="Avatar"
-              width={50}
-              height={50}
-              className="size-16 rounded-full object-cover"
-            />
+            <Link href={`/profile/${notification.senderId._id}`}>
+              <Image
+                src={
+                  notification.senderId.avatar
+                    ? notification.senderId.avatar
+                    : "/assets/images/capy.jpg"
+                }
+                alt="Avatar"
+                width={50}
+                height={50}
+                className="size-16 rounded-full object-cover"
+              />
+            </Link>
+
             <div
               className="ml-2 flex-1 pr-4"
               onClick={() => handleClick(notification)}
