@@ -158,7 +158,8 @@ const PostsCard = ({
           <div>
             <span className="text-dark100_light500 ml-3 text-base">
               {author?.firstName ? author.firstName : ""}
-              {tags.length > 0 && (
+
+              {tags?.length > 0 && (
                 <span>
                   <span className="">{" with "}</span>
                   {tags.slice(0, 2).map((tag, index) => (
@@ -167,12 +168,12 @@ const PostsCard = ({
                         key={tag._id}
                         className="cursor-pointer text-primary-100"
                       >
-                        {tag.firstName}
+                        {tag?.firstName}
                         {index < tags.slice(0, 2).length - 1 ? ", " : ""}
                       </span>
                     </Link>
                   ))}
-                  {tags.length > 2 && (
+                  {tags?.length > 2 && (
                     <span
                       className="cursor-pointer text-primary-100"
                       onClick={handleTagsModalToggle}
@@ -182,6 +183,7 @@ const PostsCard = ({
                   )}
                 </span>
               )}
+
               {location && (
                 <div className="ml-2 flex">
                   <Icon icon="mi:location" className="" />

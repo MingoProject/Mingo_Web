@@ -315,3 +315,19 @@ export async function unsavePost(postId: string, token: string) {
     throw error;
   }
 }
+
+export async function fetchPostsWithQuery(query: string) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/post/posts-with-query?query=${query}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching posts");
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    throw error;
+  }
+}

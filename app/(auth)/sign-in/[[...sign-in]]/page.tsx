@@ -71,6 +71,7 @@ const SignIn = () => {
         const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
         const userId = decodedToken?.id;
         localStorage.setItem("userId", userId);
+        localStorage.setItem("loginTime", String(Date.now()));
         const profileData = await getMyProfile(userId);
         setProfile(profileData.userProfile);
         router.push("/");
@@ -123,12 +124,12 @@ const SignIn = () => {
           </a>
         </div>
 
-        <div className="mt-4 flex items-center justify-between">
+        {/* <div className="mt-4 flex items-center justify-between">
           <hr className="grow border-gray-300" />
           <span className="mx-2 text-gray-500">Or</span>
           <hr className="grow border-gray-300" />
-        </div>
-        <div className="mt-4 flex justify-center">
+        </div> */}
+        {/* <div className="mt-4 flex justify-center">
           <button className="text-dark100_light500 background-light800_dark400 flex w-32 items-center justify-center rounded-lg p-2 transition duration-200 hover:bg-gray-300">
             <Icon icon="logos:google-icon" className="mr-2" />
             Google
@@ -137,13 +138,13 @@ const SignIn = () => {
             <Icon icon="logos:facebook" className="mr-2 " />
             Facebook
           </button>
-        </div>
+        </div> */}
 
         <div className="mt-4 text-center">
           <p className="text-dark100_light500 text-sm">
             You don&apos;t have an account yet ?{" "}
             <a href="/sign-up" className="text-primary-100 hover:underline">
-              Đăng ký
+              Signup
             </a>
           </p>
         </div>
