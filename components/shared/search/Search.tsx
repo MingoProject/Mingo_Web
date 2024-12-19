@@ -3,13 +3,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Thay đổi import
 
-const recentSearches = [
-  "React Hooks",
-  "Tailwind CSS",
-  "Next.js",
-  "JavaScript ES6 Features",
-  "Web Development Trends",
-];
+const recentSearches = ["h", "a", "u", "y", "1"];
 
 const Search = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -28,12 +22,10 @@ const Search = () => {
   };
 
   const handleSearch = () => {
-    // Navigate to result-search page with the search term
     router.push(`/result-search?page=${encodeURIComponent(searchTerm)}`);
   };
 
   useEffect(() => {
-    // Cập nhật danh sách kết quả tìm kiếm dựa trên searchTerm
     if (searchTerm.trim() === "") {
       setFilteredSearches(recentSearches);
     } else {
@@ -61,7 +53,7 @@ const Search = () => {
           />
           <button
             className="h-10 rounded-r-lg bg-primary-100 px-4 text-white"
-            onClick={handleSearch} // Call the search function on button click
+            onClick={handleSearch}
           >
             Search
           </button>

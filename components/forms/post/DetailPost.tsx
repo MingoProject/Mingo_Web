@@ -173,7 +173,7 @@ const DetailPost = ({
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
                     {author?.firstName ? author.firstName : ""}
-                    {tags.length > 0 && (
+                    {tags?.length > 0 && (
                       <span>
                         <span className="">{" with "}</span>
 
