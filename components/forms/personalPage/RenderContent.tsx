@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import fakeFriends from "../../../fakeData/FriendsData";
 import Image from "next/image";
 import PostsCard from "@/components/cards/PostsCard";
 import NoResult from "@/components/shared/NoResult";
@@ -8,7 +7,11 @@ import RenderFriend from "./RenderFriend";
 import FilterPost from "../FilterPost";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import fetchDetailedPosts from "@/hooks/usePosts";
-import { getMyPosts } from "@/lib/services/user.service";
+import {
+  getMyBffs,
+  getMyFriends,
+  getMyPosts,
+} from "@/lib/services/user.service";
 import Images from "./Images";
 import Videos from "./Videos";
 
@@ -24,8 +27,8 @@ const RenderContentPage = ({
   isMe: boolean;
 }) => {
   const [posts, setPosts] = useState<PostResponseDTO[]>([]);
-
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
+  const [friends, setFriends] = useState<any[]>();
 
   useEffect(() => {
     let isMounted = true;
@@ -64,24 +67,23 @@ const RenderContentPage = ({
     };
   }, [posts]);
 
-  const [selectedFilter, setSelectedFilter] =
-    React.useState<string>("Mới nhất");
+  const [selectedFilter, setSelectedFilter] = React.useState<string>("Newest");
   const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
     let isMounted = true;
     const sortedPosts = [...postsData];
-    if (selectedFilter === "Mới nhất") {
+    if (selectedFilter === "Newest") {
       sortedPosts.sort(
         (a, b) =>
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
-    } else if (selectedFilter === "Cũ nhất") {
+    } else if (selectedFilter === "Oldest") {
       sortedPosts.sort(
         (a, b) =>
           new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
       );
-    } else if (selectedFilter === "Hot nhất") {
+    } else if (selectedFilter === "Most popular") {
       sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
     }
     if (isMounted) {
@@ -93,8 +95,32 @@ const RenderContentPage = ({
     };
   }, [selectedFilter, postsData]);
 
-  // if (loading) return <div className="mt-96">Loading...</div>;
-  // if (error) return <div className="mt-96">Error: {error}</div>;
+  useEffect(() => {
+    let isMounted = true;
+    const fetchFriends = async () => {
+      try {
+        const friendsData = await getMyFriends(me._id);
+        const bffsData = await getMyBffs(me._id);
+        const combinedFriends = [...bffsData, ...friendsData];
+
+        const uniqueFriends = combinedFriends.filter(
+          (friend, index, self) =>
+            index === self.findIndex((f) => f._id === friend._id)
+        );
+
+        if (isMounted) {
+          setFriends(uniqueFriends);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    };
+    fetchFriends();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [me._id]);
 
   switch (activeTab) {
     case "posts":
@@ -105,20 +131,24 @@ const RenderContentPage = ({
               Friends
             </div>
             <ul className="mt-5 space-y-4">
-              {fakeFriends.map((friend, index) => (
-                <li key={index} className="flex items-center space-x-4">
-                  <Image
-                    width={48}
-                    height={48}
-                    src={friend.image}
-                    alt={friend.name}
-                    className="size-12 rounded-full"
-                  />
-                  <span className="text-dark100_light500 font-medium">
-                    {friend.name}
-                  </span>
-                </li>
-              ))}
+              {friends &&
+                friends.map((friend, index) => (
+                  <li key={index} className="flex items-center space-x-4">
+                    <Image
+                      width={48}
+                      height={48}
+                      src={
+                        friend?.avatar ||
+                        "https://i.pinimg.com/736x/f5/69/55/f569552914826d73dc72048b8ef7aa45.jpg"
+                      }
+                      alt={friend.lastName}
+                      className="size-12 rounded-full object-cover"
+                    />
+                    <span className="text-dark100_light500 font-medium">
+                      {friend.firstName} {friend.lastName}
+                    </span>
+                  </li>
+                ))}
             </ul>
           </div>
           <div className="w-full lg:w-7/12">
@@ -157,6 +187,7 @@ const RenderContentPage = ({
                     tags={post.tags || []}
                     privacy={post.privacy}
                     profile={me}
+                    setPostsData={setFilteredPosts}
                   />
                 ))
               )}

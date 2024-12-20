@@ -104,11 +104,11 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
     }
   };
 
+  const handleClose = async () => {
+    onClose();
+  };
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
-      onClick={onClose}
-    >
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="background-light700_dark300 text-dark100_light500 z-50 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
         <div className="block lg:flex">
           <div className="w-full lg:w-1/2">
@@ -125,7 +125,7 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                 </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
-                    {profileUser?.firstName || ""}
+                    {profileUser?.firstName || ""} {profileUser?.lastName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
                     {video?.createAt && getTimestamp(video?.createAt)}
@@ -210,16 +210,14 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                   onClick={handleAddComment}
                   className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
                 >
-                  Đăng
+                  Post
                 </button>
               </div>
             </div>
           </div>
         </div>
-        <div className="mt-3 flex justify-end space-x-2">
-          <Button className="bg-gray-300 text-black" onClick={onClose}>
-            Close
-          </Button>
+        <div className="mt-3 flex justify-end space-x-2" onClick={handleClose}>
+          <Button className="bg-gray-300 text-black">Close</Button>
         </div>
       </div>
     </div>

@@ -56,27 +56,27 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
     }
   };
 
-  // const toggleLike = () => {
-  //   if (isLiked) {
-  //     handleDislikePost();
-  //     setNumberOfLikes(likes.length - 1);
-  //   } else {
-  //     handleLikePost();
-  //     setNumberOfLikes(likes.length + 1);
-  //   }
-  // };
   const toggleLike = async () => {
     if (isLiked) {
-      // Dislike
       await handleDislikePost();
       setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      // Like
       await handleLikePost();
       setNumberOfLikes((prev: any) => prev + 1);
     }
     setIsLiked(!isLiked);
   };
+
+  const handleShare = async () => {
+    const postUrl = `${window.location.origin}/post/${postId}`;
+    try {
+      await navigator.clipboard.writeText(postUrl);
+      alert("Link copied to clipboard!");
+    } catch (error) {
+      console.error("Failed to copy link:", error);
+    }
+  };
+
   return (
     <div>
       <div className="text-dark100_light500 flex items-center justify-between">
@@ -86,21 +86,28 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
             icon={
               isLiked ? "ic:baseline-favorite" : "ic:baseline-favorite-border"
             }
-            className={isLiked ? "text-primary-100" : "text-dark100_light500"}
+            className={
+              isLiked
+                ? "size-7 text-primary-100"
+                : "text-dark100_light500 size-5"
+            }
           />
-          <span className="text-dark100_light500">{numberOfLikes} Likes</span>
+          <span className="text-dark100_light500 ">{numberOfLikes} Likes</span>
         </div>
         <div className="flex items-center space-x-2">
           <Icon
             icon="mingcute:message-4-line"
-            className="text-dark100_light500"
+            className="text-dark100_light500 size-5"
           />
           <span className="text-dark100_light500">
             {comments.length} Comments
           </span>
         </div>
-        <div className="flex items-center space-x-2">
-          <Icon icon="mdi:share-outline" className="text-dark100_light500" />
+        <div className="flex items-center space-x-2" onClick={handleShare}>
+          <Icon
+            icon="bitcoin-icons:link-filled"
+            className="text-dark100_light500 size-7"
+          />
           <span className="text-dark100_light500">{shares.length} Shares</span>
         </div>
       </div>

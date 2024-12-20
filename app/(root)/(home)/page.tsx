@@ -141,6 +141,7 @@ export default function Home() {
                 tags={post.tags || []}
                 privacy={post.privacy}
                 profile={profile}
+                setPostsData={setFilteredPosts}
               />
             ))
           )}

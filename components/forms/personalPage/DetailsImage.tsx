@@ -121,7 +121,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                 </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
-                    {profileUser?.firstName || ""}
+                    {profileUser?.firstName || ""} {profileUser?.lastName || ""}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
                     {image?.createAt && getTimestamp(image?.createAt)}

@@ -7,13 +7,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DetailPost from "../forms/post/DetailPost";
 import { CldImage } from "next-cloudinary";
-import { dislikePost, likePost } from "@/lib/services/post.service";
+// import { dislikePost, likePost } from "@/lib/services/post.service";
 import Link from "next/link";
 import PostMenu from "../forms/post/PostMenu";
-import { createNotification } from "@/lib/services/notification.service";
+// import { createNotification } from "@/lib/services/notification.service";
 import TagModal from "../forms/post/TagModal";
 import DetailsImage from "../forms/personalPage/DetailsImage";
 import DetailsVideo from "../forms/personalPage/DetailsVideo";
+import Action from "../forms/post/Action";
 
 const PostsCard = ({
   postId,
@@ -28,6 +29,7 @@ const PostsCard = ({
   tags,
   privacy,
   profile,
+  setPostsData,
 }: {
   postId: string;
   author: any;
@@ -44,9 +46,10 @@ const PostsCard = ({
     allowedUsers?: any[];
   };
   profile: any;
+  setPostsData: any;
 }) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
+  // const [isLiked, setIsLiked] = useState(false);
+  // const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
   const [menuModal, setMenuModal] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
@@ -71,82 +74,16 @@ const PostsCard = ({
     };
   }, []);
 
-  useEffect(() => {
-    let isMounted = true;
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      try {
-        const isUserLiked = likes.some((like) => like === userId);
-        if (isMounted) {
-          setIsLiked(isUserLiked);
-        }
-      } catch (error) {
-        console.error("Invalid token:", error);
-      }
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [likes]);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
-  const handleLikePost = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        await likePost(postId, token);
-        setIsLiked(!isLiked);
-        if (profile._id !== author._id) {
-          const params = {
-            senderId: profile._id,
-            receiverId: author._id,
-            type: "like",
-            postId,
-          };
-          await createNotification(params, token);
-        }
-      } else {
-        console.warn("User is not authenticated");
-      }
-    } catch (error) {
-      console.error("Error in handleLikePost:", error);
-    }
-  };
-
-  const handleDislikePost = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      if (token) {
-        await dislikePost(postId, token);
-
-        setIsLiked(!isLiked);
-      } else {
-        console.warn("User is not authenticated");
-      }
-    } catch (error) {
-      console.error("Error in handleLikePost:", error);
-    }
-  };
-
-  const toggleLike = async () => {
-    if (isLiked) {
-      await handleDislikePost();
-      setNumberOfLikes((prev: any) => prev - 1);
-    } else {
-      await handleLikePost();
-      setNumberOfLikes((prev: any) => prev + 1);
-    }
-    setIsLiked(!isLiked);
-  };
-
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
         <div className="flex items-center">
-          <Link href={`/profile/${author._id}`}>
+          <Link href={`/profile/${author?._id || null}`}>
             <Image
               src={author?.avatar ? author.avatar : "/assets/images/capy.jpg"}
               alt="Avatar"
@@ -157,8 +94,8 @@ const PostsCard = ({
           </Link>
           <div>
             <span className="text-dark100_light500 ml-3 text-base">
-              {author?.firstName ? author.firstName : ""}
-
+              {author?.firstName ? author.firstName : ""}{" "}
+              {author?.lastName ? author.lastName : ""}
               {tags?.length > 0 && (
                 <span>
                   <span className="">{" with "}</span>
@@ -183,7 +120,6 @@ const PostsCard = ({
                   )}
                 </span>
               )}
-
               {location && (
                 <div className="ml-2 flex">
                   <Icon icon="mi:location" className="" />
@@ -202,7 +138,7 @@ const PostsCard = ({
             </span>
             <hr className="border-transparent bg-transparent"></hr>
             <span className="text-dark100_light500 ml-3 text-sm">
-              {getTimestamp(createdAt)}
+              {createdAt && getTimestamp(createdAt)}
             </span>
           </div>
         </div>
@@ -227,6 +163,7 @@ const PostsCard = ({
               location={location}
               privacy={privacy}
               onClose={() => setMenuModal(false)}
+              setPostsData={setPostsData}
             />
           )}
         </div>
@@ -278,44 +215,14 @@ const PostsCard = ({
         </div>
       )}
       <div className="mx-10 my-5">
-        <div className="text-dark100_light500 flex items-center justify-between">
-          <div className="flex items-center space-x-2">
-            <Icon
-              onClick={toggleLike}
-              icon={
-                isLiked ? "ic:baseline-favorite" : "ic:baseline-favorite-border"
-              }
-              className={isLiked ? "text-primary-100" : "text-dark100_light500"}
-            />
-            <div className="flex">
-              <span className="text-dark100_light500">{numberOfLikes}</span>
-              <p className="text-dark100_light500 ml-1 hidden md:block">
-                Likes
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2" onClick={openModal}>
-            <Icon
-              icon="mingcute:message-4-line"
-              className="text-dark100_light500"
-            />
-            <div className="flex">
-              <span className="text-dark100_light500">{comments.length}</span>
-              <p className="text-dark100_light500 ml-1 hidden md:block">
-                Comments
-              </p>
-            </div>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Icon icon="mdi:share-outline" className="text-dark100_light500" />
-            <div className="flex">
-              <span className="text-dark100_light500">{shares.length}</span>
-              <p className="text-dark100_light500 ml-1 hidden md:block">
-                Shares
-              </p>
-            </div>
-          </div>
-        </div>
+        <Action
+          likes={likes}
+          postId={postId}
+          comments={comments}
+          shares={shares}
+          author={author}
+          profile={profile}
+        />
         <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
         <div className="text-dark100_light500 my-3">
           <span className="text-dark100_light500">Comment</span>
