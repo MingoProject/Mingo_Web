@@ -386,31 +386,33 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         );
                       }
 
-                      switch (type) {
-                        case "image":
-                          return (
-                            <p className={messageStatusClass}>Gửi 1 ảnh</p>
-                          );
-                        case "video":
-                          return (
-                            <p className={messageStatusClass}>Gửi 1 video</p>
-                          );
-                        case "audio":
-                          return (
-                            <p className={messageStatusClass}>
-                              đã gửi 1 âm thanh
-                            </p>
-                          );
-                        case "other":
-                          return (
-                            <p className={messageStatusClass}>Gửi 1 file</p>
-                          );
-                        default:
-                          return (
-                            <p className={messageStatusClass}>
-                              Bắt đầu đoạn chat
-                            </p>
-                          );
+                      if (type !== "") {
+                        switch (type) {
+                          case "image":
+                            return (
+                              <p className={messageStatusClass}>Gửi 1 ảnh</p>
+                            );
+                          case "video":
+                            return (
+                              <p className={messageStatusClass}>Gửi 1 video</p>
+                            );
+                          case "audio":
+                            return (
+                              <p className={messageStatusClass}>
+                                đã gửi 1 âm thanh
+                              </p>
+                            );
+                          case "other":
+                            return (
+                              <p className={messageStatusClass}>Gửi 1 file</p>
+                            );
+                          default:
+                            return (
+                              <p className={messageStatusClass}>
+                                Bắt đầu đoạn chat
+                              </p>
+                            );
+                        }
                       }
                     })()}
                   </div>

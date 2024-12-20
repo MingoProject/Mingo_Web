@@ -60,7 +60,7 @@ const ProfilePage = () => {
     } catch (error) {
       console.error("Error loading chats:", error);
     }
-  }, [setAllChat, setFilteredChat]);
+  }, []);
 
   const handleCloseMenu = () => {
     setSelectedReport(false);
@@ -182,7 +182,7 @@ const ProfilePage = () => {
       );
 
       // Tìm nhóm chat đã tồn tại
-      const existChat = allChat.find((item) => item.receiverId === id);
+      const existChat = filteredChat.find((item) => item.receiverId === id);
 
       console.log(allChat, "all chat ");
 
