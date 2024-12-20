@@ -10,9 +10,11 @@ import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 const EditPost = ({
   postId,
   onClose,
+  setPostsData,
 }: {
   postId: string;
   onClose: () => void;
+  setPostsData: any;
 }) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
@@ -146,7 +148,24 @@ const EditPost = ({
         },
       };
 
-      await editPost(postPayload, postId, token);
+      const updatedPost = await editPost(postPayload, postId, token);
+      setPostsData((prevPosts: any[]) =>
+        prevPosts.map((post) => {
+          if (post._id === updatedPost._id) {
+            return {
+              ...post,
+              media: updatedPost.media || post.media,
+              content: updatedPost.content || post.content,
+              likes: updatedPost.likes || post.likes,
+              author: updatedPost.author || post.author,
+              tags: updatedPost.tags || post.tags,
+              location: updatedPost.location || post.location,
+              privacy: updatedPost.privacy || post.privacy,
+            };
+          }
+          return post;
+        })
+      );
       alert("Post updated successfully!");
       onClose();
     } catch (err: any) {

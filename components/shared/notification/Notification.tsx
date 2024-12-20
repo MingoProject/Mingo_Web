@@ -71,7 +71,22 @@ const Notification = () => {
           const res = await getNotifications(token);
           console.log("res", res);
           if (isMounted) {
-            setNotifications(res);
+            const sortedNotifications = res
+              .filter(
+                (notification: any) =>
+                  ![
+                    "report_post",
+                    "report_user",
+                    "report_comment",
+                    "report_message",
+                  ].includes(notification.type)
+              )
+              .sort(
+                (a: any, b: any) =>
+                  new Date(b.createAt).getTime() -
+                  new Date(a.createAt).getTime()
+              );
+            setNotifications(sortedNotifications);
           }
         }
       } catch (err) {
@@ -324,7 +339,7 @@ const Notification = () => {
         Notifications
       </div>
       <div className="mt-4  flex text-primary-100">Recently</div>
-      <div className="mt-5 flex h-[650px]  flex-col space-y-4 overflow-y-scroll">
+      <div className="mt-5 flex h-[500px]  flex-col space-y-4 overflow-y-scroll">
         {notifications.map((notification) => (
           <div
             key={notification._id}
@@ -345,10 +360,10 @@ const Notification = () => {
             </Link>
 
             <div
-              className="ml-2 flex-1 pr-4"
+              className="ml-2 flex-1 cursor-pointer pr-4"
               onClick={() => handleClick(notification)}
             >
-              <p className="text-dark100_light500 font-light">
+              <p className="text-dark100_light500 cursor-pointer font-light">
                 {getNotificationContent(notification)}
               </p>
               {notification.type === "friend_request" && (
