@@ -27,9 +27,10 @@ const Save = ({ onClose, post, setListSavePosts }: any) => {
               className="mb-2 cursor-pointer"
             />
           </div>
+
           {post.length > 0 ? (
             post.map((item: any) => (
-              <div key={item._id} className="flex w-full flex-col py-2">
+              <div key={item._id} className="flex w-full flex-col px-4 py-2">
                 <div>
                   <PostYouSaveCard
                     key={`${item._id}`}

@@ -16,6 +16,7 @@ const PostMenu = ({
   location,
   privacy,
   onClose,
+  setPostsData,
 }: {
   postId: string;
   author: any;
@@ -31,6 +32,7 @@ const PostMenu = ({
     allowedUsers?: any[];
   };
   onClose: () => void;
+  setPostsData: any;
 }) => {
   const menuRef = useRef(null);
   const [userId, setUserId] = useState("");
@@ -60,6 +62,9 @@ const PostMenu = ({
 
     try {
       await deletePost(postId, token);
+      setPostsData((prevPosts: any) =>
+        prevPosts.filter((post: any) => post._id !== postId)
+      );
       onClose();
     } catch (error) {
       console.error("Failed to delete comment:", error);
@@ -112,7 +117,11 @@ const PostMenu = ({
             Edit
           </button>
           {isEditing && (
-            <EditPost postId={postId} onClose={() => setIsEditing(false)} />
+            <EditPost
+              postId={postId}
+              onClose={() => setIsEditing(false)}
+              setPostsData={setPostsData}
+            />
           )}
           <button
             onClick={() => handleDeletePost(postId)}

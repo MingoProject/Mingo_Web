@@ -14,7 +14,6 @@ const Videos = ({ me, profileUser }: any) => {
     const getVideos = async () => {
       try {
         const data = await getMyVideos(profileUser._id);
-        console.log(data);
 
         if (isMounted) {
           setVideos(data);
@@ -45,25 +44,25 @@ const Videos = ({ me, profileUser }: any) => {
         <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
           Videos
         </div>
-        <div className="mx-[10%] mt-10 flex flex-wrap gap-4">
+        <div className="mx-[20%] mt-10 flex flex-wrap gap-4">
           {videos.map((video, index) => (
             <div key={index} className="flex flex-col items-center">
-              <div className="size-96" onClick={() => handleClick(video)}>
+              <div className="size-40" onClick={() => handleClick(video)}>
                 <video width={150} height={150} controls>
                   <source src={video.url} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
-                {openModal && (
-                  <DetailsVideo
-                    video={detailSelectedVideo}
-                    onClose={() => setOpenModal(false)}
-                    profileUser={profileUser}
-                    me={me}
-                  />
-                )}
               </div>
             </div>
           ))}
+          {openModal && (
+            <DetailsVideo
+              video={detailSelectedVideo}
+              onClose={() => setOpenModal(false)}
+              profileUser={profileUser}
+              me={me}
+            />
+          )}
         </div>
       </div>
     </div>

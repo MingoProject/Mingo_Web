@@ -7,7 +7,6 @@ import { getMediaByMediaId } from "@/lib/services/media.service";
 
 const Images = ({ me, profileUser }: any) => {
   const [images, setImages] = useState<any[]>([]);
-  // const [selectedImage, setSelectedImage] = useState<any>(null);
   const [detailSelectedImage, setDetailSelectedImage] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
 
@@ -16,7 +15,6 @@ const Images = ({ me, profileUser }: any) => {
     const getImages = async () => {
       try {
         const data = await getMyImages(profileUser._id);
-        console.log(data);
 
         if (isMounted) {
           setImages(data);
