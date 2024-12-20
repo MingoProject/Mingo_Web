@@ -199,7 +199,7 @@ const MessageContent = () => {
                 item={chatItem || null}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage />
+              <BodyMessage item={chatItem || null} />
               <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
                 <p className="text-sm">
                   Bạn không thể liên lạc với người dùng này.
@@ -212,7 +212,7 @@ const MessageContent = () => {
                 item={chatItem || null}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage />
+              <BodyMessage item={chatItem || null} />
               <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
                 <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
                 <button
@@ -232,7 +232,7 @@ const MessageContent = () => {
                 item={chatItem || null}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage />
+              <BodyMessage item={chatItem || null} />
               <FooterMessage item={chatItem || null} />
             </>
           )}

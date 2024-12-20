@@ -218,6 +218,7 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
 export async function sendMessage(formData: any): Promise<void> {
   const token = localStorage.getItem("token");
+
   if (!token) {
     console.error("No token found");
     throw new Error("Authentication token is missing.");

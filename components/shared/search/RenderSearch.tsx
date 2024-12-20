@@ -105,8 +105,8 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
             .filter((result) => result.type === "user")
             .map((user) => (
               <UserCard
-                key={user._id}
-                userId={user._id}
+                key={user.userId}
+                userId={user.userId}
                 firstName={user.firstName}
                 lastName={user.lastName}
                 avatar={user.avatar}

@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ItemChat,
   PusherDelete,
   PusherRevoke,
   ResponseMessageDTO,
@@ -14,13 +15,18 @@ import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { removeMessage, revokeMessage } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
+import ReactAudioPlayer from "react-audio-player";
+import ReactPlayer from "react-player";
+import FileViewer from "./FileViewer";
 
 const MessageCard = ({
   chat,
   previousChat,
+  item,
 }: {
   chat: ResponseMessageDTO;
   previousChat?: ResponseMessageDTO;
+  item: ItemChat | null;
 }) => {
   const isSender = chat.createBy === localStorage.getItem("userId");
   const { id } = useParams();
@@ -99,6 +105,8 @@ const MessageCard = ({
     };
   }, [id, setMessages]);
 
+  console.log(item, "this is item in messacard");
+
   return (
     <>
       {isNewDay && (
@@ -110,7 +118,7 @@ const MessageCard = ({
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
         <div className="flex">
-          {isSender && (
+          {isSender && !hasFiles && (
             <>
               <div className="w-fit self-center">
                 <ChatActions
@@ -122,52 +130,37 @@ const MessageCard = ({
           )}
           <div className="flex items-start gap-2">
             {!isSender && (
-              <Image
-                src="/assets/images/capy.jpg"
-                alt="Avatar"
-                width={45}
-                height={45}
-                className="rounded-full"
-              />
+              <div className="w-[45px] h-[45px]">
+                <Image
+                  src={item?.avatarUrl || "/assets/images/default-user.png"}
+                  alt="Avatar"
+                  height={45}
+                  width={45}
+                  className="rounded-full w-full h-full"
+                />
+              </div>
             )}
             <div
               className={`max-w-sm p-3 rounded-xl ${
-                isSender
-                  ? "bg-primary-100 text-white rounded-br-none"
-                  : "bg-gray-200 text-black rounded-bl-none"
+                hasFiles
+                  ? "bg-none"
+                  : isSender
+                    ? "bg-primary-100 text-white rounded-br-none"
+                    : "bg-gray-200 text-black rounded-bl-none"
               }`}
             >
               {!chat.flag ? (
                 <p
-                  className={` ${isSender ? "text-white" : "text-gray-500"} text-sm italic   `}
+                  className={` ${isSender && !hasFiles ? "text-white" : "text-gray-500"} text-sm italic   `}
                 >
                   Tin nhắn đã được thu hồi
                 </p>
               ) : (
                 <>
                   {hasText && <p className="text-sm">{chat.text}</p>}
-                  {hasFiles && (
-                    <div className="my-2">
-                      {chat.contentId.type === "Image" ? (
-                        <Image
-                          src={chat.contentId.url}
-                          alt={chat.contentId.fileName || "Image"}
-                          width={300}
-                          height={300}
-                          className="rounded-lg"
-                        />
-                      ) : (
-                        <a
-                          href={chat.contentId.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-primary-200 underline text-sm"
-                        >
-                          {chat.contentId.fileName || "Download File"}
-                        </a>
-                      )}
-                    </div>
-                  )}
+                  <div className="">
+                    <FileViewer hasFiles chat={chat} />
+                  </div>
                 </>
               )}
             </div>

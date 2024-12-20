@@ -5,8 +5,9 @@ import MessageCard from "./MessageCard";
 import { getAllChat } from "@/lib/services/message.service";
 import { useChatContext } from "@/context/ChatContext";
 import { useParams } from "next/navigation";
+import { ItemChat } from "@/dtos/MessageDTO";
 
-const BodyMessage = () => {
+const BodyMessage = ({ item }: { item: ItemChat | null }) => {
   const { messages, setMessages } = useChatContext();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const { id } = useParams(); // Lấy ID từ URL
@@ -47,6 +48,7 @@ const BodyMessage = () => {
           key={message.id}
           chat={message}
           previousChat={index > 0 ? messages[index - 1] : undefined} // Kiểm tra tin nhắn trước
+          item={item || null}
         />
       ))}
       <div ref={messageEndRef}></div> {/* Tham chiếu cuối cùng để cuộn */}
