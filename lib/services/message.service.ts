@@ -99,7 +99,7 @@ export async function getListChat(): Promise<ItemChat[]> {
               id: box.responseLastMessage.id,
               text: box.responseLastMessage.text
                 ? box.responseLastMessage.text
-                : box.responseLastMessage.text || "Bắt đầu đoạn chat",
+                : box.responseLastMessage.text || "",
               contentId: box.responseLastMessage.contentId || fileContent,
               timestamp: new Date(box.responseLastMessage.createAt),
               createBy: box.responseLastMessage.createBy,

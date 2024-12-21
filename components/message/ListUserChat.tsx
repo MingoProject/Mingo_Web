@@ -100,7 +100,7 @@ const ListUserChat = () => {
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
@@ -150,7 +150,7 @@ const ListUserChat = () => {
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
