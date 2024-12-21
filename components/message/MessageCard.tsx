@@ -105,8 +105,6 @@ const MessageCard = ({
     };
   }, [id, setMessages]);
 
-  console.log(item, "this is item in messacard");
-
   return (
     <>
       {isNewDay && (

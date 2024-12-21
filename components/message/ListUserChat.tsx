@@ -40,8 +40,6 @@ const ListUserChat = () => {
   };
   const channelRefs = useRef<any[]>([]);
 
-  console.log(allChat, "this is all chat");
-
   const fetchChats = useCallback(async () => {
     try {
       const [normalChats, groupChats] = await Promise.all([
@@ -72,7 +70,7 @@ const ListUserChat = () => {
   useEffect(() => {
     const handleNewMessage = (data: any) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
-      console.log(data.boxId);
+      // console.log(data.boxId);
 
       setAllChat((prevChats: any) => {
         const updatedChats = prevChats.map((chat: any) => {
@@ -224,6 +222,8 @@ const ListUserChat = () => {
   const handleChatClick = (id: string) => {
     router.push(`/message/${id}`);
   };
+
+  console.log(allChat, "this is all chat");
 
   return (
     <ChatProvider>

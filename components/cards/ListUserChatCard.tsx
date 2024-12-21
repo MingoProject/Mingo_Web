@@ -41,17 +41,29 @@ export function getDisplayName(name: string): string {
 
 const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
-
   const [activeAction, setActiveAction] = useState("");
   const [activeLabel, setActiveLabel] = useState("");
 
   // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
   const userId = localStorage.getItem("userId");
+  const { id } = useParams();
+  const [isRead, setIsRead] = useState(false);
+
+  const markMessagesAsRead = async (chatId: string) => {
+    try {
+      const userId = localStorage.getItem("userId");
+      await MarkMessageAsRead(chatId.toString(), userId?.toString() || "");
+      setIsRead(true);
+    } catch (error) {
+      console.error("Error marking messages as read:", error);
+    }
+  };
 
   const myChat = async () => {
     try {
       const data = await getAllChat(itemChat.id.toString()); // Gọi API
+
       if (data.success) {
         setMessages(data.messages); // Lưu trực tiếp `messages` từ API
       }
@@ -64,10 +76,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     if (data.boxId !== itemChat.id) return;
 
     try {
-      const mark = await MarkMessageAsRead(
-        data.boxId,
-        userId?.toString() || ""
-      );
+      if (data.boxId === id) {
+      }
     } catch (error) {
       console.error("Error marking message as read:", error);
     }
@@ -83,9 +93,14 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
       // Kiểm tra xem userId có trong mảng readedId không
       const userId = localStorage.getItem("userId");
-      const isRead =
-        latestMessage.readedId.includes(userId?.toString() || "") ||
-        data.boxId === itemChat.id;
+      // const isRead =
+      //   latestMessage.readedId.includes(userId?.toString() || "") ||
+      //   data.boxId === id;
+
+      const isReadNow = updatedMessages.some(
+        (msg) =>
+          msg.readedId.includes(userId?.toString() || "") || data.boxId === id
+      );
 
       const fileContent: FileContent = {
         fileName: "",
@@ -105,10 +120,13 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         contentId: latestMessage.contentId || fileContent,
         createBy: latestMessage.createBy,
         timestamp: new Date(latestMessage.createAt),
-        status: isRead, // Cập nhật trạng thái dựa vào `readedId`
+        status: isReadNow, // Cập nhật trạng thái dựa vào `readedId`
       });
-      console.log(updatedMessages, "updatedMessages");
 
+      // console.log(isRead, "updatedMessages");
+      if (data.boxId === id) {
+        markMessagesAsRead(data.boxId); // Gọi API đánh dấu tin nhắn đã đọc
+      }
       return updatedMessages;
     });
 
@@ -251,6 +269,10 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       return;
     }
     myChat();
+
+    if (id === itemChat.id) {
+      markMessagesAsRead(id); // Đánh dấu tất cả tin nhắn là đã đọc
+    }
     //const pusherChannel = `private-${itemChat.id}`;
     //pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
@@ -263,7 +285,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
-  }, [itemChat.id, setMessages]);
+  }, [itemChat.id, setMessages, id]);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();
@@ -292,7 +314,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   const isReceiver = lastMessage.createBy !== userId;
 
-  console.log(lastMessage, "this is last mes");
+  // console.log(lastMessage, "this is last mes");
+
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -317,22 +340,18 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
               </span>
               <span className={`truncate text-sm font-medium`}>
                 {lastMessage.text === "Bắt đầu đoạn chat" ? (
-                  <p
-                    className={lastMessage.status ? "font-normal" : "font-bold"}
-                  >
+                  <p className={isRead ? "font-normal" : "font-bold"}>
                     {lastMessage.text}
                   </p>
                 ) : isReceiver ? (
                   <div className="flex gap-1 text-sm">
-                    <p
-                      className={`${lastMessage.status ? "font-normal" : "font-bold"}`}
-                    >
+                    <p className={`${isRead ? "font-normal" : "font-bold"}`}>
                       {itemChat.userName.trim().split(" ").pop()}:{" "}
                     </p>
                     {(() => {
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
-                      const messageStatusClass = lastMessage.status
+                      const messageStatusClass = isRead
                         ? "font-normal"
                         : "font-bold";
 
@@ -374,7 +393,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                     {(() => {
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
-                      const messageStatusClass = lastMessage.status
+                      const messageStatusClass = isRead
                         ? "font-normal"
                         : "font-normal";
 
