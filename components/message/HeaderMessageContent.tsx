@@ -28,7 +28,7 @@ const HeaderMessageContent = ({
               {/* Hiển thị thông tin từ `item` */}
               <div className="relative">
                 <Image
-                  src={item.avatarUrl || "/assets/images/capy.jpg"}
+                  src={item.avatarUrl || "/assets/images/default-user.png"}
                   alt="Avatar"
                   width={45}
                   height={45}

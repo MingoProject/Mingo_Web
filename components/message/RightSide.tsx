@@ -164,7 +164,7 @@ const RightSide = ({
             {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
                 <Image
-                  src={item.avatarUrl || "/assets/images/capy.jpg"}
+                  src={item.avatarUrl || "/assets/images/default-user.png"}
                   alt="Avatar"
                   width={80}
                   height={80}

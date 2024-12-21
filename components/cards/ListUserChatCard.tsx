@@ -214,10 +214,18 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     if (data.boxId !== itemChat.id) return;
 
     setMessages((prevMessages) => {
-      // Filter out the deleted message
-      const updatedMessages = prevMessages.filter(
-        (chat) => chat.id !== data.id
-      );
+      const updatedMessages = prevMessages.map((chat) => {
+        // Nếu là tin nhắn bị thu hồi, cập nhật nội dung
+        if (chat.id === data.id) {
+          return {
+            ...chat,
+            text: "Đã thu hồi tin nhắn", // Hoặc nội dung tùy chỉnh
+            type: "recalled", // Có thể thêm type để phân loại tin nhắn đã thu hồi
+          };
+        }
+        return chat;
+      });
+
       const fileContent: FileContent = {
         fileName: "",
         bytes: "",
@@ -230,25 +238,21 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       };
 
       // Cập nhật `lastMessage` và trạng thái (`status`)
-
-      // If the deleted message was the last one, update the lastMessage
-      if (updatedMessages.length >= 0) {
+      if (updatedMessages.length > 0) {
         const latestMessage = updatedMessages.sort(
           (a, b) =>
             new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-        )[0]; // Get the latest message from the updated list
+        )[0];
 
-        // Update the `lastMessage` state with the new last message
         setLastMessage({
           id: latestMessage.boxId,
-          text: latestMessage.text || "Đã thu hồi tin nhắn",
+          text: latestMessage.text,
           contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,
           timestamp: new Date(latestMessage.createAt),
-          status: true, // Cập nhật trạng thái dựa vào `readedId`
+          status: true,
         });
       } else {
-        // If no messages left after deletion, clear the lastMessage
         setLastMessage({
           id: "",
           text: "Đã thu hồi tin nhắn",
@@ -273,8 +277,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     if (id === itemChat.id) {
       markMessagesAsRead(id); // Đánh dấu tất cả tin nhắn là đã đọc
     }
-    //const pusherChannel = `private-${itemChat.id}`;
-    //pusherClient.subscribe(pusherChannel);
+    // const pusherChannel = `private-${itemChat.id}`;
+    // pusherClient.subscribe(pusherChannel);
     pusherClient.bind("new-message", handleNewMessage);
     pusherClient.bind("delete-message", handleDeleteMessage);
     pusherClient.bind("revoke-message", handleRevokeMessage);
@@ -285,7 +289,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       pusherClient.unbind("delete-message", handleDeleteMessage);
       pusherClient.unbind("revoke-message", handleRevokeMessage);
     };
-  }, [itemChat.id, setMessages, id]);
+  }, [setMessages, id]);
 
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();

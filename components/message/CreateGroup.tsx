@@ -201,7 +201,9 @@ const CreateGroup = ({ onClose, me }: any) => {
                       <Image
                         width={40}
                         height={40}
-                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        src={
+                          friend?.avatar || "/assets/images/default-user.png"
+                        }
                         alt="Avatar"
                         className="mr-2 size-10 rounded-full"
                       />
@@ -226,7 +228,9 @@ const CreateGroup = ({ onClose, me }: any) => {
                       <Image
                         width={40}
                         height={40}
-                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        src={
+                          friend?.avatar || "/assets/images/default-user.png"
+                        }
                         alt="Avatar"
                         className="mr-2 size-10 rounded-full"
                       />

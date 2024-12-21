@@ -67,27 +67,27 @@ const MessageCard = ({
     }
   };
 
+  const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
+    console.log("Successfully deleted message: ", messageId);
+    setMessages((prevMessages) =>
+      prevMessages.filter((msg) => msg.id !== messageId)
+    );
+  };
+
+  const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
+    console.log("Successfully revoked message: ", messageId);
+    setMessages((prevMessages) =>
+      prevMessages.map((msg) =>
+        msg.id === messageId ? { ...msg, flag: false } : msg
+      )
+    );
+  };
+
   useEffect(() => {
     if (!id) {
       console.error("boxId is missing or invalid");
       return;
     }
-
-    const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
-      console.log("Successfully deleted message: ", messageId);
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.id !== messageId)
-      );
-    };
-
-    const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
-      console.log("Successfully revoked message: ", messageId);
-      setMessages((prevMessages) =>
-        prevMessages.map((msg) =>
-          msg.id === messageId ? { ...msg, flag: false } : msg
-        )
-      );
-    };
 
     const channels: any[] = allChat.map((chat) => {
       const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
@@ -104,6 +104,8 @@ const MessageCard = ({
       });
     };
   }, [id, setMessages]);
+
+  console.log(chat, "this is chatt");
 
   return (
     <>
@@ -132,9 +134,10 @@ const MessageCard = ({
                 <Image
                   src={item?.avatarUrl || "/assets/images/default-user.png"}
                   alt="Avatar"
-                  height={45}
                   width={45}
-                  className="rounded-full w-full h-full"
+                  height={45}
+                  className="rounded-full object-cover"
+                  style={{ objectFit: "cover", width: "45px", height: "45px" }}
                 />
               </div>
             )}
