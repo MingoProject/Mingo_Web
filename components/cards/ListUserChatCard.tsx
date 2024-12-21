@@ -233,7 +233,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         )[0];
 
         setLastMessage({
-          id: latestMessage.boxId,
+          id: latestMessage.boxId || id.toString(),
           text: latestMessage.text,
           contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,
