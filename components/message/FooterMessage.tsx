@@ -122,6 +122,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     // Giả lập audioBlob (thay bằng logic thực)
     const mockBlob = new Blob(["audio data"], { type: "audio/wav" });
     setAudioBlob(mockBlob);
+    console.log(mockBlob, "Blob created from recording");
     console.log("Recording stopped");
     if (mediaRecorderRef.current) {
       mediaRecorderRef.current.stop();
@@ -137,6 +138,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     const storedToken = localStorage.getItem("token");
     if (!storedToken) return;
 
+    console.log(audioBlob, "Blob created from recording");
     try {
       const formData = new FormData();
       formData.append("boxId", id.toString());
@@ -158,6 +160,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
 
       formData.append("content", JSON.stringify(fileContent));
       formData.append("file", audioBlob, "voice-message.wav");
+      console.log(formData, "formData created from recording");
 
       const messageResponse = await sendMessage(formData);
       console.log("Voice message sent successfully:", messageResponse);
@@ -231,6 +234,9 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
         formData.append("content", JSON.stringify(fileContent));
         formData.append("file", file);
 
+        console.log(fileContent, "file");
+        console.log(file, "file");
+
         await sendMessage(formData);
       }
     } catch (error) {
@@ -278,6 +284,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
+      console.log(files, "fileObject");
       setSelectedFiles(files);
       setCurrentContentType("file");
     }

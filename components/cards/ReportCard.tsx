@@ -4,8 +4,11 @@ import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 import { useParams } from "next/navigation";
-import { createReport } from "@/lib/services/report.service";
-import { ReportCreateDTO } from "@/dtos/reportDTO";
+import {
+  createCommentReport,
+  createReport,
+} from "@/lib/services/report.service";
+import { CommentReportCreateDTO, ReportCreateDTO } from "@/dtos/reportDTO";
 // import { SchemaTypes } from "mongoose";
 import { Schema, Types } from "mongoose";
 
@@ -61,11 +64,13 @@ const ReportCard = ({
   type,
   entityId,
   reportedId,
+  postId,
 }: {
   onClose: () => void;
   type: string;
   entityId: string;
   reportedId: string;
+  postId?: string;
 }) => {
   const [selectedOption, setSelectedOption] = useState<string>("");
   const [loading, setLoading] = useState(false);
@@ -94,9 +99,21 @@ const ReportCard = ({
         entityType: type,
       };
 
-      const res = await createReport(reportPayload, token);
+      const reportCommentPayload: CommentReportCreateDTO = {
+        title: "Báo cáo vi phạm",
+        content: selectedOption,
+        reportedId: reportedId || "", // Sử dụng ObjectId đã import
+        reportedEntityId: entityId.toString(),
+        entityType: type,
+        parentReportEntityId: postId,
+      };
 
-      console.log(res, "res rp");
+      if (type === "comment") {
+        const res = await createCommentReport(reportCommentPayload, token);
+      } else {
+        const res = await createReport(reportPayload, token);
+        console.log(res, "res rp");
+      }
 
       alert("Repost created successfully!");
       onClose();
