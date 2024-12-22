@@ -1,5 +1,5 @@
 "use client";
-import { FileContent, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import { FileContent, ResponseGroupMessageDTO } from "@/dtos/MessageDTO";
 import { createContext, useContext, useState } from "react";
 export interface LatestMessage {
   senderName: string;
@@ -10,8 +10,8 @@ export interface LatestMessage {
 
 // Tạo kiểu cho context
 interface ChatContextType {
-  messages: ResponseMessageDTO[];
-  setMessages: React.Dispatch<React.SetStateAction<ResponseMessageDTO[]>>;
+  messages: ResponseGroupMessageDTO[];
+  setMessages: React.Dispatch<React.SetStateAction<ResponseGroupMessageDTO[]>>;
 }
 
 // Tạo context
@@ -21,7 +21,7 @@ const ChatContext = createContext<ChatContextType | undefined>(undefined);
 export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
-  const [messages, setMessages] = useState<ResponseMessageDTO[]>([]); // Mảng tin nhắn
+  const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
 
   return (
     <ChatContext.Provider

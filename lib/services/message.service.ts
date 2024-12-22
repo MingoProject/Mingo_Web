@@ -2,6 +2,7 @@ import {
   ChatResponse,
   FileContent,
   FindMessageResponse,
+  GroupChatResponse,
   ItemChat,
   RequestCreateGroup,
   ResponseMessageBoxDTO,
@@ -33,6 +34,42 @@ export async function getAllChat(boxId: string): Promise<ChatResponse> {
   try {
     const response = await fetch(
       `${BASE_URL}/message/getAllChat?boxId=${boxId}&&userId=${userId}`,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `${token}`, // Kiểm tra format Authorization
+        },
+      }
+    );
+
+    if (!response.ok) {
+      if (response.status === 403) {
+        console.error("Access Denied: You do not have permission.");
+      }
+      throw new Error(`Error fetching box chat by boxId: ${response.status}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch box chat by boxId:", error);
+    throw error;
+  }
+}
+
+export async function getGroupAllChat(
+  boxId: string
+): Promise<GroupChatResponse> {
+  const token = localStorage.getItem("token");
+  const userId = localStorage.getItem("userId");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  try {
+    const response = await fetch(
+      `${BASE_URL}/message/getGroupAllChat?boxId=${boxId}&&userId=${userId}`,
       {
         headers: {
           "Content-Type": "application/json",
@@ -666,5 +703,39 @@ export async function createGroups(
   } catch (error: any) {
     console.error("Failed to create group:", error);
     throw error;
+  }
+}
+
+export async function uploadGroupAvatar(
+  formData: any,
+  boxId: string,
+  token: string | null
+) {
+  try {
+    console.log(
+      `${BASE_URL}/message/upload-group-avatar?boxId=${boxId}`,
+      formData,
+      boxId,
+      "this is for update group"
+    );
+    const response = await fetch(
+      `${BASE_URL}/message/upload-group-avatar?boxId=${boxId}`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `${token}`,
+        },
+        body: formData,
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Error upload avatar");
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (err) {
+    console.error("Failed to upload avatar", err);
   }
 }

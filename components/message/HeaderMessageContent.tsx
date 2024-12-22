@@ -12,11 +12,13 @@ import { FindUserDTO } from "@/dtos/UserDTO";
 
 const HeaderMessageContent = ({
   item,
-  // user,
+  groupData,
+  setGroupData,
   toggleRightSide,
 }: {
   item: ItemChat | null;
-  // user: FindUserDTO | null;
+  groupData: ItemChat[] | [];
+  setGroupData: any;
   toggleRightSide: () => void;
 }) => {
   return (
@@ -40,7 +42,7 @@ const HeaderMessageContent = ({
                 )}
               </div>
               <span className="text-[18px] font-semibold self-center">
-                {item.userName}
+                {item.groupName}
               </span>
             </>
           )}

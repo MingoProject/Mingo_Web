@@ -117,6 +117,11 @@ export interface ChatResponse {
   messages: ResponseMessageDTO[];
 }
 
+export interface GroupChatResponse {
+  success: boolean;
+  messages: ResponseGroupMessageDTO[];
+}
+
 export interface FindMessageResponse {
   success: boolean;
   messages: ResponseMessageDTO[];
@@ -161,4 +166,18 @@ export interface StatusResponse {
 export interface RequestCreateGroup {
   membersIds: string[];
   groupName: string;
+}
+
+export interface ResponseGroupMessageDTO {
+  id: string;
+  flag: boolean;
+  readedId: string[];
+  contentId: FileContent;
+  text: string;
+  boxId: string;
+  createAt: string;
+  createBy: string;
+  isReact: boolean;
+  createName: string;
+  createAvatar: string;
 }

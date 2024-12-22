@@ -2,8 +2,8 @@
 
 import {
   ItemChat,
-  PusherDelete,
   PusherRevoke,
+  ResponseGroupMessageDTO,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import { format, isSameDay } from "date-fns";
@@ -15,8 +15,6 @@ import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { removeMessage, revokeMessage } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import ReactAudioPlayer from "react-audio-player";
-import ReactPlayer from "react-player";
 import FileViewer from "./FileViewer";
 
 const MessageCard = ({
@@ -24,8 +22,8 @@ const MessageCard = ({
   previousChat,
   item,
 }: {
-  chat: ResponseMessageDTO;
-  previousChat?: ResponseMessageDTO;
+  chat: ResponseGroupMessageDTO;
+  previousChat?: ResponseGroupMessageDTO;
   item: ItemChat | null;
 }) => {
   const isSender = chat.createBy === localStorage.getItem("userId");
@@ -103,7 +101,7 @@ const MessageCard = ({
       <div
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
-        {!isSender && <p className="text-[8px] ml-[55px]">{item?.userName}</p>}
+        {!isSender && <p className="text-[8px] ml-[55px]">{chat.createName}</p>}
         <div className="flex">
           {isSender && !hasFiles && (
             <>
@@ -119,7 +117,7 @@ const MessageCard = ({
             {!isSender && (
               <div className="w-[45px] h-[45px]">
                 <Image
-                  src={item?.avatarUrl || "/assets/images/default-user.png"}
+                  src={chat.createAvatar || "/assets/images/default-user.png"}
                   alt="Avatar"
                   width={45}
                   height={45}

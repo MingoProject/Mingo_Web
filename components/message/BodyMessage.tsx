@@ -2,12 +2,20 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import MessageCard from "./MessageCard";
-import { getAllChat } from "@/lib/services/message.service";
+import { getAllChat, getGroupAllChat } from "@/lib/services/message.service";
 import { useChatContext } from "@/context/ChatContext";
 import { useParams } from "next/navigation";
 import { ItemChat } from "@/dtos/MessageDTO";
 
-const BodyMessage = ({ item }: { item: ItemChat | null }) => {
+const BodyMessage = ({
+  item,
+  groupData,
+  setGroupData,
+}: {
+  item: ItemChat | null;
+  groupData: ItemChat[] | [];
+  setGroupData: any;
+}) => {
   const { messages, setMessages } = useChatContext();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const { id } = useParams(); // Lấy ID từ URL
@@ -17,7 +25,7 @@ const BodyMessage = ({ item }: { item: ItemChat | null }) => {
 
     const myChat = async () => {
       try {
-        const data = await getAllChat(id.toString()); // Gọi API
+        const data = await getGroupAllChat(id.toString()); // Gọi API
         // console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API

@@ -18,13 +18,18 @@ import { block, unblock } from "@/lib/services/friend.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import ReportCard from "../cards/ReportCard";
+import ChangeAvatar from "./ChangeAvatar";
 
 const RightSide = ({
   item,
   setRelation,
+  groupData,
+  setGroupData,
   // user,
 }: {
   item: ItemChat | null;
+  groupData: ItemChat[] | [];
+  setGroupData: any;
   setRelation: any;
   // user: FindUserDTO | null;
 }) => {
@@ -163,15 +168,24 @@ const RightSide = ({
             </div>
             {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
-                <Image
-                  src={item.avatarUrl || "/assets/images/default-user.png"}
-                  alt="Avatar"
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
-                />
-                <p className="text-lg">{item.userName}</p>
+                {item.groupName === item.userName ? (
+                  <Image
+                    src={item.avatarUrl || "/assets/images/default-user.png"}
+                    alt="Avatar"
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover"
+                    style={{
+                      objectFit: "cover",
+                      width: "80px",
+                      height: "80px",
+                    }}
+                  />
+                ) : (
+                  <ChangeAvatar groupData={item} setGroupData={setGroupData} />
+                )}
+
+                <p className="text-lg">{item.groupName}</p>
               </div>
             )}
             <div className="flex items-center px-8 ">
