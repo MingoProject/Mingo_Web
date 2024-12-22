@@ -52,7 +52,7 @@ const getNotificationContent = (notification: any) => {
   }
 };
 
-const Notification = () => {
+const Notification = ({ closeDrawer }: any) => {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [post, setPost] = useState<any>();
   const [image, setImage] = useState<any>();

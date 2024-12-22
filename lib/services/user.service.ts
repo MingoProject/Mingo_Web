@@ -449,3 +449,20 @@ export async function getMyLikedPosts(id: string | null) {
     throw error;
   }
 }
+
+export async function findUserByPhoneNumber(phoneNumber: string) {
+  try {
+    const response = await fetch(
+      `${BASE_URL}/user/get-user-by-phone-number?phoneNumber=${phoneNumber}`
+    );
+    if (!response.ok) {
+      throw new Error("Error fetching user");
+    }
+    const data = await response.json();
+    console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch user:", error);
+    throw error;
+  }
+}

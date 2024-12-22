@@ -4,7 +4,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import CreatePost from "./CreatePost";
 
-const OpenCreatePost = ({ me }: any) => {
+const OpenCreatePost = ({ me, setPostsData }: any) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const toggleForm = () => {
@@ -63,7 +63,11 @@ const OpenCreatePost = ({ me }: any) => {
         </div>
       </div>
       {isFormOpen && (
-        <CreatePost onClose={() => setIsFormOpen(false)} me={me} />
+        <CreatePost
+          onClose={() => setIsFormOpen(false)}
+          me={me}
+          setPostsData={setPostsData}
+        />
       )}
     </>
   );

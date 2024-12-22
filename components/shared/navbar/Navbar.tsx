@@ -204,10 +204,12 @@ const Navbar = () => {
             </button>
             {activeDrawer === "/search" && (
               <>
-                <Search />
+                <Search closeDrawer={closeDrawer} />
               </>
             )}
-            {activeDrawer === "/notifications" && <Notification />}
+            {activeDrawer === "/notifications" && (
+              <Notification closeDrawer={closeDrawer} />
+            )}
           </div>
         </div>
       )}

@@ -137,7 +137,7 @@ const UpdateInformation = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
       <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-4/5 overflow-y-auto rounded-lg bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold text-primary-100">
           Update Information

@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation"; // Thay đổi import
 
 const recentSearches = ["h", "a", "u", "y", "1"];
 
-const Search = () => {
+const Search = ({ closeDrawer }: any) => {
   const [searchTerm, setSearchTerm] = useState("");
   const router = useRouter();
   const [filteredSearches, setFilteredSearches] = useState(recentSearches);
@@ -22,6 +22,7 @@ const Search = () => {
   };
 
   const handleSearch = () => {
+    closeDrawer();
     router.push(`/result-search?page=${encodeURIComponent(searchTerm)}`);
   };
 

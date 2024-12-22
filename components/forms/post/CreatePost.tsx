@@ -8,7 +8,7 @@ import { PostCreateDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 import { createNotification } from "@/lib/services/notification.service";
 
-const CreatePost = ({ onClose, me }: any) => {
+const CreatePost = ({ onClose, me, setPostsData }: any) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
@@ -129,7 +129,22 @@ const CreatePost = ({ onClose, me }: any) => {
           await createNotification(notificationParams, token);
         }
       }
+      console.log(res);
+      setPostsData((prevPosts: any[]) => [
+        {
+          ...res,
+          media: res.media || [],
+          content: res.content || "",
+          likes: res.likes || [],
+          author: res.author || me,
+          tags: res.tags || [],
+          location: res.location || null,
+          privacy: res.privacy || { type: "public" },
+        },
+        ...prevPosts,
+      ]);
       alert("Post created successfully!");
+
       onClose();
     } catch (err: any) {
       console.error(err);
