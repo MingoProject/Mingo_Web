@@ -33,6 +33,7 @@ interface Text {
 interface ItemChat {
   id: string;
   userName: string;
+  groupName: string;
   avatarUrl: string;
   status: string;
   lastMessage: Text;
@@ -207,7 +208,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         if (chat.id === data.id) {
           return {
             ...chat,
-            text: "Đã thu hồi tin nhắn", // Hoặc nội dung tùy chỉnh
+            text: "Đã thu hồi", // Hoặc nội dung tùy chỉnh
             type: "recalled", // Có thể thêm type để phân loại tin nhắn đã thu hồi
           };
         }
@@ -220,7 +221,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         format: "",
         height: "",
         publicId: "",
-        type: "Đã thu hồi tin nhắn",
+        type: "Đã thu hồi",
         url: "",
         width: "",
       };
@@ -243,7 +244,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       } else {
         setLastMessage({
           id: "",
-          text: "Đã thu hồi tin nhắn",
+          text: "Đã thu hồi",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -315,7 +316,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
           <div className="flex w-full items-center gap-3">
             <div className="relative w-[45px] h-[45px]">
               <Image
-                src={itemChat.avatarUrl || "/assets/images/capy.jpg"}
+                src={itemChat.avatarUrl || "/assets/images/default-user.png"}
                 alt="Avatar"
                 width={45}
                 height={45}
@@ -328,7 +329,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
             </div>
             <div className="hidden w-[55%] gap-1 text-xs md:flex md:flex-col">
               <span className="text-base font-semibold whitespace-nowrap overflow-hidden truncate">
-                {itemChat.userName}
+                {itemChat.groupName}
               </span>
               <span className={`truncate text-sm font-medium`}>
                 {lastMessage.text === "Bắt đầu đoạn chat" ? (

@@ -3,6 +3,7 @@ import {
   FileContent,
   FindMessageResponse,
   ItemChat,
+  RequestCreateGroup,
   ResponseMessageBoxDTO,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
@@ -82,6 +83,7 @@ export async function getListChat(): Promise<ItemChat[]> {
     }
 
     const rawData: ResponseMessageBoxDTO = await response.json();
+    console.log(rawData, "rawData");
 
     // console.log(rawData, "status lisstchat");
 
@@ -96,7 +98,7 @@ export async function getListChat(): Promise<ItemChat[]> {
         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
         if (!receiver) return null;
 
-        console.log(box.responseLastMessage, "box.responseLastMessage");
+        console.log(box, "box.responseLastMessage");
 
         const lastMessage = box.responseLastMessage
           ? {
@@ -121,8 +123,10 @@ export async function getListChat(): Promise<ItemChat[]> {
           id: box._id,
           userName:
             `${receiver.firstName || ""} ${receiver.lastName || ""}`.trim(),
+          groupName:
+            `${receiver.firstName || ""} ${receiver.lastName || ""}`.trim(),
           avatarUrl: receiver.avatar || "", // Get the avatar URL of the recipient
-          status: box.readStatus, // Adjust status according to the 'flag'
+          status: box.status, // Adjust status according to the 'flag'
           lastMessage: lastMessage,
           isRead: box.readStatus,
           receiverId: receiver._id,
@@ -166,7 +170,6 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
     const rawData: ResponseMessageBoxDTO = await response.json();
     // console.log(rawData, "raw data");
-    console.log(rawData, "rawData");
 
     // Mapping the response to ItemChat
     const chat: ItemChat[] = rawData.box
@@ -202,11 +205,10 @@ export async function getListGroupChat(): Promise<ItemChat[]> {
 
         return {
           id: box._id,
-          userName:
-            box.groupName ||
-            `${receiver?.firstName || ""} ${receiver?.lastName || ""}`.trim(),
+          userName: `${box.senderId.firstName} ${box.senderId.lastName}`.trim(),
+          groupName: box.groupName || "",
           avatarUrl: box.groupAva || receiver?.avatar || "", // Lấy avatar của người nhận hoặc nhóm
-          status: box.readStatus, // Trạng thái đọc
+          status: box.status, // Trạng thái đọc
           lastMessage, // Tin nhắn cuối
           isRead: box.readStatus, // Trạng thái đã đọc
           receiverId: receiver._id,
@@ -626,6 +628,43 @@ export async function IsOffline(userId: string) {
     return data;
   } catch (error) {
     console.error("Failed to fetch mark as read list by boxId:", error);
+    throw error;
+  }
+}
+
+export async function createGroups(
+  param: RequestCreateGroup,
+  groupAva?: File | undefined
+) {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      return { success: false, message: "No token found" };
+    }
+
+    const formData = new FormData();
+    formData.append("membersIds", JSON.stringify(param.membersIds));
+    formData.append("groupName", param.groupName);
+
+    // Chỉ thêm avatar nếu tồn tại
+    if (groupAva) {
+      formData.append("file", groupAva);
+    }
+
+    const response = await fetch(`${BASE_URL}/message/createGroup`, {
+      method: "POST",
+      headers: {
+        Authorization: `${token}`, // Đảm bảo sử dụng định dạng 'Bearer'
+      },
+      body: formData, // Dữ liệu phải được chuyển thành JSON
+    });
+
+    const responseData = await response.json();
+    console.log(responseData);
+
+    return responseData;
+  } catch (error: any) {
+    console.error("Failed to create group:", error);
     throw error;
   }
 }

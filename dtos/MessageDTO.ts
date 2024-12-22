@@ -94,6 +94,7 @@ export interface ResponseMessageDTO {
 export interface ItemChat {
   id: string;
   userName: string;
+  groupName: string;
   avatarUrl: string;
   status: string;
   lastMessage: Text;
@@ -149,4 +150,15 @@ export interface PusherDelete {
   action: string;
   createAt: string;
   createBy: string;
+}
+
+export interface StatusResponse {
+  userId: string;
+  status: boolean;
+  createAt: Date;
+}
+
+export interface RequestCreateGroup {
+  membersIds: string[];
+  groupName: string;
 }

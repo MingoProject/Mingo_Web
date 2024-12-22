@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthContext";
 import {
   createGroup,
+  createGroups,
   getListChat,
   getListGroupChat,
 } from "@/lib/services/message.service";
@@ -82,12 +83,11 @@ const CreateGroup = ({ onClose, me }: any) => {
     try {
       const groupData = {
         membersIds: [...members.map((friend) => friend._id), me._id],
-        leaderId: me._id,
         groupName: newName,
-        groupAva: avatar || "",
       };
 
-      const newGroup = await createGroup(groupData);
+      const newGroup = await createGroups(groupData);
+
       console.log("Creating new group:", newGroup);
 
       if (newGroup && newGroup.messageBoxId) {

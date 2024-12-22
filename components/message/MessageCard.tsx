@@ -68,24 +68,6 @@ const MessageCard = ({
   };
 
   useEffect(() => {
-    //   if (!id) {
-    //     console.error("boxId is missing or invalid");
-    //     return;
-    //   }
-
-    //   const handleDeleteMessage = ({
-    //     id: messageId,
-    //     createBy: createBy,
-    //   }: PusherDelete) => {
-    //     if (createBy === localStorage.getItem("userId")) {
-    //       console.log(createBy, localStorage.getItem("userId"), "check user coi");
-    //       console.log("Successfully deleted message: ", messageId);
-    //       setMessages((prevMessages) =>
-    //         prevMessages.filter((msg) => msg.id !== messageId)
-    //       );
-    //     }
-    //   };
-
     const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
       console.log("Successfully revoked message: ", messageId);
       setMessages((prevMessages) =>
@@ -121,6 +103,7 @@ const MessageCard = ({
       <div
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
+        {!isSender && <p className="text-[8px] ml-[55px]">{item?.userName}</p>}
         <div className="flex">
           {isSender && !hasFiles && (
             <>
