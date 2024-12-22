@@ -12,13 +12,9 @@ import { FindUserDTO } from "@/dtos/UserDTO";
 
 const HeaderMessageContent = ({
   item,
-  groupData,
-  setGroupData,
   toggleRightSide,
 }: {
   item: ItemChat | null;
-  groupData: ItemChat[] | [];
-  setGroupData: any;
   toggleRightSide: () => void;
 }) => {
   return (

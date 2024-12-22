@@ -101,7 +101,9 @@ const MessageCard = ({
       <div
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
-        {!isSender && <p className="text-[8px] ml-[55px]">{chat.createName}</p>}
+        {!isSender && item?.groupName !== chat.createName && (
+          <p className="text-[8px] ml-[55px]">{chat.createName}</p>
+        )}
         <div className="flex">
           {isSender && !hasFiles && (
             <>

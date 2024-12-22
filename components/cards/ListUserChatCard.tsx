@@ -15,11 +15,17 @@ import {
   FileContent,
   PusherDelete,
   PusherRevoke,
+  ResponseGroupMessageDTO,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import { pusherClient } from "@/lib/pusher";
-import { getAllChat, MarkMessageAsRead } from "@/lib/services/message.service";
+import {
+  getAllChat,
+  getGroupAllChat,
+  MarkMessageAsRead,
+} from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
+import data from "@iconify/icons-mi/sort";
 
 interface Text {
   id: string;
@@ -67,17 +73,53 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   const myChat = async () => {
     try {
-      const data = await getAllChat(itemChat.id.toString()); // Gọi API
+      const data = await getGroupAllChat(itemChat.id.toString()); // Gọi API
 
       if (data.success) {
         setMessages(data.messages); // Lưu trực tiếp `messages` từ API
+        if (data.messages.length > 0) {
+          // Cập nhật `lastMessage`
+          const latestMessage = data.messages.sort(
+            (a, b) =>
+              new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+          )[0];
+
+          setLastMessage({
+            id: latestMessage.boxId,
+            text: latestMessage.text || "",
+            contentId: latestMessage.contentId || null,
+            createBy: latestMessage.createBy,
+            timestamp: new Date(latestMessage.createAt),
+            status: false,
+          });
+        } else {
+          const fileContent = {
+            fileName: "",
+            bytes: "",
+            format: "",
+            height: "",
+            publicId: "",
+            type: "",
+            url: "",
+            width: "",
+          };
+          // Nếu không có tin nhắn, đặt giá trị mặc định cho `lastMessage`
+          setLastMessage({
+            id: itemChat.id,
+            text: "",
+            contentId: fileContent,
+            createBy: "",
+            timestamp: new Date(),
+            status: true,
+          });
+        }
       }
     } catch (error) {
       console.error("Error loading chat:", error);
     }
   };
 
-  const handleNewMessage = async (data: ResponseMessageDTO) => {
+  const handleNewMessage = async (data: ResponseGroupMessageDTO) => {
     if (data.boxId !== itemChat.id) return;
 
     try {
@@ -151,7 +193,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
       // Nếu `visibility` là `false`, xử lý tin nhắn bị xóa
       if (!data.visibility) {
-        // Giữ lại các tin nhắn ban đầu, chỉ xóa tin nhắn mới (2 tin nhắn vừa thêm)
+        // Lọc các tin nhắn còn lại sau khi xóa tin nhắn bị thu hồi
         const updatedMessages = boxChatMessages.filter(
           (msg) => msg.id !== data.id
         );
@@ -171,23 +213,42 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
         // Chỉ cập nhật `lastMessage` cho người xóa
         if (data.createBy === currentUserId) {
-          // Sắp xếp lại tin nhắn theo thời gian để luôn hiển thị tin nhắn mới nhất
-          const sortedMessages = updatedMessages.sort(
-            (a, b) =>
-              new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
-          );
+          let latestMessage;
 
-          const latestMessage = sortedMessages[0] || boxChatMessages[0]; // Lấy tin nhắn cuối cùng nếu có
-          console.log("Last message after deletion: ", latestMessage);
+          if (updatedMessages.length > 0) {
+            // Lấy tin nhắn mới nhất từ `updatedMessages`
+            latestMessage = updatedMessages.sort(
+              (a, b) =>
+                new Date(b.createAt).getTime() - new Date(a.createAt).getTime()
+            )[0];
+          } else {
+            // Nếu không còn tin nhắn, gọi API để lấy lại danh sách tin nhắn
+            myChat();
+            return prevMessages; // Tạm thời trả về danh sách hiện tại
+          }
 
-          setLastMessage({
-            id: latestMessage.boxId || id.toString(),
-            text: latestMessage.text || "",
-            contentId: latestMessage.contentId || fileContent,
-            createBy: latestMessage.createBy,
-            timestamp: new Date(latestMessage.createAt),
-            status: false, // Tùy chỉnh logic trạng thái nếu cần
-          });
+          if (latestMessage) {
+            console.log("Last message after deletion: ", latestMessage);
+
+            setLastMessage({
+              id: latestMessage.boxId,
+              text: latestMessage.text || "",
+              contentId: latestMessage.contentId || fileContent,
+              createBy: latestMessage.createBy,
+              timestamp: new Date(latestMessage.createAt),
+              status: false, // Tùy chỉnh logic trạng thái nếu cần
+            });
+          } else {
+            // Không còn tin nhắn nào, đặt giá trị mặc định cho `lastMessage`
+            setLastMessage({
+              id: itemChat.id,
+              text: "",
+              contentId: fileContent,
+              createBy: "",
+              timestamp: new Date(),
+              status: true,
+            });
+          }
         }
 
         // Trả về danh sách đã cập nhật (xóa tin nhắn bị thu hồi)
@@ -234,7 +295,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         )[0];
 
         setLastMessage({
-          id: latestMessage.boxId || id.toString(),
+          id: latestMessage.boxId,
           text: latestMessage.text,
           contentId: latestMessage.contentId || fileContent,
           createBy: latestMessage.createBy,

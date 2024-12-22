@@ -21,7 +21,7 @@ const MessageContent = () => {
   const [isRightSideVisible, setIsRightSideVisible] = useState(false); // Trạng thái hiển thị của RightSide
   const { id } = useParams(); // Lấy ID từ URL
   const router = useRouter();
-
+  const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
   useEffect(() => {
     const fetchChats = async () => {
       try {
@@ -54,7 +54,14 @@ const MessageContent = () => {
       </div>
     );
   }
-  const chatItem = allChat.find((chat) => chat.id === id);
+  // const chatItem = allChat.find((chat) => chat.id === id);
+
+  useEffect(() => {
+    const chatItem = allChat.find((chat) => chat.id === id);
+    if (chatItem) {
+      setChatItem(chatItem); // Cập nhật itemChat khi tìm thấy cuộc trò chuyện
+    }
+  }, [id, allChat]);
 
   const handleUnBlockChat = async () => {
     try {
@@ -173,15 +180,9 @@ const MessageContent = () => {
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage
-                item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
-              />
+              <BodyMessage item={chatItem || null} />
               <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
                 <p className="text-sm">
                   Bạn không thể liên lạc với người dùng này.
@@ -192,15 +193,9 @@ const MessageContent = () => {
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage
-                item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
-              />
+              <BodyMessage item={chatItem || null} />
               <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
                 <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
                 <button
@@ -218,15 +213,9 @@ const MessageContent = () => {
             <>
               <HeaderMessageContent
                 item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
                 toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
               />
-              <BodyMessage
-                item={chatItem || null}
-                groupData={filteredChat}
-                setGroupData={setFilteredChat}
-              />
+              <BodyMessage item={chatItem || null} />
               <FooterMessage item={chatItem || null} />
             </>
           )}
@@ -235,12 +224,7 @@ const MessageContent = () => {
         {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
         {isRightSideVisible && (
           <div className="h-full hidden w-[25%] flex-col gap-2 overflow-y-auto lg:block">
-            <RightSide
-              item={chatItem || null}
-              setRelation={setRelation}
-              groupData={filteredChat}
-              setGroupData={setFilteredChat}
-            />
+            <RightSide item={chatItem || null} setGroupData={setChatItem} />
           </div>
         )}
       </div>

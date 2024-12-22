@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { ItemChat } from "@/dtos/MessageDTO";
 import { uploadGroupAvatar } from "@/lib/services/message.service";
+import { Icon } from "@iconify/react/dist/iconify.js";
 
 const ChangeAvatar = ({
   groupData,
@@ -56,7 +57,7 @@ const ChangeAvatar = ({
           console.log(response?.result.secure_url);
           setGroupData((prevProfile: any) => ({
             ...prevProfile,
-            avatar: response?.result.secure_url,
+            avatarUrl: response?.result.secure_url,
           }));
         }
       }
@@ -79,9 +80,13 @@ const ChangeAvatar = ({
 
   return (
     <>
-      <div className="ml-[10%] size-[200px] overflow-hidden rounded-full">
-        <Image
+      <div className="w-[80px] h-[80px] relative">
+        <Icon
+          icon="mdi-light:camera"
+          className="w-8 h-8 cursor-pointer absolute top-14 right-0 bg-slate-50 text-black rounded-full p-1 shadow-md"
           onClick={handleAvatarClick}
+        />
+        <Image
           src={groupData?.avatarUrl || "/assets/images/default-user.png"}
           alt="Avatar"
           width={80}
@@ -94,20 +99,15 @@ const ChangeAvatar = ({
           }}
         />
       </div>
+
       {avatarMenuOpen && (
         <div
           ref={avatarMenuRef}
-          className="background-light800_dark400 absolute z-10 mb-10 ml-[20%] mt-5 rounded-lg border border-gray-300 shadow-lg"
+          className="background-light800_dark400 absolute z-10 mr-14 mt-24 rounded-lg border border-gray-300 shadow-lg"
         >
           <button
-            onClick={() => console.log("View Avatar")}
-            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
-          >
-            View Avatar
-          </button>
-          <button
             onClick={() => document.getElementById("avatarInput")?.click()}
-            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
+            className="text-dark100_light500 block w-full px-4 py-2 rounded-md text-left text-sm hover:bg-primary-100 hover:text-white"
           >
             Change Avatar
           </button>

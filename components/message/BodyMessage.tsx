@@ -7,15 +7,7 @@ import { useChatContext } from "@/context/ChatContext";
 import { useParams } from "next/navigation";
 import { ItemChat } from "@/dtos/MessageDTO";
 
-const BodyMessage = ({
-  item,
-  groupData,
-  setGroupData,
-}: {
-  item: ItemChat | null;
-  groupData: ItemChat[] | [];
-  setGroupData: any;
-}) => {
+const BodyMessage = ({ item }: { item: ItemChat | null }) => {
   const { messages, setMessages } = useChatContext();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
   const { id } = useParams(); // Lấy ID từ URL

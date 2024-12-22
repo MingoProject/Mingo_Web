@@ -22,16 +22,11 @@ import ChangeAvatar from "./ChangeAvatar";
 
 const RightSide = ({
   item,
-  setRelation,
-  groupData,
   setGroupData,
   // user,
 }: {
   item: ItemChat | null;
-  groupData: ItemChat[] | [];
   setGroupData: any;
-  setRelation: any;
-  // user: FindUserDTO | null;
 }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
