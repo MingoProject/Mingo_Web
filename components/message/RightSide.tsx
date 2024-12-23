@@ -18,15 +18,17 @@ import { block, unblock } from "@/lib/services/friend.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import ReportCard from "../cards/ReportCard";
+import ChangeAvatar from "./ChangeAvatar";
 
 const RightSide = ({
   item,
+  setGroupData,
   setRelation,
   // user,
 }: {
   item: ItemChat | null;
+  setGroupData: any;
   setRelation: any;
-  // user: FindUserDTO | null;
 }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
@@ -38,6 +40,8 @@ const RightSide = ({
   const { allChat, setAllChat } = useChatItemContext();
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
   const router = useRouter();
+
+  // console.log(item, "this is item");
 
   const handleIsReport = () => {
     setIsReport(true);
@@ -115,6 +119,7 @@ const RightSide = ({
     try {
       setIsLoading(true);
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
       // Kiểm tra xem receiverId và senderId có tồn tại hay không
       if (!item?.receiverId || !item?.senderId) {
         alert("Lỗi: Không có ID người nhận hoặc người gửi.");
@@ -127,10 +132,13 @@ const RightSide = ({
         sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
         receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
       };
+      // console.log(params, "id ng dui nguoi nhan");
 
       await block(params, token); // Gọi API block
+      setRelation("block");
       alert("Đã block thành công!");
-      closeDelete(); // Đóng modal sau khi block thành công
+
+      closeBlock(); // Đóng modal sau khi block thành công
     } catch (error) {
       alert("Block thất bại. Vui lòng thử lại.");
       setIsLoading(false);
@@ -163,15 +171,24 @@ const RightSide = ({
             </div>
             {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
-                <Image
-                  src={item.avatarUrl || "/assets/images/capy.jpg"}
-                  alt="Avatar"
-                  width={80}
-                  height={80}
-                  className="rounded-full object-cover"
-                  style={{ objectFit: "cover", width: "80px", height: "80px" }}
-                />
-                <p className="text-lg">{item.userName}</p>
+                {item.groupName === item.userName ? (
+                  <Image
+                    src={item.avatarUrl || "/assets/images/default-user.png"}
+                    alt="Avatar"
+                    width={80}
+                    height={80}
+                    className="rounded-full object-cover"
+                    style={{
+                      objectFit: "cover",
+                      width: "80px",
+                      height: "80px",
+                    }}
+                  />
+                ) : (
+                  <ChangeAvatar groupData={item} setGroupData={setGroupData} />
+                )}
+
+                <p className="text-lg">{item.groupName}</p>
               </div>
             )}
             <div className="flex items-center px-8 ">

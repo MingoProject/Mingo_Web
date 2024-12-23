@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import MessageCard from "./MessageCard";
-import { getAllChat } from "@/lib/services/message.service";
+import { getAllChat, getGroupAllChat } from "@/lib/services/message.service";
 import { useChatContext } from "@/context/ChatContext";
 import { useParams } from "next/navigation";
 import { ItemChat } from "@/dtos/MessageDTO";
@@ -17,8 +17,8 @@ const BodyMessage = ({ item }: { item: ItemChat | null }) => {
 
     const myChat = async () => {
       try {
-        const data = await getAllChat(id.toString()); // Gọi API
-        console.log(data, "this is data of body");
+        const data = await getGroupAllChat(id.toString()); // Gọi API
+        // console.log(data, "this is data of body");
         if (isMounted && data.success) {
           setMessages(data.messages); // Lưu trực tiếp `messages` từ API
         }

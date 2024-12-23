@@ -2,7 +2,11 @@
 import React, { useState, useEffect } from "react";
 import { Icon } from "@iconify/react";
 import { findMessage } from "@/lib/services/message.service";
-import { FindMessageResponse, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import {
+  FindMessageResponse,
+  ResponseGroupMessageDTO,
+  ResponseMessageDTO,
+} from "@/dtos/MessageDTO";
 import MessageCard from "./MessageCard";
 
 const SearchMessage = ({
@@ -13,7 +17,7 @@ const SearchMessage = ({
   onCancel: () => void;
 }) => {
   const [query, setQuery] = useState<string>("");
-  const [messages, setMessages] = useState<ResponseMessageDTO[]>([]);
+  const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
 
   // Fetch messages whenever query changes

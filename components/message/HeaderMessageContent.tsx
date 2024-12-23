@@ -9,16 +9,33 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { ItemChat } from "@/dtos/MessageDTO";
 import { FindUserDTO } from "@/dtos/UserDTO";
+import { getMyProfile } from "@/lib/services/user.service";
+import { useChatContext } from "@/context/ChatContext";
 
 const HeaderMessageContent = ({
   item,
-  // user,
   toggleRightSide,
 }: {
   item: ItemChat | null;
-  // user: FindUserDTO | null;
   toggleRightSide: () => void;
 }) => {
+  const { isOnlineChat, setIsOnlineChat } = useChatContext();
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        if (item) {
+          const data = await getMyProfile(item?.receiverId?.toString() || "");
+          setIsOnlineChat((prevState) => ({
+            ...prevState,
+            [item?.receiverId?.toString() || ""]: data.userProfile.status,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, [item, item?.receiverId]);
   return (
     <div className="w-full border-b border-gray-200 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
@@ -28,19 +45,19 @@ const HeaderMessageContent = ({
               {/* Hiển thị thông tin từ `item` */}
               <div className="relative">
                 <Image
-                  src={item.avatarUrl || "/assets/images/capy.jpg"}
+                  src={item.avatarUrl || "/assets/images/default-user.png"}
                   alt="Avatar"
                   width={45}
                   height={45}
                   className="rounded-full object-cover"
                   style={{ objectFit: "cover", width: "45px", height: "45px" }}
                 />
-                {item.status && (
+                {isOnlineChat[item.receiverId || ""] && (
                   <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
                 )}
               </div>
               <span className="text-[18px] font-semibold self-center">
-                {item.userName}
+                {item.groupName}
               </span>
             </>
           )}
