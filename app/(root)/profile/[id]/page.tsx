@@ -196,7 +196,6 @@ const ProfilePage = () => {
         };
 
         const newGroup = await createGroups(groupData);
-        console.log("Creating new group:", newGroup.newBox.id);
 
         if (newGroup?.result?.newBox?.id) {
           // Điều hướng đến nhóm mới tạo

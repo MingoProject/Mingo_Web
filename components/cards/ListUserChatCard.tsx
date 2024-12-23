@@ -22,10 +22,12 @@ import { pusherClient } from "@/lib/pusher";
 import {
   getAllChat,
   getGroupAllChat,
+  IsOnline,
   MarkMessageAsRead,
 } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import data from "@iconify/icons-mi/sort";
+import { getMyProfile } from "@/lib/services/user.service";
 
 interface Text {
   id: string;
@@ -44,6 +46,8 @@ interface ItemChat {
   status: string;
   lastMessage: Text;
   isRead: boolean;
+  receiverId: string | undefined;
+  senderId: string | undefined;
 }
 
 export function getDisplayName(name: string): string {
@@ -60,6 +64,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const userId = localStorage.getItem("userId");
   const { id } = useParams();
   const [isRead, setIsRead] = useState(false);
+  // const { isOnlineChat } = useChatContext();
+  const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
   const markMessagesAsRead = async (chatId: string) => {
     try {
@@ -368,7 +374,24 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   const isReceiver = lastMessage.createBy !== userId;
 
-  // console.log(lastMessage, "this is last mes");
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        if (itemChat) {
+          const data = await getMyProfile(
+            itemChat?.receiverId?.toString() || ""
+          );
+          setIsOnlineChat((prevState) => ({
+            ...prevState,
+            [itemChat?.receiverId?.toString() || ""]: data.userProfile.status,
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
+      }
+    };
+    fetchProfile();
+  }, [itemChat, itemChat?.receiverId]);
 
   return (
     <ContextMenu>
@@ -384,7 +407,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 className="rounded-full object-cover"
                 style={{ objectFit: "cover", width: "45px", height: "45px" }}
               />
-              {itemChat.status && (
+              {isOnlineChat[itemChat.receiverId || ""] && (
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
               )}
             </div>

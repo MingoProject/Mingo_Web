@@ -12,6 +12,10 @@ export interface LatestMessage {
 interface ChatContextType {
   messages: ResponseGroupMessageDTO[];
   setMessages: React.Dispatch<React.SetStateAction<ResponseGroupMessageDTO[]>>;
+  isOnlineChat: Record<string, boolean>;
+  setIsOnlineChat: React.Dispatch<
+    React.SetStateAction<Record<string, boolean>>
+  >;
 }
 
 // Tạo context
@@ -22,12 +26,15 @@ export const ChatProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [messages, setMessages] = useState<ResponseGroupMessageDTO[]>([]); // Mảng tin nhắn
+  const [isOnlineChat, setIsOnlineChat] = useState<Record<string, boolean>>({});
 
   return (
     <ChatContext.Provider
       value={{
         messages,
         setMessages,
+        isOnlineChat,
+        setIsOnlineChat,
       }}
     >
       {children}

@@ -82,18 +82,13 @@ const CreateGroup = ({ onClose, me }: any) => {
 
     try {
       const groupData = {
-        membersIds: [...members.map((friend) => friend._id), me._id],
+        membersIds: [...members.map((friend) => friend._id)],
         groupName: newName,
       };
 
       const newGroup = await createGroups(groupData);
 
       console.log("Creating new group:", newGroup);
-
-      if (newGroup && newGroup.messageBoxId) {
-        // Điều hướng đến nhóm mới tạo
-        router.push(`/message/${newGroup.messageBoxId}`);
-      }
 
       if (newGroup) {
         const fetchChats = async () => {
@@ -109,6 +104,11 @@ const CreateGroup = ({ onClose, me }: any) => {
           }
         };
         fetchChats();
+      }
+
+      if (newGroup?.result?.newBox?.id) {
+        // Điều hướng đến nhóm mới tạo
+        router.push(`/message/${newGroup.newBox.id}`);
       }
 
       if (members && members.length > 0) {

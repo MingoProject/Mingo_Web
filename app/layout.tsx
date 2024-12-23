@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 import type { Metadata } from "next";
 import { ThemeProvider } from "@/context/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
+import { ChatItemProvider } from "@/context/ChatItemContext";
+import { ChatProvider } from "@/context/ChatContext";
 
 export const metadata: Metadata = {
   title: "Mingle",
@@ -20,20 +22,24 @@ export default function RootLayout({
 }) {
   return (
     <AuthProvider>
-      <html lang="en">
-        <body>
-          <ClerkProvider
-            appearance={{
-              elements: {
-                formButtonPrimary: "primary-gradient",
-                footerActionLink: "primary-gradient hover:text-primary-500",
-              },
-            }}
-          >
-            <ThemeProvider>{children}</ThemeProvider>
-          </ClerkProvider>
-        </body>
-      </html>
+      <ChatItemProvider>
+        <ChatProvider>
+          <html lang="en">
+            <body>
+              <ClerkProvider
+                appearance={{
+                  elements: {
+                    formButtonPrimary: "primary-gradient",
+                    footerActionLink: "primary-gradient hover:text-primary-500",
+                  },
+                }}
+              >
+                <ThemeProvider>{children}</ThemeProvider>
+              </ClerkProvider>
+            </body>
+          </html>
+        </ChatProvider>
+      </ChatItemProvider>
     </AuthProvider>
   );
 }
