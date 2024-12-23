@@ -67,7 +67,7 @@ const MessageCard = ({
 
   useEffect(() => {
     const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
-      console.log("Successfully revoked message: ", messageId);
+      // console.log("Successfully revoked message: ", messageId);
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === messageId ? { ...msg, flag: false } : msg

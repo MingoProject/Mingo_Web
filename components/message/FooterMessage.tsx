@@ -86,7 +86,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
         id?.toString() || "",
         userId?.toString() || ""
       );
-      console.log(mark, "this is mark");
+      // console.log(mark, "this is mark");
     } catch (error) {
       console.error("Error marking message as read:", error);
     }
@@ -256,7 +256,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
     }
 
     const handleNewMessage = (data: ResponseGroupMessageDTO) => {
-      console.log("Successfully received message: ", data);
+      // console.log("Successfully received message: ", data);
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng

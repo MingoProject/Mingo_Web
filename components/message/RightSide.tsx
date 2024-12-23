@@ -23,10 +23,12 @@ import ChangeAvatar from "./ChangeAvatar";
 const RightSide = ({
   item,
   setGroupData,
+  setRelation,
   // user,
 }: {
   item: ItemChat | null;
   setGroupData: any;
+  setRelation: any;
 }) => {
   const [isReport, setIsReport] = useState(false);
   const [isBlock, setIsBlock] = useState(false);
@@ -39,7 +41,7 @@ const RightSide = ({
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
   const router = useRouter();
 
-  console.log(item, "this is item");
+  // console.log(item, "this is item");
 
   const handleIsReport = () => {
     setIsReport(true);
@@ -130,11 +132,13 @@ const RightSide = ({
         sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
         receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
       };
-      console.log(params, "id ng dui nguoi nhan");
+      // console.log(params, "id ng dui nguoi nhan");
 
       await block(params, token); // Gọi API block
+      setRelation("block");
       alert("Đã block thành công!");
-      closeDelete(); // Đóng modal sau khi block thành công
+
+      closeBlock(); // Đóng modal sau khi block thành công
     } catch (error) {
       alert("Block thất bại. Vui lòng thử lại.");
       setIsLoading(false);

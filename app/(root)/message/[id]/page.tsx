@@ -174,7 +174,7 @@ const MessageContent = () => {
     return () => {
       isMounted = false;
     };
-  }, [chatItem]);
+  }, [chatItem, relation]);
 
   if (!chatItem && id) {
     return (
@@ -251,7 +251,11 @@ const MessageContent = () => {
       {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
       {isRightSideVisible && (
         <div className="h-full hidden w-[25%] flex-col gap-2 overflow-y-auto lg:block">
-          <RightSide item={chatItem || null} setGroupData={setChatItem} />
+          <RightSide
+            item={chatItem || null}
+            setGroupData={setChatItem}
+            setRelation={setRelation}
+          />
         </div>
       )}
     </div>

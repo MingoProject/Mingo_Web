@@ -102,7 +102,7 @@ export async function getListChat(): Promise<ItemChat[]> {
     throw new Error("Authentication token or User ID is missing.");
   }
 
-  console.log(userId, "log userId");
+  // console.log(userId, "log userId");
 
   try {
     const response = await fetch(`${BASE_URL}/message/getListChat`, {
@@ -120,7 +120,7 @@ export async function getListChat(): Promise<ItemChat[]> {
     }
 
     const rawData: ResponseMessageBoxDTO = await response.json();
-    console.log(rawData, "rawData");
+    // console.log(rawData, "rawData");
 
     // console.log(rawData, "status lisstchat");
 
@@ -138,8 +138,8 @@ export async function getListChat(): Promise<ItemChat[]> {
         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
         if (!receiver) return null;
 
-        console.log(receiver, "box.receiver");
-        console.log(senderId, "box.sender");
+        // console.log(receiver, "box.receiver");
+        // console.log(senderId, "box.sender");
 
         const lastMessage = box.responseLastMessage
           ? {
@@ -510,7 +510,7 @@ export async function createBoxChat(data: any): Promise<any> {
     throw new Error("Authentication token is missing.");
   }
 
-  console.log(data, "this is form data");
+  // console.log(data, "this is form data");
 
   try {
     // Gửi yêu cầu API
@@ -610,7 +610,7 @@ export async function MarkMessageAsRead(boxId: string, userId: string) {
   }
 
   try {
-    console.log(boxId, userId, "THIS IS MarkMessageAsRead");
+    // console.log(boxId, userId, "THIS IS MarkMessageAsRead");
 
     const response = await fetch(
       `${BASE_URL}/message/markMessageAsRead?boxId=${boxId}&&userId=${userId}`,
@@ -632,7 +632,7 @@ export async function MarkMessageAsRead(boxId: string, userId: string) {
     }
 
     const data = await response.json();
-    console.log(data, "MarkMessageAsRead");
+    // console.log(data, "MarkMessageAsRead");
 
     return data;
   } catch (error) {
@@ -667,7 +667,7 @@ export async function IsOnline(userId: string) {
     }
 
     const data = await response.json();
-    console.log(data, "is online");
+    // console.log(data, "is online");
 
     return data;
   } catch (error) {
@@ -702,7 +702,7 @@ export async function IsOffline(userId: string) {
     }
 
     const data = await response.json();
-    console.log(data, "is IsOffline");
+    // console.log(data, "is IsOffline");
 
     return data;
   } catch (error) {
@@ -739,7 +739,7 @@ export async function createGroups(
     });
 
     const responseData = await response.json();
-    console.log(responseData);
+    // console.log(responseData);
 
     return responseData;
   } catch (error: any) {
@@ -754,12 +754,12 @@ export async function uploadGroupAvatar(
   token: string | null
 ) {
   try {
-    console.log(
-      `${BASE_URL}/message/upload-group-avatar?boxId=${boxId}`,
-      formData,
-      boxId,
-      "this is for update group"
-    );
+    // console.log(
+    //   `${BASE_URL}/message/upload-group-avatar?boxId=${boxId}`,
+    //   formData,
+    //   boxId,
+    //   "this is for update group"
+    // );
     const response = await fetch(
       `${BASE_URL}/message/upload-group-avatar?boxId=${boxId}`,
       {

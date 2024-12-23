@@ -205,8 +205,8 @@ const ListUserChat = () => {
   useEffect(() => {
     const handleUserStatusChanged = (data: StatusResponse) => {
       // Cập nhật trạng thái online/offline của người dùng
-      console.log(profile.status, "profile.status");
-      console.log(data.status, "this is all data chat");
+      // console.log(profile.status, "profile.status");
+      // console.log(data.status, "this is all data chat");
       // Nếu người dùng online, cập nhật status = true cho filteredChat
       if (data.status) {
         setFilteredChat((prevFiltered: any) => {
@@ -311,10 +311,10 @@ const ListUserChat = () => {
     router.push(`/message/${id}`);
   };
 
-  console.log(
-    filteredChat.map((item) => item),
-    "this is all chat"
-  );
+  // console.log(
+  //   filteredChat.map((item) => item),
+  //   "this is all chat"
+  // );
 
   return (
     <ChatProvider>
