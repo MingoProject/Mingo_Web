@@ -110,20 +110,6 @@ const CreateGroup = ({ onClose, me }: any) => {
         // Điều hướng đến nhóm mới tạo
         router.push(`/message/${newGroup.newBox.id}`);
       }
-
-      if (members && members.length > 0) {
-        for (const friend of members) {
-          const notificationParams = {
-            senderId: me._id,
-            receiverId: friend._id,
-            type: "message",
-            postId: newGroup._id,
-          };
-
-          await createNotification(notificationParams, token);
-        }
-      }
-
       onClose();
     } catch (err: any) {
       console.error(err);

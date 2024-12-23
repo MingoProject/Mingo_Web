@@ -50,6 +50,17 @@ interface ItemChat {
   senderId: string | undefined;
 }
 
+const fileContent = {
+  fileName: "",
+  bytes: "",
+  format: "",
+  height: "",
+  publicId: "",
+  type: "",
+  url: "",
+  width: "",
+};
+
 export function getDisplayName(name: string): string {
   const parts = name.trim().split(" ");
   return parts.length > 1 ? parts[parts.length - 1] : name;
@@ -59,12 +70,10 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const { messages, setMessages } = useChatContext();
   const [activeAction, setActiveAction] = useState("");
   const [activeLabel, setActiveLabel] = useState("");
-  // Tạo state để lưu `lastMessage` mới nhất
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
   const userId = localStorage.getItem("userId");
   const { id } = useParams();
   const [isRead, setIsRead] = useState(false);
-  // const { isOnlineChat } = useChatContext();
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
   const markMessagesAsRead = async (chatId: string) => {
@@ -372,8 +381,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     setActiveLabel("");
   };
 
-  const isReceiver = lastMessage.createBy !== userId;
-
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -392,6 +399,10 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
     };
     fetchProfile();
   }, [itemChat, itemChat?.receiverId]);
+
+  const isReceiver = lastMessage.createBy !== userId;
+
+  console.log(lastMessage, "itemChat.lastMessage");
 
   return (
     <ContextMenu>
@@ -416,9 +427,11 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 {itemChat.groupName}
               </span>
               <span className={`truncate text-sm font-medium`}>
-                {lastMessage.text === "Bắt đầu đoạn chat" ? (
+                {!lastMessage.createBy &&
+                !lastMessage.text &&
+                !lastMessage.contentId?.type ? (
                   <p className={isRead ? "font-normal" : "font-bold"}>
-                    {lastMessage.text}
+                    Bắt đầu đoạn chat
                   </p>
                 ) : isReceiver ? (
                   <div className="flex gap-1 text-sm">
@@ -460,7 +473,11 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                             <p className={messageStatusClass}>đã gửi 1 file</p>
                           );
                         default:
-                          return <p className={messageStatusClass}></p>;
+                          return (
+                            <p className={messageStatusClass}>
+                              Bắt đầu đoạn chat
+                            </p>
+                          );
                       }
                     })()}
                   </div>
