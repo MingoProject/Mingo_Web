@@ -1,15 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import fetchDetailedComments from "@/hooks/useComments";
 import { createComment } from "@/lib/services/comment.service";
 import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
-import { getCommentsByPostId } from "@/lib/services/post.service";
 import { CldImage } from "next-cloudinary";
 import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
@@ -31,6 +29,14 @@ interface DetailPostProps {
   tags: any[];
   onClose: () => void;
   profile: any;
+  likesCount: any;
+  setLikesCount: any;
+  isLiked: any;
+  setIsLiked: any;
+  setNumberOfComments: any;
+  numberOfComments: any;
+  commentsData: any;
+  setCommentsData: any;
 }
 
 const DetailPost = ({
@@ -47,9 +53,15 @@ const DetailPost = ({
   tags,
   onClose,
   profile,
+  likesCount,
+  setLikesCount,
+  isLiked,
+  setIsLiked,
+  setNumberOfComments,
+  numberOfComments,
+  commentsData,
+  setCommentsData,
 }: DetailPostProps) => {
-  const [getComments, setGetComments] = useState<any[]>([]);
-  const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -58,40 +70,6 @@ const DetailPost = ({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    const getComments = async () => {
-      const detailedComments = await getCommentsByPostId(postId);
-      if (isMounted) {
-        setGetComments(detailedComments);
-      }
-    };
-
-    getComments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [postId]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCommentsData = async () => {
-      const detailedComments = await fetchDetailedComments(getComments);
-      console.log(detailedComments);
-      if (isMounted) {
-        setCommentsData(detailedComments);
-      }
-    };
-
-    if (getComments.length > 0) {
-      fetchCommentsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [getComments]);
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -134,7 +112,7 @@ const DetailPost = ({
       };
 
       // Cập nhật state commentsData
-      setCommentsData((prev) => [enrichedComment, ...prev]);
+      setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
       if (author._id !== profile._id) {
         const notificationParams = {
@@ -146,6 +124,7 @@ const DetailPost = ({
 
         await createNotification(notificationParams, token);
       }
+      setNumberOfComments(numberOfComments + 1);
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -230,8 +209,8 @@ const DetailPost = ({
                     <SwiperSlide key={item.url}>
                       {item.type === "image" ? (
                         <CldImage
-                          src={item.url} // Use this sample image or upload your own via the Media Explorer
-                          width="500" // Transform the image: auto-crop to square aspect_ratio
+                          src={item.url}
+                          width="500"
                           height="500"
                           alt=""
                           crop={{
@@ -240,7 +219,7 @@ const DetailPost = ({
                           }}
                           onClick={() => {
                             setSelectedImage(item);
-                            setIsDetailVisible(false); // Ẩn DetailPost
+                            setIsDetailVisible(false);
                           }}
                         />
                       ) : (
@@ -250,7 +229,7 @@ const DetailPost = ({
                           controls
                           onClick={() => {
                             setSelectedVideo(item);
-                            setIsDetailVisible(false); // Ẩn DetailPost
+                            setIsDetailVisible(false);
                           }}
                         >
                           <source src={item.url} type="video/mp4" />
@@ -267,17 +246,22 @@ const DetailPost = ({
               <Action
                 likes={likes}
                 postId={postId}
-                comments={commentsData}
+                comments={comments}
                 shares={shares}
                 author={author}
                 profile={profile}
+                likesCount={likesCount}
+                setLikesCount={setLikesCount}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
+                numberOfComments={numberOfComments}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
               <div className="my-4">
                 {commentsData.length > 0 ? (
                   commentsData.map(
-                    (comment) =>
+                    (comment: any) =>
                       comment.parentId === null && (
                         <div
                           key={comment._id}
@@ -289,6 +273,8 @@ const DetailPost = ({
                             profile={profile}
                             author={author}
                             postId={postId}
+                            setNumberOfComments={setNumberOfComments}
+                            numberOfComments={numberOfComments}
                           />
                         </div>
                       )

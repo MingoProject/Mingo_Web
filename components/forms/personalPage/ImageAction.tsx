@@ -6,7 +6,8 @@ import React, { useEffect, useState } from "react";
 const ImageAction = ({
   likes,
   mediaId,
-  comments,
+  // comments,
+  numberOfComments,
   shares,
   author,
   profile,
@@ -91,7 +92,7 @@ const ImageAction = ({
             className="text-dark100_light500"
           />
           <span className="text-dark100_light500">
-            {comments?.length} Comments
+            {numberOfComments} Comments
           </span>
         </div>
         <div className="flex items-center space-x-2">

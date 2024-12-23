@@ -15,6 +15,9 @@ import { getTimestamp } from "@/lib/utils";
 const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+  const [numberOfComments, setNumberOfComments] = useState(
+    image.comments?.length
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
@@ -97,6 +100,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
       }
 
       // setCommentsData((prev) => [newCommentData, ...prev]);
+      setNumberOfComments(numberOfComments + 1);
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
@@ -152,7 +156,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
               <ImageAction
                 likes={image?.likes}
                 mediaId={image?._id}
-                comments={image?.comments}
+                numberOfComments={numberOfComments}
                 shares={image?.shares}
                 author={profileUser}
                 profile={me}
@@ -178,7 +182,10 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                             comment={comment}
                             setCommentsData={setCommentsData}
                             mediaId={image._id}
+                            author={profileUser}
                             profile={me}
+                            setNumberOfComments={setNumberOfComments}
+                            numberOfComments={numberOfComments}
                           />
                         </div>
                       )

@@ -15,6 +15,9 @@ import { getTimestamp } from "@/lib/utils";
 const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
   const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
+  const [numberOfComments, setNumberOfComments] = useState(
+    video.comments?.length
+  );
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
@@ -97,6 +100,7 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
         await createNotification(notificationParams, token);
       }
 
+      setNumberOfComments(numberOfComments + 1);
       // setCommentsData((prev) => [newCommentData, ...prev]);
       setNewComment("");
     } catch (error) {
@@ -153,7 +157,7 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
               <ImageAction
                 likes={video?.likes}
                 mediaId={video?._id}
-                comments={video?.comments}
+                numberOfComments={numberOfComments}
                 shares={video?.shares}
                 author={profileUser}
                 profile={me}
@@ -179,7 +183,10 @@ const DetailsVideo = ({ video, onClose, profileUser, me }: any) => {
                             comment={comment}
                             setCommentsData={setCommentsData}
                             mediaId={video._id}
+                            author={profileUser}
                             profile={me}
+                            setNumberOfComments={setNumberOfComments}
+                            numberOfComments={numberOfComments}
                           />
                         </div>
                       )

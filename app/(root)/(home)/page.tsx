@@ -106,7 +106,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="background-light800_dark400 w-[44%] justify-center px-3">
+      <div className="background-light800_dark400 w-full justify-center px-3 lg:w-[44%]">
         <OpenCreatePost me={profile} setPostsData={setPostsData} />
         <div className="my-2 flex items-center">
           <div className="ml-auto flex shrink-0 items-center pl-4">
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="background-light800_dark400 hidden w-[28%] items-center justify-center bg-light-600 px-1 md:block">
+      <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[28%]">
         <Hashtag />
       </div>
     </div>
