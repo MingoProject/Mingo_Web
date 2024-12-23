@@ -124,7 +124,7 @@ export interface GroupChatResponse {
 
 export interface FindMessageResponse {
   success: boolean;
-  messages: ResponseMessageDTO[];
+  messages: ResponseGroupMessageDTO[];
 }
 
 export interface GroupCreateDTO {

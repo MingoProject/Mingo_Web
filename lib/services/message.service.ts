@@ -131,11 +131,15 @@ export async function getListChat(): Promise<ItemChat[]> {
         const receiver = box.receiverIds.find(
           (receiver: any) => receiver._id !== userId
         );
+        const senderId = box.receiverIds.find(
+          (receiver: any) => receiver._id === userId
+        );
 
         // Return null if no valid recipient is found (i.e., the logged-in user is the only one)
         if (!receiver) return null;
 
-        console.log(box, "box.responseLastMessage");
+        console.log(receiver, "box.receiver");
+        console.log(senderId, "box.sender");
 
         const lastMessage = box.responseLastMessage
           ? {
@@ -167,7 +171,7 @@ export async function getListChat(): Promise<ItemChat[]> {
           lastMessage: lastMessage,
           isRead: box.readStatus,
           receiverId: receiver._id,
-          senderId: box.senderId,
+          senderId: senderId._id,
         };
       })
       .filter((item): item is ItemChat => item !== null); // Filter out null values and ensure the type is ItemChat
@@ -469,6 +473,44 @@ export async function createGroup(data: any): Promise<any> {
   }
 
   // console.log(data, "this is form data");
+
+  try {
+    // Gửi yêu cầu API
+    const response = await fetch(`${BASE_URL}/message/createGroup`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json", // Đảm bảo thông báo content type là JSON
+        Authorization: `${token}`, // Đảm bảo sử dụng định dạng 'Bearer'
+      },
+      body: JSON.stringify(data), // Dữ liệu phải được chuyển thành JSON
+    });
+
+    // Kiểm tra trạng thái phản hồi
+    if (!response.ok) {
+      const errorMessage = `Error creating group: ${response.statusText} (${response.status})`;
+      console.error(errorMessage);
+      throw new Error(errorMessage);
+    }
+
+    // Phân tích dữ liệu phản hồi
+    const responseData = await response.json();
+    console.log("Group created successfully", responseData);
+    return responseData;
+  } catch (error) {
+    console.error("Failed to create group:", error);
+    throw error;
+  }
+}
+
+export async function createBoxChat(data: any): Promise<any> {
+  // Lấy token từ localStorage
+  const token = localStorage.getItem("token");
+  if (!token) {
+    console.error("No token found");
+    throw new Error("Authentication token is missing.");
+  }
+
+  console.log(data, "this is form data");
 
   try {
     // Gửi yêu cầu API

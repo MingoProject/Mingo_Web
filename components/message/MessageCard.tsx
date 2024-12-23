@@ -24,7 +24,7 @@ const MessageCard = ({
 }: {
   chat: ResponseGroupMessageDTO;
   previousChat?: ResponseGroupMessageDTO;
-  item: ItemChat | null;
+  item?: ItemChat | null;
 }) => {
   const isSender = chat.createBy === localStorage.getItem("userId");
   const { id } = useParams();

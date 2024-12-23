@@ -16,7 +16,9 @@ import MyButton from "@/components/shared/MyButton";
 // import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import {
+  createBoxChat,
   createGroup,
+  createGroups,
   getListChat,
   getListGroupChat,
 } from "@/lib/services/message.service";
@@ -25,7 +27,7 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import ReportMenu from "@/components/forms/report/MenuReport";
 
 const ProfilePage = () => {
-  const { id }: any = useParams();
+  const { id } = useParams();
   const [profileUser, setProfileUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [relation, setRelation] = useState<string>("");
@@ -41,26 +43,14 @@ const ProfilePage = () => {
 
   const fetchChats = useCallback(async () => {
     try {
-      const [normalChats, groupChats] = await Promise.all([
-        getListChat(),
-        getListGroupChat(),
-      ]);
-      const combinedChats = [
-        ...(normalChats || []),
-        ...(groupChats || []),
-      ].sort((a, b) => {
-        return (
-          new Date(b.lastMessage.timestamp).getTime() -
-          new Date(a.lastMessage.timestamp).getTime()
-        );
-      });
-
-      setAllChat(combinedChats);
-      setFilteredChat(combinedChats);
+      const allChat = await getListChat(); // Gọi API hoặc hàm lấy dữ liệu
+      setAllChat(allChat || []); // Cập nhật state với dữ liệu nhận được
     } catch (error) {
       console.error("Error loading chats:", error);
     }
   }, []);
+
+  console.log(allChat, "allChat check");
 
   const handleCloseMenu = () => {
     setSelectedReport(false);
@@ -107,7 +97,7 @@ const ProfilePage = () => {
       try {
         const userId = localStorage.getItem("userId");
         if (userId) {
-          const res: any = await checkRelation(userId, id);
+          const res: any = await checkRelation(userId, id.toString());
           if (isMounted) {
             if (!res) {
               setRelation("stranger");
@@ -158,7 +148,7 @@ const ProfilePage = () => {
     const fetchProfile = async () => {
       try {
         if (id) {
-          const data = await getMyProfile(id);
+          const data = await getMyProfile(id.toString());
           setProfileUser(data.userProfile);
         }
       } catch (error) {
@@ -171,7 +161,7 @@ const ProfilePage = () => {
 
   if (!profileUser) return <div>Loading...</div>;
 
-  const handleMessage = async (id: string) => {
+  const handleMessage = async () => {
     if (!id) return;
 
     try {
@@ -182,36 +172,36 @@ const ProfilePage = () => {
       );
 
       // Tìm nhóm chat đã tồn tại
-      const existChat = filteredChat.find((item) => item.receiverId === id);
+      const existChat = allChat.find(
+        (item) => item.receiverId === profileUser._id
+      );
 
-      console.log(allChat, "all chat ");
+      console.log(existChat, "exxistchat ");
 
       // Nếu nhóm đã tồn tại, điều hướng đến nhóm
       if (existChat) {
         router.push(`/message/${existChat.id.toString()}`);
         return;
-      }
+      } else {
+        // Nếu nhóm chưa tồn tại, tạo nhóm mới
+        const userId = localStorage.getItem("userId");
+        if (!userId) {
+          console.error("User ID not found in local storage");
+          return;
+        }
 
-      // Nếu nhóm chưa tồn tại, tạo nhóm mới
-      const userId = localStorage.getItem("userId");
-      if (!userId) {
-        console.error("User ID not found in local storage");
-        return;
-      }
+        const groupData = {
+          membersIds: [profileUser._id],
+          groupName: `${profileUser?.firstName || ""} ${profileUser?.lastName || ""}`,
+        };
 
-      const groupData = {
-        membersIds: [profileUser._id.toString(), userId],
-        leaderId: userId,
-        groupName: `${profileUser?.firstName || ""} ${profileUser?.lastName || ""}`,
-        groupAva: profileUser?.avatar || "/assets/images/default-avatar.jpg",
-      };
+        const newGroup = await createGroups(groupData);
+        console.log("Creating new group:", newGroup.newBox.id);
 
-      const newGroup = await createGroup(groupData);
-      console.log("Creating new group:", newGroup);
-
-      if (newGroup && newGroup.messageBoxId) {
-        // Điều hướng đến nhóm mới tạo
-        router.push(`/message/${newGroup.messageBoxId}`);
+        if (newGroup?.result?.newBox?.id) {
+          // Điều hướng đến nhóm mới tạo
+          router.push(`/message/${newGroup.newBox.id}`);
+        }
       }
     } catch (error) {
       console.error("Error creating or navigating to group chat:", error);
@@ -243,7 +233,7 @@ const ProfilePage = () => {
                 color="text-white"
                 width="w-22"
                 height="h-10"
-                onClick={() => handleMessage(id)}
+                onClick={handleMessage}
               />
 
               {/* Nút ba chấm */}
@@ -259,7 +249,7 @@ const ProfilePage = () => {
             {/* Hiển thị menu */}
             {selectedReport && (
               <div ref={menuRef} className="absolute right-0">
-                <ReportMenu isReported={isReport} userId={id} />
+                <ReportMenu isReported={isReport} userId={id.toString()} />
               </div>
             )}
           </div>

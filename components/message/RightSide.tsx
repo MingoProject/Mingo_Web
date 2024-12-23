@@ -39,6 +39,8 @@ const RightSide = ({
   const { filteredChat, setFilteredChat } = useChatItemContext(); // State lưu trữ các cuộc trò chuyện đã lọc
   const router = useRouter();
 
+  console.log(item, "this is item");
+
   const handleIsReport = () => {
     setIsReport(true);
   };
@@ -115,6 +117,7 @@ const RightSide = ({
     try {
       setIsLoading(true);
       const token = localStorage.getItem("token");
+      const userId = localStorage.getItem("userId");
       // Kiểm tra xem receiverId và senderId có tồn tại hay không
       if (!item?.receiverId || !item?.senderId) {
         alert("Lỗi: Không có ID người nhận hoặc người gửi.");
@@ -127,6 +130,7 @@ const RightSide = ({
         sender: item.senderId || null, // Nếu senderId là undefined, sử dụng null
         receiver: item.receiverId || null, // Nếu receiverId là undefined, sử dụng null
       };
+      console.log(params, "id ng dui nguoi nhan");
 
       await block(params, token); // Gọi API block
       alert("Đã block thành công!");

@@ -99,8 +99,8 @@ const RenderContentPage = ({
     let isMounted = true;
     const fetchFriends = async () => {
       try {
-        const friendsData = await getMyFriends(me._id);
-        const bffsData = await getMyBffs(me._id);
+        const friendsData = await getMyFriends(profileUser._id);
+        const bffsData = await getMyBffs(profileUser._id);
         const combinedFriends = [...bffsData, ...friendsData];
 
         const uniqueFriends = combinedFriends.filter(
@@ -120,7 +120,7 @@ const RenderContentPage = ({
     return () => {
       isMounted = false;
     };
-  }, [me._id]);
+  }, [profileUser._id]);
 
   switch (activeTab) {
     case "posts":
