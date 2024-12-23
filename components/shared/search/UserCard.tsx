@@ -8,6 +8,7 @@ interface UserCardProps {
   firstName: string;
   lastName: string;
   avatar: string;
+  nickName: string;
 }
 
 const UserCard: React.FC<UserCardProps> = ({
@@ -15,28 +16,29 @@ const UserCard: React.FC<UserCardProps> = ({
   firstName,
   lastName,
   avatar,
+  nickName,
 }) => {
   return (
     <div
       key={userId}
       style={{ cursor: "pointer" }}
-      className="mb-4 flex items-center rounded-xl border p-3"
+      className=" flex items-center rounded-xl border p-3 dark:border-gray-800"
     >
       <Link href={`/profile/${userId}`}>
         <Image
           src={avatar || "/assets/images/capy.jpg"}
           alt={lastName}
-          width={56}
-          height={56}
-          className="mr-2 size-14 rounded-full object-cover "
+          width={40}
+          height={40}
+          className="mr-2 size-10 rounded-full object-cover "
         />
       </Link>
 
       <div>
-        <span className="text-dark100_light500 text-lg font-semibold">
+        <span className="text-dark100_light500 text-lg font-medium">
           {firstName} {lastName}
         </span>
-        <h5 className="text-primary-100">{/* <i>@{username}</i> */}</h5>
+        <h5 className="text-primary-100">{nickName && <i>@{nickName}</i>}</h5>
       </div>
     </div>
   );

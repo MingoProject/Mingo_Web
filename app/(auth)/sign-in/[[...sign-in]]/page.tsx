@@ -1,6 +1,5 @@
-"use client"; // Thêm dòng này để đảm bảo mã chạy ở phía client
+"use client";
 import React, { useState } from "react";
-import { Icon } from "@iconify/react";
 import { useRouter } from "next/navigation";
 import {
   getMyProfile,
@@ -119,7 +118,10 @@ const SignIn = () => {
         </form>
 
         <div className="mt-2 text-end">
-          <a href="#" className="text-dark100_light500 text-sm hover:underline">
+          <a
+            href="/forget-password"
+            className="text-dark100_light500 text-sm hover:underline"
+          >
             Forget password?
           </a>
         </div>

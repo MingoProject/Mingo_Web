@@ -152,7 +152,7 @@ const RenderContentPage = ({
             </ul>
           </div>
           <div className="w-full lg:w-7/12">
-            {isMe && <OpenCreatePost me={me} />}
+            {isMe && <OpenCreatePost me={me} setPostsData={setPostsData} />}
 
             <div className="my-2 flex items-center">
               <div className="ml-auto flex shrink-0 items-center pl-4">

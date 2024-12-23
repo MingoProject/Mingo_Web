@@ -2,7 +2,8 @@
 
 import React, { useState } from "react";
 import { register } from "@/lib/services/user.service"; // Import the service function
-import { sendOTP } from "@/lib/services/auth.service";
+import { sendOTP, verifyOTP } from "@/lib/services/auth.service";
+import { useRouter } from "next/navigation";
 
 const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
   const [isFocused, setIsFocused] = useState(false);
@@ -49,50 +50,56 @@ const SignUp = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [otp, setOtp] = useState("");
-  const [generatedOtp, setGeneratedOtp] = useState("");
+  const router = useRouter();
   const [isOtpStep, setIsOtpStep] = useState(false);
 
   const handleOtpSubmit = async (e: any) => {
     e.preventDefault();
-
-    if (otp !== generatedOtp.toString()) {
-      setErrorMessage("Invalid OTP!");
-      return;
-    }
-
     setErrorMessage("");
-
-    const userData = {
-      firstName,
-      lastName,
-      nickName: "",
-      phoneNumber,
-      email,
-      password,
-      rePassword: confirmPassword,
-      gender: gender === "male",
-      birthDay: new Date(birthday),
-    };
-
+    setSuccessMessage("");
     try {
-      const newUser = await register(userData);
+      const verifyResult = await verifyOTP(phoneNumber, otp); // Hàm verifyOTP thực hiện xác thực OTP
 
-      if (newUser) {
-        setSuccessMessage("Registration successful! Please log in.");
-        setFirstName("");
-        setLastName("");
-        setEmail("");
-        setPhoneNumber("");
-        setBirthday("");
-        setGender("");
-        setPassword("");
-        setConfirmPassword("");
-        setIsOtpStep(false);
-      } else {
-        setErrorMessage("Registration failed!");
+      if (!verifyResult.success) {
+        setErrorMessage("Invalid or expired OTP.");
+        return;
+      }
+      const userData = {
+        firstName,
+        lastName,
+        nickName: "",
+        phoneNumber,
+        email,
+        password,
+        rePassword: confirmPassword,
+        gender: gender === "male",
+        birthDay: new Date(birthday),
+      };
+
+      try {
+        const newUser = await register(userData);
+
+        if (newUser) {
+          setSuccessMessage("Registration successful! Please log in.");
+          setFirstName("");
+          setLastName("");
+          setEmail("");
+          setPhoneNumber("");
+          setBirthday("");
+          setGender("");
+          setPassword("");
+          setConfirmPassword("");
+          setIsOtpStep(false);
+          router.push("/sign-in");
+        } else {
+          setErrorMessage("Registration failed!");
+        }
+      } catch (error: any) {
+        console.error("Error during registration:", error);
+        setErrorMessage(error.message || "An unexpected error occurred.");
       }
     } catch (error: any) {
-      console.error("Error during registration:", error);
+      console.error("Error during OTP verification or registration:", error);
       setErrorMessage(error.message || "An unexpected error occurred.");
     }
   };
@@ -108,12 +115,19 @@ const SignUp = () => {
     setErrorMessage("");
 
     try {
-      const otpResponse = await sendOTP(phoneNumber);
-      setGeneratedOtp(otpResponse.otp);
+      await sendOTP(phoneNumber);
       setIsOtpStep(true);
     } catch (error: any) {
       console.error("Error during OTP request:", error);
       setErrorMessage(error.message || "Failed to send OTP.");
+    }
+  };
+
+  const handleResendOTP = async () => {
+    try {
+      await sendOTP(phoneNumber);
+    } catch (error) {
+      setErrorMessage("resend failed. Please try again.");
     }
   };
 
@@ -258,6 +272,15 @@ const SignUp = () => {
             >
               Verify OTP
             </button>
+            <p className="text-dark100_light500 mt-5 flex text-sm">
+              You haven&apos;t recieved OTP yet ?{" "}
+              <p
+                onClick={handleResendOTP}
+                className="ml-2 cursor-pointer text-primary-100 hover:underline"
+              >
+                Resend
+              </p>
+            </p>
           </form>
         )}
         <div className="mt-5 text-center">

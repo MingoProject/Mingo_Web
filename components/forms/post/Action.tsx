@@ -88,7 +88,7 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
             }
             className={
               isLiked
-                ? "size-7 text-primary-100"
+                ? "size-5 text-primary-100"
                 : "text-dark100_light500 size-5"
             }
           />

@@ -83,7 +83,7 @@ export default function Home() {
 
   return (
     <div className="background-light800_dark400 mt-7 flex w-full pt-20">
-      <div className="background-light800_dark400 hidden w-2/5 pl-[2%] lg:block">
+      <div className="background-light800_dark400 hidden w-[28%] pl-[2%] lg:block">
         {profile && (
           <>
             <h1 className="text-dark100_light500 text-2xl">
@@ -106,8 +106,8 @@ export default function Home() {
         )}
       </div>
 
-      <div className="background-light800_dark400 w-[700px] justify-center px-3">
-        <OpenCreatePost me={profile} />
+      <div className="background-light800_dark400 w-[44%] justify-center px-3">
+        <OpenCreatePost me={profile} setPostsData={setPostsData} />
         <div className="my-2 flex items-center">
           <div className="ml-auto flex shrink-0 items-center pl-4">
             <p className="text-dark100_light500 mr-2">Filter: </p>
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="background-light800_dark400 hidden w-2/5 items-center justify-center bg-light-600 px-1 md:block">
+      <div className="background-light800_dark400 hidden w-[28%] items-center justify-center bg-light-600 px-1 md:block">
         <Hashtag />
       </div>
     </div>
