@@ -1,18 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import fetchDetailedComments from "@/hooks/useComments";
-import { createComment } from "@/lib/services/comment.service";
+import {
+  createComment,
+  getCommentByCommentId,
+} from "@/lib/services/comment.service";
 import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
-import { getCommentsByPostId } from "@/lib/services/post.service";
 import { CldImage } from "next-cloudinary";
 import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
+import { getMediaByMediaId } from "@/lib/services/media.service";
 
 interface DetailPostProps {
   postId: string;
@@ -31,6 +33,14 @@ interface DetailPostProps {
   tags: any[];
   onClose: () => void;
   profile: any;
+  likesCount: any;
+  setLikesCount: any;
+  isLiked: any;
+  setIsLiked: any;
+  setNumberOfComments: any;
+  numberOfComments: any;
+  commentsData: any;
+  setCommentsData: any;
 }
 
 const DetailPost = ({
@@ -47,51 +57,24 @@ const DetailPost = ({
   tags,
   onClose,
   profile,
+  likesCount,
+  setLikesCount,
+  isLiked,
+  setIsLiked,
+  setNumberOfComments,
+  numberOfComments,
+  commentsData,
+  setCommentsData,
 }: DetailPostProps) => {
-  const [getComments, setGetComments] = useState<any[]>([]);
-  const [commentsData, setCommentsData] = useState<any[]>([]);
   const [newComment, setNewComment] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isDetailVisible, setIsDetailVisible] = useState(true);
+  const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    const getComments = async () => {
-      const detailedComments = await getCommentsByPostId(postId);
-      if (isMounted) {
-        setGetComments(detailedComments);
-      }
-    };
-
-    getComments();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [postId]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCommentsData = async () => {
-      const detailedComments = await fetchDetailedComments(getComments);
-      console.log(detailedComments);
-      if (isMounted) {
-        setCommentsData(detailedComments);
-      }
-    };
-
-    if (getComments.length > 0) {
-      fetchCommentsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [getComments]);
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -134,7 +117,7 @@ const DetailPost = ({
       };
 
       // Cập nhật state commentsData
-      setCommentsData((prev) => [enrichedComment, ...prev]);
+      setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
       if (author._id !== profile._id) {
         const notificationParams = {
@@ -146,9 +129,41 @@ const DetailPost = ({
 
         await createNotification(notificationParams, token);
       }
+      setNumberOfComments(numberOfComments + 1);
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
+    }
+  };
+
+  const handleClick = async (item: any) => {
+    console.log(item.type);
+    try {
+      if (item.type === "image") {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setSelectedImage(data);
+        console.log("image", data);
+        setCommentsMediaData(detailsComments);
+        console.log("comment", detailsComments);
+      } else {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setSelectedVideo(data);
+        setCommentsMediaData(detailsComments);
+      }
+
+      setIsDetailVisible(false);
+    } catch (error) {
+      console.error("Error loading image details:", error);
     }
   };
 
@@ -230,28 +245,22 @@ const DetailPost = ({
                     <SwiperSlide key={item.url}>
                       {item.type === "image" ? (
                         <CldImage
-                          src={item.url} // Use this sample image or upload your own via the Media Explorer
-                          width="500" // Transform the image: auto-crop to square aspect_ratio
+                          src={item.url}
+                          width="500"
                           height="500"
                           alt=""
                           crop={{
                             type: "auto",
                             source: true,
                           }}
-                          onClick={() => {
-                            setSelectedImage(item);
-                            setIsDetailVisible(false); // Ẩn DetailPost
-                          }}
+                          onClick={() => handleClick(item)}
                         />
                       ) : (
                         <video
                           width={250}
                           height={250}
                           controls
-                          onClick={() => {
-                            setSelectedVideo(item);
-                            setIsDetailVisible(false); // Ẩn DetailPost
-                          }}
+                          onClick={() => handleClick(item)}
                         >
                           <source src={item.url} type="video/mp4" />
                           Your browser does not support the video tag.
@@ -267,17 +276,22 @@ const DetailPost = ({
               <Action
                 likes={likes}
                 postId={postId}
-                comments={commentsData}
+                comments={comments}
                 shares={shares}
                 author={author}
                 profile={profile}
+                likesCount={likesCount}
+                setLikesCount={setLikesCount}
+                isLiked={isLiked}
+                setIsLiked={setIsLiked}
+                numberOfComments={numberOfComments}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
               <div className="my-4">
                 {commentsData.length > 0 ? (
                   commentsData.map(
-                    (comment) =>
+                    (comment: any) =>
                       comment.parentId === null && (
                         <div
                           key={comment._id}
@@ -289,6 +303,8 @@ const DetailPost = ({
                             profile={profile}
                             author={author}
                             postId={postId}
+                            setNumberOfComments={setNumberOfComments}
+                            numberOfComments={numberOfComments}
                           />
                         </div>
                       )
@@ -334,10 +350,12 @@ const DetailPost = ({
           image={selectedImage}
           onClose={() => {
             setSelectedImage(null);
-            setIsDetailVisible(true); // Hiển thị lại DetailPost
+            setIsDetailVisible(true);
           }}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
@@ -349,6 +367,8 @@ const DetailPost = ({
           }}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
     </div>

@@ -70,7 +70,7 @@ const SignIn = () => {
         const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
         const userId = decodedToken?.id;
         localStorage.setItem("userId", userId);
-        localStorage.setItem("loginTime", String(Date.now()));
+        // localStorage.setItem("loginTime", String(Date.now()));
         const profileData = await getMyProfile(userId);
         setProfile(profileData.userProfile);
         router.push("/");

@@ -2,6 +2,8 @@ import ReportCard from "@/components/cards/ReportCard";
 import {
   deleteComment,
   deleteCommentMedia,
+  deleteCommentReply,
+  deleteCommentReplyMedia,
   updateComment,
 } from "@/lib/services/comment.service";
 import React, { useState, useEffect, useRef } from "react";
@@ -9,11 +11,16 @@ import React, { useState, useEffect, useRef } from "react";
 const CommentMenu = ({
   commentUserId,
   commentId,
+  originalCommentId,
   content,
+  commentsData,
   setCommentsData,
   handleCloseMenu,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
+  repliesCount,
 }: any) => {
   const [newComment, setNewComment] = useState(content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
@@ -78,9 +85,52 @@ const CommentMenu = ({
 
     try {
       if (postId) {
-        await deleteComment(commentId, postId, token);
+        if (originalCommentId === null) {
+          await deleteComment(commentId, postId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReply(commentId, postId, originalCommentId, token);
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       } else {
-        await deleteCommentMedia(commentId, mediaId, token);
+        if (originalCommentId === null) {
+          await deleteCommentMedia(commentId, mediaId, token);
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+        } else {
+          const childReplies = commentsData.filter(
+            (comment: any) => comment.parentId === commentId
+          );
+          setCommentsData((prev: any) =>
+            prev.filter(
+              (comment: any) =>
+                comment._id !== commentId &&
+                !childReplies.some((child: any) => child._id === comment._id)
+            )
+          );
+          await deleteCommentReplyMedia(
+            commentId,
+            mediaId,
+            originalCommentId,
+            token
+          );
+          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+        }
       }
 
       setCommentsData((prev: any) =>
@@ -103,7 +153,7 @@ const CommentMenu = ({
             onClick={handleOpenEditComment}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
-            Sửa
+            Edit
           </button>
           {isEditing && (
             <div className="absolute">
@@ -117,13 +167,13 @@ const CommentMenu = ({
                   onClick={() => handleEditComment(commentId, newComment)}
                   className="rounded-md bg-primary-100 px-3 py-1 text-sm text-white"
                 >
-                  Lưu
+                  Save
                 </button>
                 <button
                   onClick={handleCloseEditComment}
                   className="text-dark100_light500 ml-2 rounded-md bg-gray-300 px-3 py-1 text-sm"
                 >
-                  Hủy
+                  Close
                 </button>
               </div>
             </div>
@@ -132,7 +182,7 @@ const CommentMenu = ({
             onClick={() => handleDeleteComment(commentId, postId)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           >
-            Xóa
+            Delete
           </button>
         </>
       ) : (
@@ -140,7 +190,7 @@ const CommentMenu = ({
           className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
           onClick={() => setIsReport(true)}
         >
-          Báo cáo
+          Report
         </button>
       )}
       {isReport && (

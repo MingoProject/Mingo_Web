@@ -1,23 +1,19 @@
 import { createNotification } from "@/lib/services/notification.service";
 import { dislikePost, likePost } from "@/lib/services/post.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import React, { useEffect, useState } from "react";
+import React from "react";
 
-const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
-  const [isLiked, setIsLiked] = useState(false);
-  const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
-
-  useEffect(() => {
-    const userId = localStorage.getItem("userId");
-    if (userId) {
-      try {
-        const isUserLiked = likes.some((like: any) => like === userId);
-        setIsLiked(isUserLiked);
-      } catch (error) {
-        console.error("Invalid token:", error);
-      }
-    }
-  }, [likes]);
+const Action = ({
+  postId,
+  shares,
+  author,
+  profile,
+  likesCount,
+  setLikesCount,
+  isLiked,
+  setIsLiked,
+  numberOfComments,
+}: any) => {
   const handleLikePost = async () => {
     try {
       const token = localStorage.getItem("token");
@@ -59,10 +55,10 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
   const toggleLike = async () => {
     if (isLiked) {
       await handleDislikePost();
-      setNumberOfLikes((prev: any) => prev - 1);
+      setLikesCount((prev: any) => prev - 1);
     } else {
       await handleLikePost();
-      setNumberOfLikes((prev: any) => prev + 1);
+      setLikesCount((prev: any) => prev + 1);
     }
     setIsLiked(!isLiked);
   };
@@ -92,7 +88,7 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
                 : "text-dark100_light500 size-5"
             }
           />
-          <span className="text-dark100_light500 ">{numberOfLikes} Likes</span>
+          <span className="text-dark100_light500 ">{likesCount} Likes</span>
         </div>
         <div className="flex items-center space-x-2">
           <Icon
@@ -100,7 +96,7 @@ const Action = ({ likes, postId, comments, shares, author, profile }: any) => {
             className="text-dark100_light500 size-5"
           />
           <span className="text-dark100_light500">
-            {comments.length} Comments
+            {numberOfComments} Comments
           </span>
         </div>
         <div className="flex items-center space-x-2" onClick={handleShare}>

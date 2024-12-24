@@ -30,22 +30,22 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setProfile(null);
   };
 
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const loginTime = localStorage.getItem("loginTime");
+  // useEffect(() => {
+  //   const token = localStorage.getItem("token");
+  //   const loginTime = localStorage.getItem("loginTime");
 
-    if (token && loginTime) {
-      const currentTime = Date.now();
-      const elapsedTime = currentTime - Number(loginTime);
+  //   if (token && loginTime) {
+  //     const currentTime = Date.now();
+  //     const elapsedTime = currentTime - Number(loginTime);
 
-      if (elapsedTime > 2 * 60 * 60 * 1000) {
-        logout();
-      } else {
-        const timeout = setTimeout(logout, 2 * 60 * 60 * 1000 - elapsedTime);
-        return () => clearTimeout(timeout);
-      }
-    }
-  }, [profile]);
+  //     if (elapsedTime > 2 * 60 * 60 * 1000) {
+  //       logout();
+  //     } else {
+  //       const timeout = setTimeout(logout, 2 * 60 * 60 * 1000 - elapsedTime);
+  //       return () => clearTimeout(timeout);
+  //     }
+  //   }
+  // }, [profile]);
 
   return (
     <AuthContext.Provider value={{ profile, setProfile, logout }}>

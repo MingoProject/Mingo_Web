@@ -13,7 +13,6 @@ import { checkRelation } from "@/lib/services/relation.service";
 import RelationModal from "@/components/forms/profile/RelationAction";
 import { useAuth } from "@/context/AuthContext";
 import MyButton from "@/components/shared/MyButton";
-// import { faMessage } from "@fortawesome/free-solid-svg-icons";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import {
   createBoxChat,
@@ -25,6 +24,8 @@ import {
 import ReportCard from "@/components/cards/ReportCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import ReportMenu from "@/components/forms/report/MenuReport";
+import { pusherClient } from "@/lib/pusher";
+import { Console } from "console";
 
 const ProfilePage = () => {
   const { id } = useParams();
@@ -93,9 +94,9 @@ const ProfilePage = () => {
 
   useEffect(() => {
     let isMounted = true;
+    const userId = localStorage.getItem("userId");
     const check = async () => {
       try {
-        const userId = localStorage.getItem("userId");
         if (userId) {
           const res: any = await checkRelation(userId, id.toString());
           if (isMounted) {
@@ -139,8 +140,19 @@ const ProfilePage = () => {
       }
     };
     check();
+
+    const channel = pusherClient.subscribe(`user-${id}`);
+
+    channel.bind("friend", (data) => {
+      if (isMounted) {
+        console.log(data);
+        check();
+      }
+    });
+
     return () => {
       isMounted = false;
+      pusherClient.unsubscribe(`user-${id}`);
     };
   }, [id]);
 

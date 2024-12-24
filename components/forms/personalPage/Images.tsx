@@ -3,12 +3,14 @@ import Image from "next/image";
 import { getMyImages } from "@/lib/services/user.service";
 import DetailsImage from "./DetailsImage";
 import { getMediaByMediaId } from "@/lib/services/media.service";
+import { getCommentByCommentId } from "@/lib/services/comment.service";
 // import { getMediaByMediaId } from "@/lib/services/media.service";
 
 const Images = ({ me, profileUser }: any) => {
   const [images, setImages] = useState<any[]>([]);
   const [detailSelectedImage, setDetailSelectedImage] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -32,7 +34,14 @@ const Images = ({ me, profileUser }: any) => {
   const handleClick = async (image: any) => {
     try {
       const data = await getMediaByMediaId(image._id);
+      const detailsComments = await Promise.all(
+        data.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
       setDetailSelectedImage(data);
+      setCommentsData(detailsComments);
+
       setOpenModal(true);
     } catch (error) {
       console.error("Error loading image details:", error);
@@ -62,6 +71,8 @@ const Images = ({ me, profileUser }: any) => {
                   onClose={() => setOpenModal(false)}
                   profileUser={profileUser}
                   me={me}
+                  commentsData={commentsData}
+                  setCommentsData={setCommentsData}
                 />
               )}
             </div>
