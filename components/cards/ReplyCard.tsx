@@ -12,6 +12,7 @@ import {
   likeComment,
 } from "@/lib/services/comment.service";
 import { createNotification } from "@/lib/services/notification.service";
+import { auth } from "@clerk/nextjs/server";
 
 const ReplyCard = ({
   reply,
@@ -181,9 +182,6 @@ const ReplyCard = ({
 
     try {
       if (postId) {
-        console.log("parentId", reply._id);
-        console.log("originalCommentId", commentId);
-
         const newCommentData = await createReplyCommentPost(
           {
             content: newComment,
@@ -201,10 +199,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -231,6 +225,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,
@@ -259,10 +255,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -291,6 +283,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,

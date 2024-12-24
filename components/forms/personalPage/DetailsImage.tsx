@@ -3,48 +3,30 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import {
-  createCommentMedia,
-  getCommentByCommentId,
-} from "@/lib/services/comment.service";
+import { createCommentMedia } from "@/lib/services/comment.service";
 import CommentCard from "@/components/cards/CommentCard";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";
 
-const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
-  const [commentsData, setCommentsData] = useState<any[]>([]);
+const DetailsImage = ({
+  image,
+  onClose,
+  profileUser,
+  me,
+  commentsData,
+  setCommentsData,
+}: any) => {
   const [newComment, setNewComment] = useState<string>("");
   const [numberOfComments, setNumberOfComments] = useState(
     image.comments?.length
   );
 
+  // console.log(image);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchCommentsData = async () => {
-      const detailsComments = await Promise.all(
-        image?.comments.map(async (comment: any) => {
-          return await getCommentByCommentId(comment);
-        })
-      );
-
-      if (isMounted) {
-        setCommentsData(detailsComments);
-      }
-      // console.log(detailsComments);
-    };
-
-    if (image?.comments.length > 0) {
-      fetchCommentsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [image?.comments]);
 
   const handleAddComment = async () => {
     const token = localStorage.getItem("token");
@@ -86,7 +68,7 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
         createAt: isoStringWithOffset,
       };
 
-      setCommentsData((prev) => [enrichedComment, ...prev]);
+      setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
       if (profileUser._id !== me._id) {
         const notificationParams = {
@@ -170,9 +152,9 @@ const DetailsImage = ({ image, onClose, profileUser, me }: any) => {
                   msOverflowStyle: "none", // IE và Edge
                 }}
               >
-                {commentsData.length > 0 ? (
+                {commentsData?.length > 0 ? (
                   commentsData.map(
-                    (comment) =>
+                    (comment: any) =>
                       comment.parentId === null && (
                         <div
                           key={comment._id}

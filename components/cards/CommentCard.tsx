@@ -165,7 +165,6 @@ const CommentCard = ({
       setNewComment("");
       setReplyingTo(null);
       if (postId) {
-        console.log("parentId", comment._id);
         const newCommentData = await createReplyCommentPost(
           {
             content: newComment,
@@ -183,10 +182,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -235,7 +230,6 @@ const CommentCard = ({
           mediaId
         );
         if (newCommentData) {
-          console.log(newCommentData._id);
           await addReplyToComment(replyingTo, newCommentData._id, token);
         }
 
@@ -243,10 +237,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -361,7 +351,6 @@ const CommentCard = ({
             </button>
           </div>
 
-          {/* Input trả lời */}
           {replyingTo === comment._id && (
             <div className="flex w-full">
               <div className="mt-2 flex w-full rounded-xl border border-gray-200">

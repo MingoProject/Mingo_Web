@@ -14,6 +14,7 @@ import DetailsImage from "../forms/personalPage/DetailsImage";
 import DetailsVideo from "../forms/personalPage/DetailsVideo";
 import Action from "../forms/post/Action";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
+import { getMediaByMediaId } from "@/lib/services/media.service";
 
 const PostsCard = ({
   postId,
@@ -56,6 +57,8 @@ const PostsCard = ({
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [likesCount, setLikesCount] = useState(likes.length);
   const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
+
   const handleTagsModalToggle = () => {
     setIsTagsModalOpen((prev) => !prev);
   };
@@ -81,7 +84,6 @@ const PostsCard = ({
     };
   }, [comments]);
 
-  console.log(numberOfComments);
   useEffect(() => {
     const userId = localStorage.getItem("userId");
     if (userId) {
@@ -112,6 +114,33 @@ const PostsCard = ({
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const handleClick = async (item: any) => {
+    console.log(item.type);
+    try {
+      if (item.type === "image") {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setCommentsMediaData(detailsComments);
+        setSelectedImage(data);
+      } else {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setCommentsMediaData(detailsComments);
+        setSelectedVideo(data);
+      }
+    } catch (error) {
+      console.error("Error loading image details:", error);
+    }
+  };
 
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
@@ -227,7 +256,7 @@ const PostsCard = ({
                         type: "auto",
                         source: true,
                       }}
-                      onClick={() => setSelectedImage(item)}
+                      onClick={() => handleClick(item)}
                     />
                   </>
                 ) : (
@@ -236,7 +265,7 @@ const PostsCard = ({
                       width={250}
                       height={250}
                       controls
-                      onClick={() => setSelectedVideo(item)}
+                      onClick={() => handleClick(item)}
                     >
                       <source src={item.url} type="video/mp4" />
                       Your browser does not support the video tag.
@@ -318,6 +347,8 @@ const PostsCard = ({
           onClose={() => setSelectedImage(null)}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
@@ -326,6 +357,8 @@ const PostsCard = ({
           onClose={() => setSelectedVideo(null)}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
     </div>

@@ -3,7 +3,10 @@ import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import { getTimestamp } from "@/lib/utils";
-import { createComment } from "@/lib/services/comment.service";
+import {
+  createComment,
+  getCommentByCommentId,
+} from "@/lib/services/comment.service";
 import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -11,6 +14,7 @@ import { createNotification } from "@/lib/services/notification.service";
 import { CldImage } from "next-cloudinary";
 import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
+import { getMediaByMediaId } from "@/lib/services/media.service";
 
 interface DetailPostProps {
   postId: string;
@@ -66,6 +70,7 @@ const DetailPost = ({
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isDetailVisible, setIsDetailVisible] = useState(true);
+  const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
@@ -128,6 +133,37 @@ const DetailPost = ({
       setNewComment("");
     } catch (error) {
       console.error("Failed to add comment:", error);
+    }
+  };
+
+  const handleClick = async (item: any) => {
+    console.log(item.type);
+    try {
+      if (item.type === "image") {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setSelectedImage(data);
+        console.log("image", data);
+        setCommentsMediaData(detailsComments);
+        console.log("comment", detailsComments);
+      } else {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setSelectedVideo(data);
+        setCommentsMediaData(detailsComments);
+      }
+
+      setIsDetailVisible(false);
+    } catch (error) {
+      console.error("Error loading image details:", error);
     }
   };
 
@@ -217,20 +253,14 @@ const DetailPost = ({
                             type: "auto",
                             source: true,
                           }}
-                          onClick={() => {
-                            setSelectedImage(item);
-                            setIsDetailVisible(false);
-                          }}
+                          onClick={() => handleClick(item)}
                         />
                       ) : (
                         <video
                           width={250}
                           height={250}
                           controls
-                          onClick={() => {
-                            setSelectedVideo(item);
-                            setIsDetailVisible(false);
-                          }}
+                          onClick={() => handleClick(item)}
                         >
                           <source src={item.url} type="video/mp4" />
                           Your browser does not support the video tag.
@@ -320,10 +350,12 @@ const DetailPost = ({
           image={selectedImage}
           onClose={() => {
             setSelectedImage(null);
-            setIsDetailVisible(true); // Hiển thị lại DetailPost
+            setIsDetailVisible(true);
           }}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
@@ -335,6 +367,8 @@ const DetailPost = ({
           }}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
     </div>
