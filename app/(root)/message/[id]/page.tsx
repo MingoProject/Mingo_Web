@@ -6,13 +6,18 @@ import BodyMessage from "@/components/message/BodyMessage";
 import FooterMessage from "@/components/message/FooterMessage";
 import HeaderMessageContent from "@/components/message/HeaderMessageContent";
 import RightSide from "@/components/message/RightSide";
-import { getListChat, getListGroupChat } from "@/lib/services/message.service";
-import { ChatProvider } from "@/context/ChatContext";
-import { getUserById } from "@/lib/services/user.service";
+import {
+  getListChat,
+  getListGroupChat,
+  IsOnline,
+} from "@/lib/services/message.service";
+import { ChatProvider, useChatContext } from "@/context/ChatContext";
+import { getMyProfile, getUserById } from "@/lib/services/user.service";
 import { FindUserDTO } from "@/dtos/UserDTO";
 import { checkRelation } from "@/lib/services/relation.service";
 import { FriendRequestDTO } from "@/dtos/FriendDTO";
 import { unblock } from "@/lib/services/friend.service";
+import { useChatItemContext } from "@/context/ChatItemContext";
 
 const MessageContent = () => {
   const [allChat, setAllChat] = useState<ItemChat[]>([]);
@@ -20,31 +25,9 @@ const MessageContent = () => {
   const [relation, setRelation] = useState<string>("");
   const [isRightSideVisible, setIsRightSideVisible] = useState(false); // Trạng thái hiển thị của RightSide
   const { id } = useParams(); // Lấy ID từ URL
-  const [user, setUser] = useState<FindUserDTO | null>(null);
   const router = useRouter();
-  // Fetch user nếu không có chatItem
-  useEffect(() => {
-    if (id && !allChat.find((chat) => chat.id === id)) {
-      let isMounted = true;
-
-      const fetchUser = async () => {
-        try {
-          const data = await getUserById(id.toString());
-          if (isMounted && data) {
-            setUser(data);
-          }
-        } catch (error) {
-          console.error("Error loading user:", error);
-        }
-      };
-
-      fetchUser();
-
-      return () => {
-        isMounted = false; // Cleanup khi component unmount
-      };
-    }
-  }, []);
+  const [chatItem, setChatItem] = useState<ItemChat | null>(null); // State lưu trữ itemChat
+  const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
   useEffect(() => {
     const fetchChats = async () => {
@@ -78,7 +61,35 @@ const MessageContent = () => {
       </div>
     );
   }
-  const chatItem = allChat.find((chat) => chat.id === id);
+  // const chatItem = allChat.find((chat) => chat.id === id);
+
+  useEffect(() => {
+    const chatItem = allChat.find((chat) => chat.id === id);
+    if (chatItem) {
+      setChatItem(chatItem); // Cập nhật itemChat khi tìm thấy cuộc trò chuyện
+    }
+  }, [id, allChat]);
+
+  // useEffect(() => {
+  //   const fetchProfile = async () => {
+  //     try {
+  //       if (chatItem) {
+  //         const data = await getMyProfile(
+  //           chatItem?.receiverId?.toString() || ""
+  //         );
+  //         setIsOnlineChat((prevState) => ({
+  //           ...prevState,
+  //           [chatItem?.receiverId?.toString() || ""]: data.userProfile.status,
+  //         }));
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching profile:", error);
+  //     }
+  //   };
+  //   fetchProfile();
+  // }, [chatItem, chatItem?.receiverId]);
+
+  // console.log(isOnlineChat, "isOnlineChat");
 
   const handleUnBlockChat = async () => {
     try {
@@ -163,7 +174,7 @@ const MessageContent = () => {
     return () => {
       isMounted = false;
     };
-  }, [chatItem]);
+  }, [chatItem, relation]);
 
   if (!chatItem && id) {
     return (
@@ -174,78 +185,80 @@ const MessageContent = () => {
   }
 
   return (
-    <ChatProvider>
-      <div className="flex w-full">
-        <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
-          {!chatItem && !id ? (
-            // Hiển thị giao diện mặc định khi không có chat hoặc id
-            <div className="flex flex-col items-center justify-center w-full h-full">
-              <p className="text-lg text-gray-600">
-                Chọn một cuộc trò chuyện để bắt đầu.
-              </p>
-              <p className="text-sm text-gray-400">
-                Không có cuộc trò chuyện nào được chọn.
-              </p>
-            </div>
-          ) : relation === "" ? (
-            // Hiển thị loader hoặc giao diện chờ trong khi chờ xác định trạng thái relation
-            <div className="flex flex-col items-center justify-center w-full h-full">
-              <div className="loader"></div>
-              <p className="text-sm text-gray-500">Đang tải...</p>
-            </div>
-          ) : relation === "blockedBy" ? (
-            <>
-              <HeaderMessageContent
-                item={chatItem || null}
-                toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
-              />
-              <BodyMessage item={chatItem || null} />
-              <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
-                <p className="text-sm">
-                  Bạn không thể liên lạc với người dùng này.
-                </p>
-              </div>
-            </>
-          ) : relation === "blocked" ? (
-            <>
-              <HeaderMessageContent
-                item={chatItem || null}
-                toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
-              />
-              <BodyMessage item={chatItem || null} />
-              <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
-                <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
-                <button
-                  className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4"
-                  onClick={handleUnBlockChat}
-                >
-                  Bỏ chặn
-                </button>
-                <button className="text-sm cursor-pointer text-red-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4">
-                  Báo cáo
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <HeaderMessageContent
-                item={chatItem || null}
-                toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
-              />
-              <BodyMessage item={chatItem || null} />
-              <FooterMessage item={chatItem || null} />
-            </>
-          )}
-        </div>
-
-        {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
-        {isRightSideVisible && (
-          <div className="h-full hidden w-[25%] flex-col gap-2 overflow-y-auto lg:block">
-            <RightSide item={chatItem || null} setRelation={setRelation} />
+    <div className="flex w-full">
+      <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
+        {!chatItem && !id ? (
+          // Hiển thị giao diện mặc định khi không có chat hoặc id
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <p className="text-lg text-gray-600">
+              Chọn một cuộc trò chuyện để bắt đầu.
+            </p>
+            <p className="text-sm text-gray-400">
+              Không có cuộc trò chuyện nào được chọn.
+            </p>
           </div>
+        ) : relation === "" ? (
+          // Hiển thị loader hoặc giao diện chờ trong khi chờ xác định trạng thái relation
+          <div className="flex flex-col items-center justify-center w-full h-full">
+            <div className="loader"></div>
+            <p className="text-sm text-gray-500">Đang tải...</p>
+          </div>
+        ) : relation === "blockedBy" ? (
+          <>
+            <HeaderMessageContent
+              item={chatItem || null}
+              toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
+            />
+            <BodyMessage item={chatItem || null} />
+            <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
+              <p className="text-sm">
+                Bạn không thể liên lạc với người dùng này.
+              </p>
+            </div>
+          </>
+        ) : relation === "blocked" ? (
+          <>
+            <HeaderMessageContent
+              item={chatItem || null}
+              toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
+            />
+            <BodyMessage item={chatItem || null} />
+            <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
+              <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
+              <button
+                className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4"
+                onClick={handleUnBlockChat}
+              >
+                Bỏ chặn
+              </button>
+              <button className="text-sm cursor-pointer text-red-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4">
+                Báo cáo
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <HeaderMessageContent
+              item={chatItem || null}
+              toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
+            />
+            <BodyMessage item={chatItem || null} />
+            <FooterMessage item={chatItem || null} />
+          </>
         )}
       </div>
-    </ChatProvider>
+
+      {/* RightSide hiển thị dựa trên trạng thái isRightSideVisible */}
+      {isRightSideVisible && (
+        <div className="h-full hidden w-[25%] flex-col gap-2 overflow-y-auto lg:block">
+          <RightSide
+            item={chatItem || null}
+            setGroupData={setChatItem}
+            setRelation={setRelation}
+          />
+        </div>
+      )}
+    </div>
   );
 };
 

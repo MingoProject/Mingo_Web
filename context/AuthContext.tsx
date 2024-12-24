@@ -1,4 +1,5 @@
 "use client";
+import { IsOffline } from "@/lib/services/message.service";
 import { updateUserStatus } from "@/lib/services/user.service";
 import React, {
   createContext,
@@ -21,7 +22,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     const token = localStorage.getItem("token");
+
     await updateUserStatus(token);
+
     localStorage.removeItem("userId");
     localStorage.removeItem("token");
     setProfile(null);

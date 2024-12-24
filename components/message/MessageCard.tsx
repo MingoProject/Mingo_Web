@@ -2,8 +2,8 @@
 
 import {
   ItemChat,
-  PusherDelete,
   PusherRevoke,
+  ResponseGroupMessageDTO,
   ResponseMessageDTO,
 } from "@/dtos/MessageDTO";
 import { format, isSameDay } from "date-fns";
@@ -15,8 +15,6 @@ import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { removeMessage, revokeMessage } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
-import ReactAudioPlayer from "react-audio-player";
-import ReactPlayer from "react-player";
 import FileViewer from "./FileViewer";
 
 const MessageCard = ({
@@ -24,9 +22,9 @@ const MessageCard = ({
   previousChat,
   item,
 }: {
-  chat: ResponseMessageDTO;
-  previousChat?: ResponseMessageDTO;
-  item: ItemChat | null;
+  chat: ResponseGroupMessageDTO;
+  previousChat?: ResponseGroupMessageDTO;
+  item?: ItemChat | null;
 }) => {
   const isSender = chat.createBy === localStorage.getItem("userId");
   const { id } = useParams();
@@ -68,20 +66,8 @@ const MessageCard = ({
   };
 
   useEffect(() => {
-    if (!id) {
-      console.error("boxId is missing or invalid");
-      return;
-    }
-
-    const handleDeleteMessage = ({ id: messageId }: PusherDelete) => {
-      console.log("Successfully deleted message: ", messageId);
-      setMessages((prevMessages) =>
-        prevMessages.filter((msg) => msg.id !== messageId)
-      );
-    };
-
     const handleRevokeMessage = ({ id: messageId }: PusherRevoke) => {
-      console.log("Successfully revoked message: ", messageId);
+      // console.log("Successfully revoked message: ", messageId);
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === messageId ? { ...msg, flag: false } : msg
@@ -91,21 +77,19 @@ const MessageCard = ({
 
     const channels: any[] = allChat.map((chat) => {
       const channel = pusherClient.subscribe(`private-${chat.id.toString()}`);
-      channel.bind("delete-message", handleDeleteMessage);
+      // channel.bind("delete-message", handleDeleteMessage);
       channel.bind("revoke-message", handleRevokeMessage);
       return channel;
     });
 
-    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
+    //   // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
     return () => {
       channels.forEach((channel: any) => {
-        channel.bind("delete-message", handleDeleteMessage);
+        // channel.bind("delete-message", handleDeleteMessage);
         channel.bind("revoke-message", handleRevokeMessage);
       });
     };
   }, [id, setMessages]);
-
-  console.log(item, "this is item in messacard");
 
   return (
     <>
@@ -117,6 +101,9 @@ const MessageCard = ({
       <div
         className={`flex flex-col ${isSender ? "items-end" : "items-start"} mb-4`}
       >
+        {!isSender && item?.groupName !== chat.createName && (
+          <p className="text-[8px] ml-[55px]">{chat.createName}</p>
+        )}
         <div className="flex">
           {isSender && !hasFiles && (
             <>
@@ -132,11 +119,12 @@ const MessageCard = ({
             {!isSender && (
               <div className="w-[45px] h-[45px]">
                 <Image
-                  src={item?.avatarUrl || "/assets/images/default-user.png"}
+                  src={chat.createAvatar || "/assets/images/default-user.png"}
                   alt="Avatar"
-                  height={45}
                   width={45}
-                  className="rounded-full w-full h-full"
+                  height={45}
+                  className="rounded-full object-cover"
+                  style={{ objectFit: "cover", width: "45px", height: "45px" }}
                 />
               </div>
             )}

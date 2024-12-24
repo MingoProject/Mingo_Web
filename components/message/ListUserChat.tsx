@@ -4,6 +4,7 @@ import {
   createGroup,
   getListChat,
   getListGroupChat,
+  IsOnline,
 } from "@/lib/services/message.service";
 import ListUserChatCard from "../cards/ListUserChatCard";
 import { useParams, useRouter } from "next/navigation";
@@ -25,7 +26,7 @@ import { ChatProvider } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { getUserById } from "@/lib/services/user.service";
 import { FindUserDTO } from "@/dtos/UserDTO";
-import { ItemChat } from "@/dtos/MessageDTO";
+import { ItemChat, StatusResponse } from "@/dtos/MessageDTO";
 
 const ListUserChat = () => {
   const { allChat, setAllChat } = useChatItemContext();
@@ -39,8 +40,6 @@ const ListUserChat = () => {
     setIsFormOpen(!isFormOpen);
   };
   const channelRefs = useRef<any[]>([]);
-
-  console.log(allChat, "this is all chat");
 
   const fetchChats = useCallback(async () => {
     try {
@@ -66,13 +65,9 @@ const ListUserChat = () => {
   }, [setAllChat, setFilteredChat]);
 
   useEffect(() => {
-    fetchChats();
-  }, []);
-
-  useEffect(() => {
     const handleNewMessage = (data: any) => {
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
-      console.log(data.boxId);
+      // console.log(data.boxId);
 
       setAllChat((prevChats: any) => {
         const updatedChats = prevChats.map((chat: any) => {
@@ -81,7 +76,7 @@ const ListUserChat = () => {
               ...chat,
               lastMessage: {
                 ...chat.lastMessage,
-                text: data.text || "Đã gửi 1 file",
+                text: data.text || "",
                 timestamp: new Date(data.createAt),
               },
             };
@@ -100,7 +95,7 @@ const ListUserChat = () => {
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
@@ -150,7 +145,7 @@ const ListUserChat = () => {
             lastMessage: {
               id: "unique-id",
               createBy: "system",
-              text: "Bắt đầu đoạn chat",
+              text: "",
               timestamp: new Date(data.createAt),
               status: false,
               contentId: {
@@ -168,6 +163,7 @@ const ListUserChat = () => {
             isRead: false,
             senderId: profile._id,
             receiverId: data.receiverIds,
+            groupName: data.groupName,
           });
         }
 
@@ -202,6 +198,96 @@ const ListUserChat = () => {
     };
   }, [id, allChat]);
 
+  useEffect(() => {
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const handleUserStatusChanged = (data: StatusResponse) => {
+      // Cập nhật trạng thái online/offline của người dùng
+      // console.log(profile.status, "profile.status");
+      // console.log(data.status, "this is all data chat");
+      // Nếu người dùng online, cập nhật status = true cho filteredChat
+      if (data.status) {
+        setFilteredChat((prevFiltered: any) => {
+          const updatedChats = prevFiltered.map((chat: any) => {
+            if (chat.receiverId === data.userId) {
+              return {
+                ...chat,
+                status: true, // Cập nhật status là true khi người dùng online
+              };
+            }
+            return chat;
+          });
+          return updatedChats;
+        });
+      } else {
+        // Nếu trạng thái là offline, vẫn có thể cập nhật nếu cần
+        setFilteredChat((prevFiltered: any) => {
+          const updatedChats = prevFiltered.map((chat: any) => {
+            if (chat.receiverId === data.userId) {
+              return {
+                ...chat,
+                status: false, // Cập nhật status là false khi người dùng offline
+              };
+            }
+            return chat;
+          });
+          return updatedChats;
+        });
+      }
+
+      // Cập nhật lại allChat nếu cần
+      setAllChat((prevChats) => {
+        const updatedChats = prevChats.map((chat: any) => {
+          if (chat.receiverId === data.userId) {
+            return {
+              ...chat,
+              status: data.status, // 'online' hoặc 'offline'
+            };
+          }
+          return chat;
+        });
+        return updatedChats;
+      });
+    };
+
+    const userId = localStorage.getItem("userId");
+
+    // Gọi API IsOnline khi người dùng truy cập vào kênh
+    const markUserAsOnline = async () => {
+      try {
+        await IsOnline(userId?.toString() || ""); // Đánh dấu người dùng là online khi truy cập
+      } catch (error) {
+        console.error("Error marking user as online:", error);
+      }
+    };
+
+    // Gọi hàm để đánh dấu người dùng là online khi họ truy cập kênh
+    markUserAsOnline();
+
+    // Đảm bảo hủy đăng ký kênh cũ
+    channelRefs.current.forEach((channel) => {
+      channel.unbind("online-status", handleUserStatusChanged);
+      pusherClient.unsubscribe(channel.name);
+    });
+
+    // Đăng ký kênh theo dõi trạng thái người dùng
+    const statusChannel = pusherClient.subscribe(`${userId}`);
+
+    // Lắng nghe sự kiện thay đổi trạng thái
+    statusChannel.bind("online-status", handleUserStatusChanged);
+
+    // Lưu lại kênh đã đăng ký
+    channelRefs.current.push(statusChannel);
+
+    // Hủy đăng ký khi component unmount hoặc khi allChat thay đổi
+    return () => {
+      statusChannel.unbind("online-status", handleUserStatusChanged);
+      pusherClient.unsubscribe(statusChannel.name);
+    };
+  }, [allChat, setAllChat, setFilteredChat]);
+
   const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
     const searchValue = e.target.value;
     setSearchTerm(searchValue);
@@ -224,6 +310,11 @@ const ListUserChat = () => {
   const handleChatClick = (id: string) => {
     router.push(`/message/${id}`);
   };
+
+  // console.log(
+  //   filteredChat.map((item) => item),
+  //   "this is all chat"
+  // );
 
   return (
     <ChatProvider>

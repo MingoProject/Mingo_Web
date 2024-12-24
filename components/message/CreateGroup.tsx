@@ -10,6 +10,7 @@ import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthContext";
 import {
   createGroup,
+  createGroups,
   getListChat,
   getListGroupChat,
 } from "@/lib/services/message.service";
@@ -81,19 +82,13 @@ const CreateGroup = ({ onClose, me }: any) => {
 
     try {
       const groupData = {
-        membersIds: [...members.map((friend) => friend._id), me._id],
-        leaderId: me._id,
+        membersIds: [...members.map((friend) => friend._id)],
         groupName: newName,
-        groupAva: avatar || "",
       };
 
-      const newGroup = await createGroup(groupData);
-      console.log("Creating new group:", newGroup);
+      const newGroup = await createGroups(groupData);
 
-      if (newGroup && newGroup.messageBoxId) {
-        // Điều hướng đến nhóm mới tạo
-        router.push(`/message/${newGroup.messageBoxId}`);
-      }
+      console.log("Creating new group:", newGroup);
 
       if (newGroup) {
         const fetchChats = async () => {
@@ -111,19 +106,10 @@ const CreateGroup = ({ onClose, me }: any) => {
         fetchChats();
       }
 
-      if (members && members.length > 0) {
-        for (const friend of members) {
-          const notificationParams = {
-            senderId: me._id,
-            receiverId: friend._id,
-            type: "message",
-            postId: newGroup._id,
-          };
-
-          await createNotification(notificationParams, token);
-        }
+      if (newGroup?.result?.newBox?.id) {
+        // Điều hướng đến nhóm mới tạo
+        router.push(`/message/${newGroup.newBox.id}`);
       }
-
       onClose();
     } catch (err: any) {
       console.error(err);
@@ -201,7 +187,9 @@ const CreateGroup = ({ onClose, me }: any) => {
                       <Image
                         width={40}
                         height={40}
-                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        src={
+                          friend?.avatar || "/assets/images/default-user.png"
+                        }
                         alt="Avatar"
                         className="mr-2 size-10 rounded-full"
                       />
@@ -226,7 +214,9 @@ const CreateGroup = ({ onClose, me }: any) => {
                       <Image
                         width={40}
                         height={40}
-                        src={friend?.avatar || "/assets/images/capy.jpg"}
+                        src={
+                          friend?.avatar || "/assets/images/default-user.png"
+                        }
                         alt="Avatar"
                         className="mr-2 size-10 rounded-full"
                       />

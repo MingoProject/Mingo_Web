@@ -1,5 +1,10 @@
 import { useChatContext } from "@/context/ChatContext";
-import { FileContent, ItemChat, ResponseMessageDTO } from "@/dtos/MessageDTO";
+import {
+  FileContent,
+  ItemChat,
+  ResponseGroupMessageDTO,
+  ResponseMessageDTO,
+} from "@/dtos/MessageDTO";
 import { pusherClient } from "@/lib/pusher";
 import { MarkMessageAsRead, sendMessage } from "@/lib/services/message.service";
 import { checkRelation } from "@/lib/services/relation.service";
@@ -81,7 +86,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
         id?.toString() || "",
         userId?.toString() || ""
       );
-      console.log(mark, "this is mark");
+      // console.log(mark, "this is mark");
     } catch (error) {
       console.error("Error marking message as read:", error);
     }
@@ -250,8 +255,8 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
       return;
     }
 
-    const handleNewMessage = (data: ResponseMessageDTO) => {
-      console.log("Successfully received message: ", data);
+    const handleNewMessage = (data: ResponseGroupMessageDTO) => {
+      // console.log("Successfully received message: ", data);
       if (id !== data.boxId) return; // Kiểm tra đúng kênh
       setMessages((prevMessages) => {
         return [...prevMessages, data]; // Thêm tin nhắn mới vào mảng
