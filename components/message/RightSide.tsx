@@ -167,7 +167,7 @@ const RightSide = ({
         return (
           <>
             <div className="h-[45px] w-full border-b border-gray-200 px-8">
-              <p className="text-lg">Chi tiết</p>
+              <p className="text-lg">DetailDetail</p>
             </div>
             {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
@@ -204,7 +204,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Tìm kiếm tin nhắn
+                    Find
                   </p>
                 </li>
                 <li
@@ -218,7 +218,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Phương tiện
+                    Media
                   </p>
                 </li>
                 <li
@@ -246,7 +246,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Tắt thông báo
+                    Turn off
                   </p>
                 </li>
                 <li
@@ -260,7 +260,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Báo cáo
+                    Report
                   </p>
                 </li>
                 <li
@@ -274,7 +274,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Chặn
+                    Block
                   </p>
                 </li>
                 <li
@@ -288,7 +288,7 @@ const RightSide = ({
                     className="text-gray-500 dark:text-white"
                   />
                   <p className="text-ellipsis whitespace-nowrap font-sans text-base">
-                    Xóa đoạn chat
+                    Remove
                   </p>
                 </li>
               </ul>

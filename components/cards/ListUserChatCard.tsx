@@ -284,8 +284,8 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         if (chat.id === data.id) {
           return {
             ...chat,
-            text: "Đã thu hồi", // Hoặc nội dung tùy chỉnh
-            type: "recalled", // Có thể thêm type để phân loại tin nhắn đã thu hồi
+            text: "Message unsent", // Hoặc nội dung tùy chỉnh
+            type: "recalled", // Có thể thêm type để phân loại tin nhắn Message unsent
           };
         }
         return chat;
@@ -297,7 +297,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         format: "",
         height: "",
         publicId: "",
-        type: "Đã thu hồi",
+        type: "Message unsent",
         url: "",
         width: "",
       };
@@ -320,7 +320,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       } else {
         setLastMessage({
           id: "",
-          text: "Đã thu hồi",
+          text: "Message unsent",
           contentId: fileContent,
           createBy: "",
           timestamp: new Date(),
@@ -402,8 +402,6 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
 
   const isReceiver = lastMessage.createBy !== userId;
 
-  console.log(lastMessage, "itemChat.lastMessage");
-
   return (
     <ContextMenu>
       <ContextMenuTrigger>
@@ -431,7 +429,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 !lastMessage.text &&
                 !lastMessage.contentId?.type ? (
                   <p className={isRead ? "font-normal" : "font-bold"}>
-                    Bắt đầu đoạn chat
+                    Started the chat
                   </p>
                 ) : isReceiver ? (
                   <div className="flex gap-1 text-sm">
@@ -456,34 +454,28 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                       switch (type) {
                         case "image":
                           return (
-                            <p className={messageStatusClass}>đã gửi 1 ảnh</p>
+                            <p className={messageStatusClass}>sent an image</p>
                           );
                         case "video":
                           return (
-                            <p className={messageStatusClass}>đã gửi 1 video</p>
+                            <p className={messageStatusClass}>sent a video</p>
                           );
                         case "audio":
                           return (
-                            <p className={messageStatusClass}>
-                              đã gửi 1 âm thanh
-                            </p>
+                            <p className={messageStatusClass}>sent an audio</p>
                           );
                         case "other":
                           return (
-                            <p className={messageStatusClass}>đã gửi 1 file</p>
+                            <p className={messageStatusClass}>sent a file</p>
                           );
                         default:
-                          return (
-                            <p className={messageStatusClass}>
-                              Bắt đầu đoạn chat
-                            </p>
-                          );
+                          return <p className={messageStatusClass}></p>;
                       }
                     })()}
                   </div>
                 ) : (
                   <div className="flex items-center gap-1">
-                    <p className="font-normal">Bạn: </p>
+                    <p className="font-normal">You: </p>
                     {(() => {
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
@@ -503,26 +495,28 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         switch (type) {
                           case "image":
                             return (
-                              <p className={messageStatusClass}>Gửi 1 ảnh</p>
+                              <p className={messageStatusClass}>
+                                sent an image
+                              </p>
                             );
                           case "video":
                             return (
-                              <p className={messageStatusClass}>Gửi 1 video</p>
+                              <p className={messageStatusClass}>sent a video</p>
                             );
                           case "audio":
                             return (
                               <p className={messageStatusClass}>
-                                đã gửi 1 âm thanh
+                                sent an audio
                               </p>
                             );
                           case "other":
                             return (
-                              <p className={messageStatusClass}>Gửi 1 file</p>
+                              <p className={messageStatusClass}>sent a file</p>
                             );
                           default:
                             return (
                               <p className={messageStatusClass}>
-                                Bắt đầu đoạn chat
+                                Started the chat
                               </p>
                             );
                         }
@@ -542,28 +536,28 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
         {[
           {
             icon: "system-uicons:picture",
-            label: "Lưu đoạn chat",
-            action: "lưu đoạn chat",
+            label: "Save chat",
+            action: "save chat",
           },
           {
             icon: "material-symbols:delete-outline",
-            label: "Xóa đoạn chat",
-            action: "xóa đoạn chat",
+            label: "Remove",
+            action: "remove chatchat",
           },
           {
             icon: "ion:notifications-off-outline",
-            label: "Tắt thông báo",
-            action: "tắt thông báo đoạn chat",
+            label: "Turn off",
+            action: "turn off",
           },
           {
             icon: "material-symbols:report-outline",
-            label: "Báo cáo",
-            action: "báo cáo",
+            label: "Report",
+            action: "report",
           },
           {
             icon: "material-symbols:block",
-            label: "Chặn",
-            action: "chặn đoạn chat",
+            label: "BlockBlock",
+            action: "block",
           },
         ].map(({ icon, label, action }) => (
           <ContextMenuItem

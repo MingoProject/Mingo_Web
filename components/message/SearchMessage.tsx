@@ -63,7 +63,7 @@ const SearchMessage = ({
           height={20}
           className="text-gray-500 dark:text-white"
         />
-        <p className="text-lg text-center w-full">Tìm kiếm</p>
+        <p className="text-lg text-center w-full">Find</p>
       </div>
       <div className="w-full px-4">
         <div className="ml-4 mt-4 flex h-[33px] items-center gap-2 rounded-full border-2 px-2 text-xs sm:w-auto lg:ml-0">
@@ -75,7 +75,7 @@ const SearchMessage = ({
           />
           <input
             type="text"
-            placeholder="Tìm kiếm tin nhắn"
+            placeholder="FindFind"
             value={query}
             onChange={handleSearchChange}
             className="w-full bg-transparent p-2 outline-none"
@@ -84,7 +84,7 @@ const SearchMessage = ({
       </div>
 
       {/* Loading indicator */}
-      {loading && <div className="text-center mt-4">Đang tìm kiếm...</div>}
+      {loading && <div className="text-center mt-4">Finding...</div>}
 
       {/* Message results */}
       {messages.length > 0 ? (
@@ -100,9 +100,7 @@ const SearchMessage = ({
       ) : (
         query.trim().length > 0 &&
         !loading && (
-          <div className="mt-4 text-center text-gray-500">
-            Không tìm thấy kết quả
-          </div>
+          <div className="mt-4 text-center text-gray-500">No result</div>
         )
       )}
     </div>

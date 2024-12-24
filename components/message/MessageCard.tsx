@@ -141,7 +141,7 @@ const MessageCard = ({
                 <p
                   className={` ${isSender && !hasFiles ? "text-white" : "text-gray-500"} text-sm italic   `}
                 >
-                  Tin nhắn đã được thu hồi
+                  Message unsent
                 </p>
               ) : (
                 <>
