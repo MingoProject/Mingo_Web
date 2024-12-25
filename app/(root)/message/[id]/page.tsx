@@ -178,7 +178,7 @@ const MessageContent = () => {
 
   if (!chatItem && id) {
     return (
-      <div className="flex w-full h-full items-center justify-center bg-white">
+      <div className="flex w-full h-full items-center justify-center bg-white dark:bg-transparent">
         <div className="loader"></div>
       </div>
     );
