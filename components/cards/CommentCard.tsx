@@ -357,7 +357,7 @@ const CommentCard = ({
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="w-full rounded-md bg-transparent p-2"
+                  className="w-full rounded-md bg-transparent p-2 text-dark100_light500"
                   placeholder="Write a reply..."
                 />
                 <Icon
