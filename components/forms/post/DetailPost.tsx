@@ -109,7 +109,8 @@ const DetailPost = ({
         ...newCommentData,
         userId: {
           _id: profile?._id,
-          avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
+
+          avatar: profile?.avatar || "/assets/images/capy.jpg",
           firstName: profile?.firstName || "Anonymous",
           lastName: profile?.lastName || "Anonymous",
         },
