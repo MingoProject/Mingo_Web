@@ -685,7 +685,7 @@ export async function IsOffline(userId: string) {
 
   try {
     const response = await fetch(
-      `${BASE_URL}/message/IsOffline?userId=${userId}`,
+      `${BASE_URL}/message/IsOfflineStatus?userId=${userId}`,
       {
         method: "POST",
         headers: {

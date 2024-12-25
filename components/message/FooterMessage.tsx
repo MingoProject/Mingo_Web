@@ -304,13 +304,13 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   };
 
   return (
-    <div className="sticky bottom-0 w-full bg-white px-6 py-2 flex items-center gap-4">
-      <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-gray-100">
+    <div className="sticky bottom-0 w-full bg-transparent px-6 py-2 flex items-center gap-4 text-dark100_light500">
+      <div className="flex gap-2 px-4 items-center w-full border border-border-color rounded-3xl h-12 bg-transparent">
         <div className="flex-1">
           <input
             type="text"
             placeholder="Aa"
-            className="w-full border-none outline-none bg-transparent text-sm text-gray-700 placeholder-gray-500 focus:ring-0"
+            className="w-full border-none outline-none bg-transparent text-sm text-dark100_light500 placeholder-gray-500 focus:ring-0"
             onChange={(e) => {
               setValue(e.target.value); // Cập nhật giá trị
               setCurrentContentType("text"); // Đặt loại nội dung

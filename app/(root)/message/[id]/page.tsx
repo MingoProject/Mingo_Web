@@ -178,7 +178,7 @@ const MessageContent = () => {
 
   if (!chatItem && id) {
     return (
-      <div className="flex w-full h-full items-center justify-center bg-white">
+      <div className="flex w-full h-full items-center justify-center bg-white dark:bg-transparent">
         <div className="loader"></div>
       </div>
     );
@@ -186,22 +186,20 @@ const MessageContent = () => {
 
   return (
     <div className="flex w-full">
-      <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
+      <div className="flex flex-col flex-1 h-full px-2 border-r dark:border-gray-900 border-border-color">
         {!chatItem && !id ? (
           // Hiển thị giao diện mặc định khi không có chat hoặc id
           <div className="flex flex-col items-center justify-center w-full h-full">
             <p className="text-lg text-gray-600">
-              Chọn một cuộc trò chuyện để bắt đầu.
+              Select a conversation to start.
             </p>
-            <p className="text-sm text-gray-400">
-              Không có cuộc trò chuyện nào được chọn.
-            </p>
+            <p className="text-sm text-gray-400">No conversation selected.</p>
           </div>
         ) : relation === "" ? (
           // Hiển thị loader hoặc giao diện chờ trong khi chờ xác định trạng thái relation
           <div className="flex flex-col items-center justify-center w-full h-full">
             <div className="loader"></div>
-            <p className="text-sm text-gray-500">Đang tải...</p>
+            <p className="text-sm text-gray-500">Loading...</p>
           </div>
         ) : relation === "blockedBy" ? (
           <>
@@ -210,10 +208,8 @@ const MessageContent = () => {
               toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
             />
             <BodyMessage item={chatItem || null} />
-            <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
-              <p className="text-sm">
-                Bạn không thể liên lạc với người dùng này.
-              </p>
+            <div className="flex flex-col items-center justify-center w-full h-20 border-t dark:border-gray-900 border-border-color text-gray-700">
+              <p className="text-sm">You are unable to contact this user.</p>
             </div>
           </>
         ) : relation === "blocked" ? (
@@ -223,16 +219,16 @@ const MessageContent = () => {
               toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
             />
             <BodyMessage item={chatItem || null} />
-            <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
-              <p className="text-sm p-4">Bạn đã chặn người dùng này.</p>
+            <div className="flex flex-col items-center justify-center w-full border-t dark:border-gray-900 border-border-color text-gray-700">
+              <p className="text-sm p-4">You have blocked this user.</p>
               <button
                 className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4"
                 onClick={handleUnBlockChat}
               >
-                Bỏ chặn
+                Unblock
               </button>
               <button className="text-sm cursor-pointer text-red-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4">
-                Báo cáo
+                Report
               </button>
             </div>
           </>
