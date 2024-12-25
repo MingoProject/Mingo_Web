@@ -19,6 +19,8 @@ const CommentCard = ({
   author,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
 }: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(comment?.likes.length);
@@ -27,7 +29,7 @@ const CommentCard = ({
   );
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
-  const [showReplies, setShowReplies] = useState(false); // Trạng thái hiển thị replies
+  const [showReplies, setShowReplies] = useState(false);
   const [replies, setReplies] = useState([]);
   const [newComment, setNewComment] = useState("");
 
@@ -164,7 +166,11 @@ const CommentCard = ({
       setReplyingTo(null);
       if (postId) {
         const newCommentData = await createReplyCommentPost(
-          { content: newComment, parentId: comment._id },
+          {
+            content: newComment,
+            parentId: comment._id,
+            originalCommentId: comment._id,
+          },
           token,
           postId
         );
@@ -176,10 +182,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -206,19 +208,24 @@ const CommentCard = ({
 
           await createNotification(notificationParams, token);
         }
+        if (author._id !== profile._id) {
+          const notificationParams2 = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "comment",
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
 
-        const notificationParams2 = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "comment",
-          ...(postId && { postId }),
-          ...(mediaId && { mediaId }),
-        };
-
-        await createNotification(notificationParams2, token);
+          await createNotification(notificationParams2, token);
+        }
       } else {
         const newCommentData = await createReplyCommentMedia(
-          { content: newComment, parentId: comment._id },
+          {
+            content: newComment,
+            parentId: comment._id,
+            originalCommentId: comment._id,
+          },
           token,
           mediaId
         );
@@ -230,10 +237,6 @@ const CommentCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -244,6 +247,7 @@ const CommentCard = ({
             lastName: profile?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
+          originalCommentId: comment._id,
         };
 
         setReplies((prev) => [enrichedComment, ...prev]);
@@ -261,20 +265,24 @@ const CommentCard = ({
           await createNotification(notificationParams, token);
         }
 
-        const notificationParams2 = {
-          senderId: profile._id,
-          receiverId: author._id,
-          type: "comment",
-          ...(postId && { postId }),
-          ...(mediaId && { mediaId }),
-        };
+        if (author._id !== profile._id) {
+          const notificationParams2 = {
+            senderId: profile._id,
+            receiverId: author._id,
+            type: "comment",
+            ...(postId && { postId }),
+            ...(mediaId && { mediaId }),
+          };
 
-        await createNotification(notificationParams2, token);
+          await createNotification(notificationParams2, token);
+        }
       }
+      setNumberOfComments(numberOfComments + 1);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }
   };
+
   function timeSinceMessage(timestamp: Date | string) {
     const now = new Date();
     const messageTimestamp = new Date(timestamp);
@@ -291,7 +299,7 @@ const CommentCard = ({
   }
 
   return (
-    <div>
+    <div className="w-full">
       <div className="flex">
         <Image
           src={comment.userId.avatar || "/assets/images/capy.jpg"}
@@ -301,7 +309,7 @@ const CommentCard = ({
           className="size-11 rounded-full object-cover"
         />
 
-        <div className="ml-3 flex-1">
+        <div className="ml-3 w-full">
           <p className="text-dark100_light500 font-bold">
             {comment.userId.firstName} {comment.userId.lastName}
           </p>
@@ -343,23 +351,25 @@ const CommentCard = ({
             </button>
           </div>
 
-          {/* Input trả lời */}
           {replyingTo === comment._id && (
-            <div className="mt-2 flex">
-              <textarea
-                value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
-                className="w-full rounded-md border bg-transparent p-2"
-                placeholder="Write a reply..."
-              />
+            <div className="flex w-full">
+              <div className="mt-2 flex w-full rounded-xl border border-gray-200">
+                <textarea
+                  value={newComment}
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="w-full rounded-md bg-transparent p-2"
+                  placeholder="Write a reply..."
+                />
+                <Icon
+                  onClick={handleReplyComment}
+                  className="mr-2 mt-4 text-primary-100"
+                  icon="iconoir:send"
+                  width="24"
+                  height="24"
+                />
+              </div>
               <button
-                onClick={handleReplyComment}
-                className="mx-2 mt-3 h-10 rounded-lg bg-primary-100 p-2 text-white hover:underline"
-              >
-                Reply
-              </button>
-              <button
-                className="text-2xl text-primary-100"
+                className="ml-2 text-2xl text-primary-100"
                 onClick={() => setReplyingTo(null)}
               >
                 <Icon
@@ -377,7 +387,7 @@ const CommentCard = ({
               className="mb-1 cursor-pointer text-primary-100"
               onClick={toggleShowReplies}
             >
-              Có {replies?.length} phản hồi
+              {replies?.length} replies
             </p>
           )}
 
@@ -387,11 +397,14 @@ const CommentCard = ({
                 <ReplyCard
                   reply={reply}
                   setReplies={setReplies}
+                  replies={replies}
                   profile={profile}
                   commentId={comment._id}
                   author={author}
                   postId={postId}
                   mediaId={mediaId}
+                  setNumberOfComments={setNumberOfComments}
+                  numberOfComments={numberOfComments}
                 />
               </div>
             ))}
@@ -402,11 +415,15 @@ const CommentCard = ({
             <CommentMenu
               commentUserId={comment.userId._id}
               commentId={comment._id}
+              originalCommentId={comment.originalCommentId}
               content={comment.content}
               setCommentsData={setCommentsData}
               handleCloseMenu={handleCloseMenu}
               postId={postId}
               mediaId={mediaId}
+              setNumberOfComments={setNumberOfComments}
+              numberOfComments={numberOfComments}
+              repliesCount={replies?.length}
             />
           </div>
         )}

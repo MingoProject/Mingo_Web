@@ -204,8 +204,10 @@ const RenderFriend = () => {
               : [];
 
     // Lọc danh sách theo searchTerm
-    return list.filter((friend) =>
-      friend.lastName.toLowerCase().includes(searchTerm.toLowerCase())
+    return list.filter(
+      (friend) =>
+        friend.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        friend.firstName.toLowerCase().includes(searchTerm.toLowerCase())
     );
   };
 

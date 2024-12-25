@@ -3,11 +3,13 @@ import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { getMyVideos } from "@/lib/services/user.service";
 import DetailsVideo from "./DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
+import { getCommentByCommentId } from "@/lib/services/comment.service";
 
 const Videos = ({ me, profileUser }: any) => {
   const [videos, setVideos] = useState<MediaResponseDTO[]>([]);
   const [detailSelectedVideo, setDetailSelectedVideo] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -31,7 +33,13 @@ const Videos = ({ me, profileUser }: any) => {
   const handleClick = async (video: any) => {
     try {
       const data = await getMediaByMediaId(video._id);
+      const detailsComments = await Promise.all(
+        data.comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
       setDetailSelectedVideo(data);
+      setCommentsData(detailsComments);
       setOpenModal(true);
     } catch (error) {
       console.error("Error loading video details:", error);
@@ -61,6 +69,8 @@ const Videos = ({ me, profileUser }: any) => {
               onClose={() => setOpenModal(false)}
               profileUser={profileUser}
               me={me}
+              commentsData={commentsData}
+              setCommentsData={setCommentsData}
             />
           )}
         </div>

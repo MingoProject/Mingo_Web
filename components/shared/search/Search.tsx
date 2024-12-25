@@ -6,15 +6,16 @@ import { useRouter } from "next/navigation"; // Thay đổi import
 const recentSearches = ["h", "a", "u", "y", "1"];
 
 const Search = ({ closeDrawer }: any) => {
-  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const router = useRouter();
-  const [filteredSearches, setFilteredSearches] = useState(recentSearches);
+  const [filteredSearches, setFilteredSearches] =
+    useState<string[]>(recentSearches);
 
-  const handleInputChange = (e: any) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(e.target.value);
   };
 
-  const handleDeleteSearch = (search: any) => {
+  const handleDeleteSearch = (search: string) => {
     setFilteredSearches((prevSearches) =>
       prevSearches.filter((item) => item !== search)
     );
@@ -22,8 +23,10 @@ const Search = ({ closeDrawer }: any) => {
   };
 
   const handleSearch = () => {
-    closeDrawer();
-    router.push(`/result-search?page=${encodeURIComponent(searchTerm)}`);
+    if (closeDrawer) closeDrawer();
+    if (searchTerm.trim()) {
+      router.push(`/result-search?page=${encodeURIComponent(searchTerm)}`);
+    }
   };
 
   useEffect(() => {
@@ -62,17 +65,21 @@ const Search = ({ closeDrawer }: any) => {
 
         <h2 className="mb-2 text-lg font-normal text-primary-100">Recently</h2>
         <ul className="space-y-1">
-          {filteredSearches.map((search, index) => (
-            <li
-              key={index}
-              className="flex cursor-pointer items-center justify-between rounded-md px-5 py-2 hover:bg-light-700 dark:hover:bg-dark-400"
-            >
-              <span className="text-dark100_light500">{search}</span>
-              <button onClick={() => handleDeleteSearch(search)}>
-                <Icon icon="mdi:close" className="text-dark100_light500" />
-              </button>
-            </li>
-          ))}
+          {filteredSearches.length > 0 ? (
+            filteredSearches.map((search, index) => (
+              <li
+                key={index}
+                className="flex cursor-pointer items-center justify-between rounded-md px-5 py-2 hover:bg-light-700 dark:hover:bg-dark-400"
+              >
+                <span className="text-dark100_light500">{search}</span>
+                <button onClick={() => handleDeleteSearch(search)}>
+                  <Icon icon="mdi:close" className="text-dark100_light500" />
+                </button>
+              </li>
+            ))
+          ) : (
+            <p className="text-dark100_light500">No results found</p>
+          )}
         </ul>
       </div>
     </>

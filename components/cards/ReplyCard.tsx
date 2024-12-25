@@ -12,22 +12,25 @@ import {
   likeComment,
 } from "@/lib/services/comment.service";
 import { createNotification } from "@/lib/services/notification.service";
+import { auth } from "@clerk/nextjs/server";
 
 const ReplyCard = ({
   reply,
   setReplies,
+  replies,
   profile,
   commentId,
   author,
   postId,
   mediaId,
+  setNumberOfComments,
+  numberOfComments,
 }: any) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(reply?.likes.length);
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
     null
   );
-
   const [detailsComment, setDetailsComment] = useState<any>(null);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
@@ -71,7 +74,7 @@ const ReplyCard = ({
     return () => {
       isMounted = false;
     };
-  }, [detailsComment?.parentId?._id, parentComment]);
+  }, [detailsComment?.parentId?._id]);
 
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -180,7 +183,11 @@ const ReplyCard = ({
     try {
       if (postId) {
         const newCommentData = await createReplyCommentPost(
-          { content: newComment, parentId: detailsComment._id },
+          {
+            content: newComment,
+            parentId: reply._id,
+            originalCommentId: commentId,
+          },
           token,
           postId
         );
@@ -192,10 +199,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -206,11 +209,11 @@ const ReplyCard = ({
             lastName: profile?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
+          originalCommentId: commentId,
+          parentId: detailsComment._id,
         };
 
-        // Cập nhật state commentsData
         setReplies((prev: any) => [enrichedComment, ...prev]);
-
         if (detailsComment.userId._id !== profile._id) {
           const notificationParams = {
             senderId: profile._id,
@@ -222,6 +225,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,
@@ -234,7 +239,11 @@ const ReplyCard = ({
         }
       } else {
         const newCommentData = await createReplyCommentMedia(
-          { content: newComment, parentId: detailsComment._id },
+          {
+            content: newComment,
+            parentId: detailsComment._id,
+            originalCommentId: commentId,
+          },
           token,
           mediaId
         );
@@ -246,10 +255,6 @@ const ReplyCard = ({
         const isoStringWithOffset = currentTime
           .toISOString()
           .replace("Z", "+00:00");
-        console.log(
-          "Current Time (new Date()):",
-          currentTime.toISOString().replace("Z", "+00:00")
-        );
 
         const enrichedComment = {
           ...newCommentData,
@@ -260,6 +265,8 @@ const ReplyCard = ({
             lastName: profile?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
+          originalCommentId: commentId,
+          parentId: detailsComment._id,
         };
 
         // Cập nhật state commentsData
@@ -276,6 +283,8 @@ const ReplyCard = ({
           };
 
           await createNotification(notificationParams, token);
+        }
+        if (profile._id !== author._id) {
           const notificationParams2 = {
             senderId: profile._id,
             receiverId: author._id,
@@ -290,14 +299,15 @@ const ReplyCard = ({
 
       setNewComment("");
       setReplyingTo(null);
+      setNumberOfComments(numberOfComments + 1);
     } catch (error) {
       console.error("Failed to reply to comment:", error);
     }
   };
 
   return (
-    <div>
-      <div className="flex">
+    <div className="w-full">
+      <div className="flex w-full">
         <Image
           src={
             detailsComment?.userId?.avatar
@@ -316,12 +326,13 @@ const ReplyCard = ({
               {detailsComment?.userId?.firstName || ""}{" "}
               {detailsComment?.userId?.lastName || ""}
             </span>
-            {parentComment && (
+            {detailsComment?.parentId?._id !==
+              detailsComment?.originalCommentId && (
               <>
                 <Icon icon="raphael:arrowright" />
                 <span>
-                  {parentComment.userId.firstName || ""}{" "}
-                  {parentComment.userId.lastName || ""}
+                  {parentComment?.userId.firstName || ""}{" "}
+                  {parentComment?.userId.lastName || ""}
                 </span>
               </>
             )}
@@ -376,31 +387,38 @@ const ReplyCard = ({
             <CommentMenu
               commentUserId={detailsComment.userId._id}
               commentId={detailsComment._id}
+              originalCommentId={detailsComment.originalCommentId}
               content={detailsComment.content}
+              commentsData={replies}
               setCommentsData={setReplies}
               handleCloseMenu={handleCloseMenu}
               postId={postId}
               mediaId={mediaId}
+              setNumberOfComments={setNumberOfComments}
+              numberOfComments={numberOfComments}
             />
           </div>
         )}
       </div>
       {replyingTo === detailsComment?._id && (
-        <div className="ml-10 mt-2 flex">
-          <textarea
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            className="w-52 rounded-md border bg-transparent p-2"
-            placeholder="Write a reply..."
-          />
+        <div className="ml-12 flex w-full">
+          <div className="mt-2 flex w-full rounded-xl border border-gray-200">
+            <textarea
+              value={newComment}
+              onChange={(e) => setNewComment(e.target.value)}
+              className="w-full bg-transparent p-2"
+              placeholder="Write a reply..."
+            />
+            <Icon
+              onClick={handleReplyComment}
+              className="mr-2 mt-4 text-primary-100"
+              icon="iconoir:send"
+              width="24"
+              height="24"
+            />
+          </div>
           <button
-            onClick={handleReplyComment}
-            className="mx-2 mt-3 h-10 rounded-lg bg-primary-100 p-2 text-white hover:underline"
-          >
-            Reply
-          </button>
-          <button
-            className="text-2xl text-primary-100"
+            className="ml-2 text-2xl text-primary-100"
             onClick={() => setReplyingTo(null)}
           >
             <Icon

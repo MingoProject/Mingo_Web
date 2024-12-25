@@ -7,14 +7,14 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import DetailPost from "../forms/post/DetailPost";
 import { CldImage } from "next-cloudinary";
-// import { dislikePost, likePost } from "@/lib/services/post.service";
 import Link from "next/link";
 import PostMenu from "../forms/post/PostMenu";
-// import { createNotification } from "@/lib/services/notification.service";
 import TagModal from "../forms/post/TagModal";
 import DetailsImage from "../forms/personalPage/DetailsImage";
 import DetailsVideo from "../forms/personalPage/DetailsVideo";
 import Action from "../forms/post/Action";
+import { getCommentByCommentId } from "@/lib/services/comment.service";
+import { getMediaByMediaId } from "@/lib/services/media.service";
 
 const PostsCard = ({
   postId,
@@ -48,17 +48,53 @@ const PostsCard = ({
   profile: any;
   setPostsData: any;
 }) => {
-  // const [isLiked, setIsLiked] = useState(false);
-  // const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
+  const [isLiked, setIsLiked] = useState(false);
+  const [numberOfComments, setNumberOfComments] = useState(comments.length);
   const [menuModal, setMenuModal] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
   const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
+  const [likesCount, setLikesCount] = useState(likes.length);
+  const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
 
   const handleTagsModalToggle = () => {
     setIsTagsModalOpen((prev) => !prev);
   };
+
+  useEffect(() => {
+    let isMounted = true;
+    const getComments = async () => {
+      const detailsComments = await Promise.all(
+        comments.map(async (comment: any) => {
+          return await getCommentByCommentId(comment);
+        })
+      );
+
+      if (isMounted) {
+        setCommentsData(detailsComments);
+      }
+    };
+
+    getComments();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [comments]);
+
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    if (userId) {
+      try {
+        const isUserLiked = likes.some((like: any) => like === userId);
+        setIsLiked(isUserLiked);
+      } catch (error) {
+        console.error("Invalid token:", error);
+      }
+    }
+  }, [likes]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -78,6 +114,33 @@ const PostsCard = ({
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
+
+  const handleClick = async (item: any) => {
+    console.log(item.type);
+    try {
+      if (item.type === "image") {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setCommentsMediaData(detailsComments);
+        setSelectedImage(data);
+      } else {
+        const data = await getMediaByMediaId(item._id);
+        const detailsComments = await Promise.all(
+          data.comments.map(async (comment: any) => {
+            return await getCommentByCommentId(comment);
+          })
+        );
+        setCommentsMediaData(detailsComments);
+        setSelectedVideo(data);
+      }
+    } catch (error) {
+      console.error("Error loading image details:", error);
+    }
+  };
 
   return (
     <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
@@ -193,7 +256,7 @@ const PostsCard = ({
                         type: "auto",
                         source: true,
                       }}
-                      onClick={() => setSelectedImage(item)}
+                      onClick={() => handleClick(item)}
                     />
                   </>
                 ) : (
@@ -202,7 +265,7 @@ const PostsCard = ({
                       width={250}
                       height={250}
                       controls
-                      onClick={() => setSelectedVideo(item)}
+                      onClick={() => handleClick(item)}
                     >
                       <source src={item.url} type="video/mp4" />
                       Your browser does not support the video tag.
@@ -222,6 +285,11 @@ const PostsCard = ({
           shares={shares}
           author={author}
           profile={profile}
+          likesCount={likesCount}
+          setLikesCount={setLikesCount}
+          isLiked={isLiked}
+          setIsLiked={setIsLiked}
+          numberOfComments={numberOfComments}
         />
         <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
         <div className="text-dark100_light500 my-3">
@@ -262,6 +330,14 @@ const PostsCard = ({
             tags={tags}
             onClose={closeModal}
             profile={profile}
+            likesCount={likesCount}
+            setLikesCount={setLikesCount}
+            isLiked={isLiked}
+            setIsLiked={setIsLiked}
+            setNumberOfComments={setNumberOfComments}
+            numberOfComments={numberOfComments}
+            commentsData={commentsData}
+            setCommentsData={setCommentsData}
           />
         )}
       </div>
@@ -271,6 +347,8 @@ const PostsCard = ({
           onClose={() => setSelectedImage(null)}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
@@ -279,6 +357,8 @@ const PostsCard = ({
           onClose={() => setSelectedVideo(null)}
           profileUser={author}
           me={profile}
+          commentsData={commentsMediaData}
+          setCommentsData={setCommentsMediaData}
         />
       )}
     </div>
