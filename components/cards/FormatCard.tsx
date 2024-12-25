@@ -27,11 +27,11 @@ const Format = ({
   const getActionText = () => {
     switch (type) {
       case "delete":
-        return `Xác nhận xóa ${content} <span>${userName}</span>`;
+        return `Confirm ${content} <span>${userName}</span>`;
       case "block":
-        return `Xác nhận block ${content} <span>${userName}</span>`;
+        return `Confirm block ${content} <span>${userName}</span>`;
       case "disableNotifications":
-        return `Xác nhận tắt thông báo với ${userName}`;
+        return `Confirm disable notifications with ${userName}`;
       default:
         return "";
     }
@@ -80,13 +80,13 @@ const Format = ({
               onClick={onClose}
               className="h-[35px] w-32 bg-white text-xs shadow-md dark:border dark:bg-transparent md:text-sm"
             >
-              Hủy
+              Cancel
             </Button>
             <Button
               onClick={getConfirmAction()} // Gọi hàm tương ứng
               className="h-[35px] w-32 bg-primary-100 text-xs text-white shadow-md md:text-sm"
             >
-              Xác nhận
+              Confirm
             </Button>
           </div>
         </div>

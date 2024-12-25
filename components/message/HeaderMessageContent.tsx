@@ -37,7 +37,7 @@ const HeaderMessageContent = ({
     fetchProfile();
   }, [item, item?.receiverId]);
   return (
-    <div className="w-full border-b border-gray-200 flex px-4">
+    <div className="w-full border-b border-gray-200 dark:border-gray-900 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
         <div className="flex w-full items-center gap-3">
           {item && (

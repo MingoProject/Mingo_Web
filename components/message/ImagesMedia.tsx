@@ -78,7 +78,7 @@ const ImagesMedia = ({
           height={20}
           className="text-gray-500 dark:text-white"
         />
-        <p className="text-lg text-center w-full">Phương tiện</p>
+        <p className="text-lg text-center w-full">Media</p>
       </div>
 
       <div className="flex items-center w-full p-4">
@@ -90,7 +90,7 @@ const ImagesMedia = ({
               : "opacity-40"
           }`}
         >
-          Hình ảnh
+          Images
         </div>
         <div
           onClick={() => setActiveTab("video")}
@@ -100,7 +100,7 @@ const ImagesMedia = ({
               : "opacity-40"
           }`}
         >
-          Video
+          Videos
         </div>
       </div>
       <div className="flex-1 overflow-y-auto">{RenderTag()}</div>

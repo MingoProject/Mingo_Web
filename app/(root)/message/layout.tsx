@@ -14,7 +14,9 @@ const MessageLayout = ({ children }: { children: React.ReactNode }) => {
         </div>
 
         {/* Phần bên phải, thay đổi theo [id] */}
-        <div className="flex h-full w-4/5 border-l border-r">{children}</div>
+        <div className="flex h-full w-4/5 border-l border-r dark:border-gray-900">
+          {children}
+        </div>
       </div>
     </ChatItemProvider>
   );

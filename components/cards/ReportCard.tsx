@@ -181,14 +181,14 @@ const ReportCard = ({
               onClick={onClose}
               className="h-[35px] w-32 bg-white text-xs shadow-md dark:border dark:bg-transparent md:text-sm"
             >
-              Hủy
+              Cancel
             </Button>
             <Button
               onClick={handleSubmit} // Truyền giá trị đã chọn
               disabled={!selectedOption} // Vô hiệu hóa nếu chưa chọn mục
               className="h-[35px] w-32 bg-primary-100 text-xs text-white shadow-md md:text-sm"
             >
-              Xác nhận
+              Confirm
             </Button>
           </div>
         </div>

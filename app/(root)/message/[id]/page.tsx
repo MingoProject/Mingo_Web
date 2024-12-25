@@ -186,7 +186,7 @@ const MessageContent = () => {
 
   return (
     <div className="flex w-full">
-      <div className="flex flex-col flex-1 h-full px-2 border-r border-border-color">
+      <div className="flex flex-col flex-1 h-full px-2 border-r dark:border-gray-900 border-border-color">
         {!chatItem && !id ? (
           // Hiển thị giao diện mặc định khi không có chat hoặc id
           <div className="flex flex-col items-center justify-center w-full h-full">
@@ -208,7 +208,7 @@ const MessageContent = () => {
               toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
             />
             <BodyMessage item={chatItem || null} />
-            <div className="flex flex-col items-center justify-center w-full h-20 border-t border-border-color text-gray-700">
+            <div className="flex flex-col items-center justify-center w-full h-20 border-t dark:border-gray-900 border-border-color text-gray-700">
               <p className="text-sm">You are unable to contact this user.</p>
             </div>
           </>
@@ -219,7 +219,7 @@ const MessageContent = () => {
               toggleRightSide={() => setIsRightSideVisible((prev) => !prev)}
             />
             <BodyMessage item={chatItem || null} />
-            <div className="flex flex-col items-center justify-center w-full border-t border-border-color text-gray-700">
+            <div className="flex flex-col items-center justify-center w-full border-t dark:border-gray-900 border-border-color text-gray-700">
               <p className="text-sm p-4">You have blocked this user.</p>
               <button
                 className="text-sm cursor-pointer text-blue-500 hover:bg-opacity-30 hover:bg-border-color rounded-md shadow-md w-full p-4"

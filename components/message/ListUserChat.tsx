@@ -311,43 +311,39 @@ const ListUserChat = () => {
     router.push(`/message/${id}`);
   };
 
-  // console.log(
-  //   filteredChat.map((item) => item),
-  //   "this is all chat"
-  // );
-
   return (
     <ChatProvider>
-      <div className="flex flex-col w-full">
+      <div className="flex flex-col w-full bg-transparent">
         <MessageSearch value={searchTerm} onChange={handleSearch} />
-        <Menubar className="relative border-none bg-transparent py-4 shadow-none z-50">
+        <Menubar className="relative  border-none bg-transparent py-4 shadow-none z-50">
           <MenubarMenu>
             <MenubarTrigger className="flex items-center gap-2">
               <span className="ml-1 text-xs font-semibold md:text-base">
-                Đoạn chat
+                Chat
               </span>
               <FontAwesomeIcon icon={faChevronDown} />
             </MenubarTrigger>
-            <MenubarContent className="absolute top-full z-1000 ml-20 mt-2 w-40 font-sans text-sm shadow-md bg-white ">
-              <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md">
-                Tin nhắn đang chờ
+            <MenubarContent className="  absolute top-full ml-20 mt-2 w-40 font-sans text-sm shadow-md z-50 dark:z-50 dark:bg-gray-700 rounded-md dark:text-white">
+              <MenubarItem className="flex w-full cursor-pointer justify-center  hover:bg-primary-100 hover:text-white py-2 rounded-md">
+                Message Request
               </MenubarItem>
               <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md">
-                Lưu trữ đoạn chat
+                Save chatchat
               </MenubarItem>
               <MenubarItem
                 onClick={toggleForm}
                 className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md"
               >
-                Tạo nhóm
+                Create group
               </MenubarItem>
               <MenubarSeparator />
             </MenubarContent>
           </MenubarMenu>
         </Menubar>
+
         <div className="h-[75vh] w-full overflow-y-auto">
           {filteredChat.length === 0 ? (
-            <p>Không tìm thấy cuộc trò chuyện nào!</p>
+            <p>No conversations found!</p>
           ) : (
             filteredChat.map((item) => (
               <div key={item.id} onClick={() => handleChatClick(item.id)}>

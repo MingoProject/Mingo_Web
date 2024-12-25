@@ -8,7 +8,7 @@ interface ImageRenderProps {
 
 const ImageRender: React.FC<ImageRenderProps> = ({ images }) => {
   return (
-    <div className="flex flex-wrap gap-4 px-4">
+    <div className="grid grid-cols-2 gap-4 px-4">
       {images.map((image, index) => (
         <div key={index} className="relative w-32 h-32">
           <Image

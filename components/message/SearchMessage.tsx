@@ -75,7 +75,7 @@ const SearchMessage = ({
           />
           <input
             type="text"
-            placeholder="FindFind"
+            placeholder="Find..."
             value={query}
             onChange={handleSearchChange}
             className="w-full bg-transparent p-2 outline-none"

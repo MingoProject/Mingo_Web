@@ -166,8 +166,8 @@ const RightSide = ({
         }
         return (
           <>
-            <div className="h-[45px] w-full border-b border-gray-200 px-8">
-              <p className="text-lg">DetailDetail</p>
+            <div className="h-[45px] w-full border-b border-gray-200 dark:border-gray-900 px-8">
+              <p className="text-lg">Detail</p>
             </div>
             {item && (
               <div className="flex w-full flex-col items-center justify-center gap-4 p-4">
@@ -312,8 +312,8 @@ const RightSide = ({
       {isBlock && (
         <Format
           onClose={closeBlock}
-          content="chặn"
-          label="Chặn"
+          content="with"
+          label="Block"
           userName={item?.userName || ""}
           onConfirmBlock={handleBlockChat}
           type="block"
@@ -322,8 +322,8 @@ const RightSide = ({
       {isDelete && (
         <Format
           onClose={closeDelete}
-          content="xóa đoạn chat với"
-          label="Xóa"
+          content="remove chat with"
+          label="Remove"
           userName={item?.userName || ""}
           onConfirmDelete={handleDeleteChat} // Thêm hàm gọi API xóa vào đây
           type="delete"
@@ -331,11 +331,11 @@ const RightSide = ({
       )}
       {isNoNotification && (
         <Format
-          onClose={closeNoNotification}
-          content="tắt thông báo đoạn chat với"
-          label="Tắt thông báo"
-          userName={item?.userName || ""}
-          type="disableNotifications"
+          onClose={closeNoNotification} // Function to close the notification when triggered
+          content="Disable notifications for chat with" // The content of the notification
+          label="Disable Notifications" // The label or title for the notification
+          userName={item?.userName || ""} // The username, defaults to an empty string if not available
+          type="disableNotifications" // The type of notification, used in your logic within Format
         />
       )}
     </div>
