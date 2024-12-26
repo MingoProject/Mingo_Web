@@ -93,6 +93,7 @@ const ReportCard = ({
     try {
       const reportPayload: ReportCreateDTO = {
         title: "Báo cáo vi phạm",
+        createdById: userId || "",
         content: selectedOption,
         reportedId: reportedId || "", // Sử dụng ObjectId đã import
         reportedEntityId: entityId.toString(),
@@ -102,10 +103,11 @@ const ReportCard = ({
       const reportCommentPayload: CommentReportCreateDTO = {
         title: "Báo cáo vi phạm",
         content: selectedOption,
+        createdById: userId || "",
         reportedId: reportedId || "", // Sử dụng ObjectId đã import
         reportedEntityId: entityId.toString(),
         entityType: type,
-        parentReportEntityId: postId,
+        parentReportEntityId: postId || "",
       };
 
       if (type === "comment") {
