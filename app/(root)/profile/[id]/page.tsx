@@ -22,7 +22,7 @@ import { pusherClient } from "@/lib/pusher";
 import Image from "next/image";
 
 const ProfilePage = () => {
-  const { id } = useParams();
+  const { id }: any = useParams();
   const [profileUser, setProfileUser] = useState<any>(null);
   const [activeTab, setActiveTab] = useState("posts");
   const [relation, setRelation] = useState<string>("");

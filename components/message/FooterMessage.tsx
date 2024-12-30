@@ -22,7 +22,7 @@ const FooterMessage = ({ item }: { item: ItemChat | null }) => {
   const [temporaryToCloudinaryMap, setTemporaryToCloudinaryMap] = useState<
     { tempUrl: string; cloudinaryUrl: string }[]
   >([]);
-  const { id } = useParams(); // Lấy ID từ URL
+  const { id }: any = useParams(); // Lấy ID từ URL
   const [isRecording, setIsRecording] = useState(false); // Để theo dõi trạng thái ghi âm
   const [audioUrl, setAudioUrl] = useState<string | null>(null); // URL của file audio
   const mediaRecorderRef = useRef<MediaRecorder | null>(null); // Để lưu MediaRecorder instance

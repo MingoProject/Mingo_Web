@@ -21,7 +21,7 @@ const ReportMenu = ({
         className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
         onClick={() => setIsReport(true)}
       >
-        Báo cáo
+        Report
       </button>
       {isReport && (
         <ReportCard

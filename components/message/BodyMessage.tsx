@@ -10,7 +10,7 @@ import { ItemChat } from "@/dtos/MessageDTO";
 const BodyMessage = ({ item }: { item: ItemChat | null }) => {
   const { messages, setMessages } = useChatContext();
   const messageEndRef = useRef<HTMLDivElement | null>(null);
-  const { id } = useParams(); // Lấy ID từ URL
+  const { id }: any = useParams(); // Lấy ID từ URL
 
   useEffect(() => {
     let isMounted = true;

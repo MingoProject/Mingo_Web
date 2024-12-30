@@ -11,7 +11,9 @@ const ResultSearch = () => {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    setQuery(searchParams.get("page"));
+    if (searchParams) {
+      setQuery(searchParams.get("page"));
+    }
   }, [searchParams]);
 
   return (

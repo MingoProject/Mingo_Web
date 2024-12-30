@@ -72,7 +72,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
   const [activeLabel, setActiveLabel] = useState("");
   const [lastMessage, setLastMessage] = useState(itemChat.lastMessage);
   const userId = localStorage.getItem("userId");
-  const { id } = useParams();
+  const { id }: any = useParams();
   const [isRead, setIsRead] = useState(false);
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
 
