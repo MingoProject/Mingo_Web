@@ -30,7 +30,7 @@ const CommentCard = ({
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
 
   const [showReplies, setShowReplies] = useState(false);
-  const [replies, setReplies] = useState([]);
+  const [replies, setReplies] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
 
   const toggleShowReplies = () => {

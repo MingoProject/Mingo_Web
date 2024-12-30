@@ -16,6 +16,7 @@ import Notification from "../notification/Notification";
 
 const MobileNav = () => {
   const pathname = usePathname();
+  const currentPath = pathname || "";
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState("");
 
@@ -64,8 +65,8 @@ const MobileNav = () => {
 
             const isActive = isDrawerLink
               ? activeDrawer === item.route
-              : (pathname.includes(item.route) && item.route.length > 1) ||
-                pathname === item.route;
+              : (currentPath.includes(item.route) && item.route.length > 1) ||
+                currentPath === item.route;
 
             return isDrawerLink ? (
               <div

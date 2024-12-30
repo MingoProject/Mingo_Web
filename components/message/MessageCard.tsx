@@ -27,7 +27,7 @@ const MessageCard = ({
   item?: ItemChat | null;
 }) => {
   const isSender = chat.createBy === localStorage.getItem("userId");
-  const { id } = useParams();
+  const { id }: any = useParams();
   const { messages, setMessages } = useChatContext();
   const { allChat, setAllChat } = useChatItemContext();
 

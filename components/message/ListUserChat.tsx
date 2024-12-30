@@ -35,7 +35,7 @@ const ListUserChat = () => {
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { profile } = useAuth();
-  const { id } = useParams();
+  const { id }: any = useParams();
   const toggleForm = () => {
     setIsFormOpen(!isFormOpen);
   };
