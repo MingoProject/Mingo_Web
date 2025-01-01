@@ -15,7 +15,7 @@ const Save = ({ onClose, post, setListSavePosts }: any) => {
         onClick={onClose}
       ></div>
 
-      <div className="no-scrollbar text-dark100_light500 background-light700_dark300 relative z-10  mt-16 h-[50vh] w-[50vw]  overflow-y-auto rounded-2xl shadow-lg ">
+      <div className="no-scrollbar text-dark100_light500 background-light700_dark300 relative z-10  mt-16 h-[50vh] w-[50vw]  overflow-y-auto rounded-lg shadow-lg ">
         <div className="flex size-full flex-col">
           <div className="flex items-center justify-between px-4 py-2 pl-0">
             <span className="rounded-lg rounded-l-none bg-primary-100 p-2 px-4 text-center text-sm text-white ">

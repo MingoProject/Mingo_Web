@@ -164,11 +164,11 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
   return (
     <>
       <div
-        className="fixed inset-0 z-40 w-full bg-black opacity-50"
+        className="fixed inset-0 z-50 w-full bg-black opacity-50"
         onClick={onClose}
       />
       {/* <div className="fixed inset-0 z-50 flex w-full items-center justify-center"> */}
-      <div className=" background-light700_dark300 fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
+      <div className=" background-light700_dark300 h-[700px] overflow-y-scroll mt-10 fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
         <div className="flex pr-5">
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Create post

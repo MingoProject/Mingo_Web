@@ -33,7 +33,7 @@ const PostYouLikeCard = ({ postYouLike, setListLikePosts }: any) => {
           alt="Avatar"
           width={55}
           height={55}
-          className="rounded-full"
+          className="rounded-full  object-cover h-12 w-12"
         />
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex w-full flex-wrap gap-[2px] text-lg md:gap-1">
