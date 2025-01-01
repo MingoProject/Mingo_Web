@@ -32,11 +32,12 @@ const PostYouSaveCard = ({ postYouSave, setListSavePosts }: any) => {
           alt="Avatar"
           width={55}
           height={55}
-          className="rounded-full"
+          className="rounded-full object-cover" // Giới hạn chiều rộng và chiều cao
+          style={{ objectFit: "cover", width: "55px", height: "55px" }} // Đảm bảo hình ảnh được cắt đúng theo khung
         />
         <div className="flex flex-1 flex-col overflow-hidden">
           <div className="flex w-full flex-wrap gap-[2px] text-lg md:gap-1">
-            <span className="text-lg font-bold">You liked</span> post of{" "}
+            <span className="text-lg font-bold">You saved</span> post of{" "}
             <span className="text-lg font-medium">
               {postYouSave?.author.firName} {postYouSave?.author.lastName}
             </span>

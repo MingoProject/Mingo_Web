@@ -97,14 +97,14 @@ const SignIn = () => {
         <form className="mt-[74px]" onSubmit={handleSubmit}>
           <FloatingLabelInput
             id="username"
-            label="Tên đăng nhập hoặc Email"
+            label="Phone number"
             type="text"
             value={phoneNumber}
             setValue={setPhoneNumber}
           />
           <FloatingLabelInput
             id="password"
-            label="Mật khẩu"
+            label="Password"
             type="password"
             value={password}
             setValue={setPassword}
@@ -125,22 +125,6 @@ const SignIn = () => {
             Forget password?
           </a>
         </div>
-
-        {/* <div className="mt-4 flex items-center justify-between">
-          <hr className="grow border-gray-300" />
-          <span className="mx-2 text-gray-500">Or</span>
-          <hr className="grow border-gray-300" />
-        </div> */}
-        {/* <div className="mt-4 flex justify-center">
-          <button className="text-dark100_light500 background-light800_dark400 flex w-32 items-center justify-center rounded-lg p-2 transition duration-200 hover:bg-gray-300">
-            <Icon icon="logos:google-icon" className="mr-2" />
-            Google
-          </button>
-          <button className="text-dark100_light500 background-light800_dark400 ml-2 flex w-32 items-center justify-center rounded-lg p-2 transition duration-200 hover:bg-gray-300">
-            <Icon icon="logos:facebook" className="mr-2 " />
-            Facebook
-          </button>
-        </div> */}
 
         <div className="mt-4 text-center">
           <p className="text-dark100_light500 text-sm">

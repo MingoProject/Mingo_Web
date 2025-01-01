@@ -186,11 +186,11 @@ const EditPost = ({
   return (
     <>
       <div
-        className="fixed inset-0 z-40 bg-black opacity-50"
+        className="fixed inset-0 z-50 bg-black opacity-50"
         onClick={onClose}
       />
       {/* <div className="fixed inset-0 z-50 flex items-center justify-center"> */}
-      <div className="background-light700_dark300 fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
+      <div className="background-light700_dark300 h-[730px] mt-6 overflow-y-scroll fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
         <div className="flex pr-5">
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Edit post
