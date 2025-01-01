@@ -15,7 +15,6 @@ export interface UserInfor {
 export interface ReportCreateDTO {
   title?: string; // Tiêu đề báo cáo (tuỳ chọn)
   content: string; // Nội dung báo cáo
-  createdById: string;
   reportedId: string; // ID của người bị báo cáo
   reportedEntityId: string; // ID của thực thể bị báo cáo (Post ID, User ID, etc.)
   entityType: string; // Loại thực thể (e.g., "post", "user", etc.)
@@ -26,7 +25,6 @@ export interface ReportCreateDTO {
 export interface CommentReportCreateDTO {
   title?: string; // Tiêu đề báo cáo (tuỳ chọn)
   content: string; // Nội dung báo cáo
-  createdById: string;
   reportedId: string; // ID của người bị báo cáo
   reportedEntityId: string; // ID của thực thể bị báo cáo (Post ID, User ID, etc.)
   parentReportEntityId: string;
