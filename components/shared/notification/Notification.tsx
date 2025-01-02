@@ -533,7 +533,7 @@ const Notification = ({ closeDrawer }: any) => {
         Notifications
       </div>
       <div className="mt-4  flex text-primary-100">Recently</div>
-      <div className="mt-5 flex h-[500px]  flex-col space-y-4 overflow-y-scroll">
+      <div className="mt-5 flex h-[500px]  flex-col space-y-4 overflow-auto custom-scrollbar">
         {notifications.map((notification) => (
           <div
             key={notification._id}
@@ -667,6 +667,26 @@ const Notification = ({ closeDrawer }: any) => {
           </div>
         ))}
       </div>
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px; /* Độ rộng của thanh cuộn */
+          height: 6px; /* Độ cao của thanh cuộn ngang */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
+          border-radius: 10px; /* Bo góc */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 };

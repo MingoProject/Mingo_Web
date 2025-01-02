@@ -28,10 +28,17 @@ const CommentCard = ({
     null
   );
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
-
   const [showReplies, setShowReplies] = useState(false);
   const [replies, setReplies] = useState<any[]>([]);
   const [newComment, setNewComment] = useState("");
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (menuRef.current) {
+      const rect = menuRef.current.getBoundingClientRect();
+      setPosition({ top: rect.bottom, left: rect.left });
+    }
+  }, [menuRef]);
 
   const toggleShowReplies = () => {
     setShowReplies(!showReplies);
@@ -51,10 +58,17 @@ const CommentCard = ({
     };
   }, [comment.replies]);
 
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  // const handleOpenMenu = (commentId: string) => {
+  //   setSelectedCommentId(commentId);
+  // };
 
-  const handleOpenMenu = (commentId: string) => {
+  const handleOpenMenu = (commentId: string, iconRef: HTMLDivElement) => {
     setSelectedCommentId(commentId);
+    const rect = iconRef.getBoundingClientRect(); // Lấy vị trí của dấu ba chấm
+    setPosition({
+      top: rect.bottom, // Tính cả khoảng cuộn dọc
+      left: rect.left, // Tính cả khoảng cuộn ngang
+    });
   };
 
   const handleCloseMenu = () => {
@@ -292,10 +306,10 @@ const CommentCard = ({
     const diffInHours = Math.floor(diffInMinutes / 60);
     const diffInDays = Math.floor(diffInHours / 24);
 
-    if (diffInDays > 0) return `${diffInDays} ngày`;
-    if (diffInHours > 0) return `${diffInHours} giờ`;
-    if (diffInMinutes > 0) return `${diffInMinutes} phút`;
-    return `${diffInSeconds} giây`;
+    if (diffInDays > 0) return `${diffInDays} days ago`;
+    if (diffInHours > 0) return `${diffInHours} hours ago`;
+    if (diffInMinutes > 0) return `${diffInMinutes} minutes ago`;
+    return `${diffInSeconds} seconds ago`;
   }
 
   return (
@@ -320,8 +334,34 @@ const CommentCard = ({
             <Icon
               icon="bi:three-dots"
               className="text-dark100_light500 ml-2 mt-3 hidden size-4 group-hover:inline"
-              onClick={() => handleOpenMenu(comment._id)}
+              onClick={(e) =>
+                handleOpenMenu(comment._id, e.currentTarget as SVGSVGElement)
+              }
             />
+            {selectedCommentId === comment._id && (
+              <div
+                ref={menuRef}
+                className="absolute z-50  shadow-lg rounded-md"
+                style={{
+                  top: `${position.top}px`,
+                  left: `${position.left}px`,
+                }}
+              >
+                <CommentMenu
+                  commentUserId={comment.userId._id}
+                  commentId={comment._id}
+                  originalCommentId={comment.originalCommentId}
+                  content={comment.content}
+                  setCommentsData={setCommentsData}
+                  handleCloseMenu={handleCloseMenu}
+                  postId={postId}
+                  mediaId={mediaId}
+                  setNumberOfComments={setNumberOfComments}
+                  numberOfComments={numberOfComments}
+                  repliesCount={replies?.length}
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-2 flex items-center text-sm text-gray-500">
@@ -409,24 +449,6 @@ const CommentCard = ({
               </div>
             ))}
         </div>
-
-        {selectedCommentId === comment._id && (
-          <div ref={menuRef}>
-            <CommentMenu
-              commentUserId={comment.userId._id}
-              commentId={comment._id}
-              originalCommentId={comment.originalCommentId}
-              content={comment.content}
-              setCommentsData={setCommentsData}
-              handleCloseMenu={handleCloseMenu}
-              postId={postId}
-              mediaId={mediaId}
-              setNumberOfComments={setNumberOfComments}
-              numberOfComments={numberOfComments}
-              repliesCount={replies?.length}
-            />
-          </div>
-        )}
       </div>
     </div>
   );

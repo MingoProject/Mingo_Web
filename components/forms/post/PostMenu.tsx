@@ -106,13 +106,13 @@ const PostMenu = ({
   return (
     <div
       ref={menuRef}
-      className="background-light800_dark400 absolute mt-2 w-48 rounded-lg border shadow-lg"
+      className="background-light800_dark400 absolute mt-2 w-48 rounded-md border shadow-lg"
     >
       {isPostOwner(author._id) ? (
         <>
           <button
             onClick={handleOpenEditPost}
-            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
           >
             Edit
           </button>
@@ -125,7 +125,7 @@ const PostMenu = ({
           )}
           <button
             onClick={() => handleDeletePost(postId)}
-            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
           >
             Delete
           </button>
@@ -135,20 +135,20 @@ const PostMenu = ({
           {isSaved ? (
             <button
               onClick={() => handleUnsavePost(postId)}
-              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
             >
               Unsave post
             </button>
           ) : (
             <button
               onClick={() => handleSavePost(postId)}
-              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+              className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
             >
               Save post
             </button>
           )}
           <button
-            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
             onClick={() => setIsReport(true)}
           >
             Report

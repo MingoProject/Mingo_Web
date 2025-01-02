@@ -98,11 +98,19 @@ const EditPost = ({
     ]);
   };
 
+  // const handleCaptionChange = (index: number, value: string) => {
+  //   setCaptions((prev) => {
+  //     const updated = [...prev];
+  //     updated[index] = value;
+  //     return updated;
+  //   });
+  // };
+
   const handleCaptionChange = (index: number, value: string) => {
-    setCaptions((prev) => {
-      const updated = [...prev];
-      updated[index] = value;
-      return updated;
+    setExistingMedia((prev) => {
+      const updatedMedia = [...prev];
+      updatedMedia[index].caption = value; // Update caption for the specific media
+      return updatedMedia;
     });
   };
 
@@ -190,7 +198,7 @@ const EditPost = ({
         onClick={onClose}
       />
       {/* <div className="fixed inset-0 z-50 flex items-center justify-center"> */}
-      <div className="background-light700_dark300 h-[730px] mt-6 overflow-y-scroll fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
+      <div className="background-light700_dark300 overflow-auto max-h-[90vh] h-[700px] custom-scrollbar mt-10 fixed inset-0 z-50 mx-auto rounded-md py-6 shadow-md lg:w-1/2">
         <div className="flex pr-5">
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Edit post
@@ -213,18 +221,7 @@ const EditPost = ({
             <span className="text-dark100_light500">
               {profile?.firstName} {profile?.lastName}
             </span>
-            <div>
-              <select
-                id="privacy"
-                value={privacy}
-                onChange={(e) => setPrivacy(e.target.value)}
-                className="background-light800_dark400 rounded-lg px-3 py-2 text-border-color"
-              >
-                <option value="public">Public</option>
-                <option value="friends">Friends</option>
-                <option value="private">Private</option>
-              </select>
-            </div>
+            <div></div>
           </div>
         </div>
 
@@ -237,7 +234,7 @@ const EditPost = ({
               className="text-dark100_light500 h-16 w-full bg-transparent p-2"
             />
           </div>
-          <div className="h-44 overflow-y-scroll">
+          <div className="">
             <label
               htmlFor="file"
               className="block  text-sm font-medium text-primary-100"
@@ -262,13 +259,32 @@ const EditPost = ({
                       className="mt-2 flex items-center space-x-4"
                     >
                       <div className="relative">
-                        <Image
+                        {/* <Image
                           src={media.url}
                           alt={`Existing Media ${index + 1}`}
                           width={100}
                           height={100}
                           className="size-20 rounded-lg object-cover"
-                        />
+                        /> */}
+                        {media.type === "video" ? (
+                          <video
+                            controls
+                            className="size-20 rounded-lg object-cover"
+                            width={100}
+                            height={100}
+                          >
+                            <source src={media.url} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        ) : (
+                          <Image
+                            src={media.url}
+                            alt={`Existing Media ${index + 1}`}
+                            width={100}
+                            height={100}
+                            className="size-20 rounded-lg object-cover"
+                          />
+                        )}
                         <button
                           type="button"
                           className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
@@ -281,7 +297,7 @@ const EditPost = ({
                           <Icon icon="ic:round-close" className="text-white" />
                         </button>
                       </div>
-                      <input
+                      {/* <input
                         type="text"
                         placeholder="Caption"
                         value={media.caption}
@@ -289,6 +305,15 @@ const EditPost = ({
                           handleCaptionChange(index, e.target.value)
                         }
                         className=" text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
+                      /> */}
+                      <input
+                        type="text"
+                        placeholder="Caption"
+                        value={media.caption} // Use the updated caption from existing media
+                        onChange={(e) =>
+                          handleCaptionChange(index, e.target.value)
+                        } // Update the caption
+                        className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
                       />
                     </div>
                   </>
@@ -301,13 +326,35 @@ const EditPost = ({
             {files.map((file, index) => (
               <div key={index} className="mt-2 flex items-center space-x-4">
                 <div className="relative">
-                  <Image
+                  {/* <Image
                     src={URL.createObjectURL(file)}
                     alt={`Preview ${file.name}`}
                     width={100}
                     height={100}
                     className="size-20 rounded-lg object-cover"
-                  />
+                  /> */}
+                  {file.type.startsWith("video") ? (
+                    <video
+                      controls
+                      className="size-20 rounded-lg object-cover"
+                      width={100}
+                      height={100}
+                    >
+                      <source
+                        src={URL.createObjectURL(file)}
+                        type={file.type}
+                      />
+                      Your browser does not support the video tag.
+                    </video>
+                  ) : (
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${file.name}`}
+                      width={100}
+                      height={100}
+                      className="size-20 rounded-lg object-cover"
+                    />
+                  )}
                   <button
                     type="button"
                     className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
@@ -321,7 +368,7 @@ const EditPost = ({
                   placeholder="Caption"
                   value={captions[index]}
                   onChange={(e) => handleCaptionChange(index, e.target.value)}
-                  className="text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
+                  className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
                 />
               </div>
             ))}
@@ -420,6 +467,26 @@ const EditPost = ({
             {loading ? "Updating..." : "Update Post"}
           </Button>
         </form>
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px; /* Độ rộng của thanh cuộn */
+            height: 6px; /* Độ cao của thanh cuộn ngang */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
+            border-radius: 10px; /* Bo góc */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
+            border-radius: 10px;
+          }
+        `}</style>
       </div>
       {/* </div> */}
     </>

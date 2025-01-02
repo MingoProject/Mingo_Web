@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ButtonClose from "@/components/ui/buttonClose";
 import { updateUserBio } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
@@ -69,7 +70,7 @@ const Bio = ({ profileUser, setProfileUser }: any) => {
 
       {showEditBio && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-1/2">
+          <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-[90%] overflow-y-auto rounded-md bg-white p-6 shadow-lg md:w-4/5 lg:w-1/2">
             <div className="mt-4">
               <h2 className="mb-4 text-xl font-semibold text-primary-100">
                 Update Bio
@@ -82,12 +83,8 @@ const Bio = ({ profileUser, setProfileUser }: any) => {
               />
             </div>
             <div className="mt-10 flex justify-end space-x-2">
-              <Button
-                className="bg-gray-300 text-black"
-                onClick={() => setShowEditBio(false)}
-              >
-                Close
-              </Button>
+              <ButtonClose onClick={() => setShowEditBio(false)} />
+
               <Button
                 className="bg-primary-100 text-white"
                 onClick={handleSave}

@@ -11,6 +11,7 @@ import CommentCard from "@/components/cards/CommentCard";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";
+import ButtonClose from "@/components/ui/buttonClose";
 
 const DetailsVideo = ({
   video,
@@ -230,8 +231,8 @@ const DetailsVideo = ({
             </div>
           </div>
         </div>
-        <div className="mt-3 flex justify-end space-x-2" onClick={handleClose}>
-          <Button className="bg-gray-300 text-black">Close</Button>
+        <div className="mt-3 flex justify-end space-x-2">
+          <ButtonClose onClick={handleClose} />
         </div>
       </div>
     </div>

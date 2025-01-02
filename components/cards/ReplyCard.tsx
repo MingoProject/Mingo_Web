@@ -35,7 +35,8 @@ const ReplyCard = ({
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [newComment, setNewComment] = useState("");
   const [parentComment, setParentComment] = useState<any>(null);
-
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const menuRef = useRef<HTMLDivElement | null>(null);
   useEffect(() => {
     let isMounted = true;
     const fetchDetailsComment = async () => {
@@ -76,10 +77,17 @@ const ReplyCard = ({
     };
   }, [detailsComment?.parentId?._id]);
 
-  const menuRef = useRef<HTMLDivElement | null>(null);
+  // const handleOpenMenu = (commentId: string) => {
+  //   setSelectedCommentId(commentId);
+  // };
 
-  const handleOpenMenu = (commentId: string) => {
+  const handleOpenMenu = (commentId: string, iconRef: HTMLDivElement) => {
     setSelectedCommentId(commentId);
+    const rect = iconRef.getBoundingClientRect(); // Lấy vị trí của dấu ba chấm
+    setPosition({
+      top: rect.bottom, // Tính cả khoảng cuộn dọc
+      left: rect.left, // Tính cả khoảng cuộn ngang
+    });
   };
 
   const handleCloseMenu = () => {
@@ -344,8 +352,37 @@ const ReplyCard = ({
             <Icon
               icon="bi:three-dots"
               className="text-dark100_light500 ml-2 mt-3 hidden size-4 group-hover:inline"
-              onClick={() => handleOpenMenu(detailsComment?._id)}
+              onClick={(e) =>
+                handleOpenMenu(
+                  detailsComment?._id,
+                  e.currentTarget as SVGSVGElement
+                )
+              }
             />
+            {selectedCommentId === reply._id && (
+              <div
+                ref={menuRef}
+                className="absolute z-50 shadow-lg rounded-md"
+                style={{
+                  top: `${position.top}px`,
+                  left: `${position.left}px`,
+                }}
+              >
+                <CommentMenu
+                  commentUserId={detailsComment.userId._id}
+                  commentId={detailsComment._id}
+                  originalCommentId={detailsComment.originalCommentId}
+                  content={detailsComment.content}
+                  commentsData={replies}
+                  setCommentsData={setReplies}
+                  handleCloseMenu={handleCloseMenu}
+                  postId={postId}
+                  mediaId={mediaId}
+                  setNumberOfComments={setNumberOfComments}
+                  numberOfComments={numberOfComments}
+                />
+              </div>
+            )}
           </div>
 
           <div className="mt-2 flex items-center text-sm text-gray-500">
@@ -381,24 +418,6 @@ const ReplyCard = ({
             </button>
           </div>
         </div>
-
-        {selectedCommentId === reply._id && (
-          <div ref={menuRef}>
-            <CommentMenu
-              commentUserId={detailsComment.userId._id}
-              commentId={detailsComment._id}
-              originalCommentId={detailsComment.originalCommentId}
-              content={detailsComment.content}
-              commentsData={replies}
-              setCommentsData={setReplies}
-              handleCloseMenu={handleCloseMenu}
-              postId={postId}
-              mediaId={mediaId}
-              setNumberOfComments={setNumberOfComments}
-              numberOfComments={numberOfComments}
-            />
-          </div>
-        )}
       </div>
       {replyingTo === detailsComment?._id && (
         <div className="ml-12 flex w-full">

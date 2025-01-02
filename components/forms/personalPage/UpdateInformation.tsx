@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import ButtonClose from "@/components/ui/buttonClose";
 import { updateInfo } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
@@ -138,7 +139,7 @@ const UpdateInformation = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-4/5 overflow-y-auto rounded-lg bg-white p-6 shadow-lg">
+      <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-4/5 overflow-y-auto rounded-md bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold text-primary-100">
           Update Information
         </h2>
@@ -247,7 +248,7 @@ const UpdateInformation = ({
         {/* Hobbies */}
         <div className="mt-4 h-12">
           <label className="block text-sm font-medium ">Hobbies</label>
-          <div className="mt-2 grid h-full grid-rows-1 gap-2 overflow-x-auto">
+          <div className="mt-2 grid h-full grid-rows-1 gap-2 custom-scrollbar overflow-auto">
             <div className="flex w-max gap-2">
               {Object.keys(hobbyIcons).map((hobby) => (
                 <div
@@ -268,14 +269,32 @@ const UpdateInformation = ({
         </div>
         {/* Buttons */}
         <div className="mt-10 flex justify-end space-x-2">
-          <Button className="bg-gray-300 text-black" onClick={onClose}>
-            Close
-          </Button>
+          <ButtonClose onClick={onClose} />
           <Button className="bg-primary-100 text-white" onClick={handleSave}>
             Save
           </Button>
         </div>
       </div>
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px; /* Độ rộng của thanh cuộn */
+          height: 6px; /* Độ cao của thanh cuộn ngang */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
+          border-radius: 10px; /* Bo góc */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 };

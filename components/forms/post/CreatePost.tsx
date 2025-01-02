@@ -164,11 +164,10 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
   return (
     <>
       <div
-        className="fixed inset-0 z-50 w-full bg-black opacity-50"
+        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
         onClick={onClose}
       />
-      {/* <div className="fixed inset-0 z-50 flex w-full items-center justify-center"> */}
-      <div className=" background-light700_dark300 h-[700px] overflow-y-scroll mt-10 fixed inset-0 z-50 mx-auto rounded-lg py-6 shadow-md lg:w-1/2">
+      <div className="background-light700_dark300 overflow-auto max-h-[90vh] h-[700px] custom-scrollbar mt-10 fixed inset-0 z-50 mx-auto rounded-md py-6 shadow-md lg:w-1/2">
         <div className="flex pr-5">
           <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Create post
@@ -191,18 +190,6 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
             <span className="text-dark100_light500">
               {me?.firstName} {me?.lastName}
             </span>
-            <div>
-              <select
-                id="privacy"
-                value={privacy}
-                onChange={(e) => setPrivacy(e.target.value)}
-                className="background-light800_dark400 rounded-lg px-3 py-2 text-border-color"
-              >
-                <option value="public">Public</option>
-                <option value="friends">Friends</option>
-                <option value="private">Private</option>
-              </select>
-            </div>
           </div>
         </div>
 
@@ -233,13 +220,23 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
             {files.map((file, index) => (
               <div key={index} className="mt-2 flex items-center space-x-4">
                 <div className="relative">
-                  <Image
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${file.name}`}
-                    width={100}
-                    height={100}
-                    className="size-20 rounded-lg object-cover"
-                  />
+                  {file.type.startsWith("image") ? (
+                    <Image
+                      src={URL.createObjectURL(file)}
+                      alt={`Preview ${file.name}`}
+                      width={100}
+                      height={100}
+                      className="size-20 rounded-lg object-cover"
+                    />
+                  ) : file.type.startsWith("video") ? (
+                    <video
+                      src={URL.createObjectURL(file)}
+                      controls
+                      className="rounded-lg w-[80px] h-[80px] object-cover"
+                      width={100}
+                      height={100}
+                    />
+                  ) : null}
                   <button
                     type="button"
                     className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
@@ -253,7 +250,7 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
                   placeholder="Caption"
                   value={captions[index]}
                   onChange={(e) => handleCaptionChange(index, e.target.value)}
-                  className=" text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
+                  className=" text-dark100_light500 py-1 mt-1 block w-full rounded-md border-gray-500 px-3 bg-transparent shadow-sm"
                 />
               </div>
             ))}
@@ -351,6 +348,26 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
             {loading ? "Creating..." : "Create Post"}
           </Button>
         </form>
+        <style jsx>{`
+          .custom-scrollbar::-webkit-scrollbar {
+            width: 6px; /* Độ rộng của thanh cuộn */
+            height: 6px; /* Độ cao của thanh cuộn ngang */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
+            border-radius: 10px; /* Bo góc */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
+          }
+
+          .custom-scrollbar::-webkit-scrollbar-track {
+            background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
+            border-radius: 10px;
+          }
+        `}</style>
       </div>
       {/* </div> */}
     </>

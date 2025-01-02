@@ -14,6 +14,7 @@ import {
 } from "@/lib/services/user.service";
 import Images from "./Images";
 import Videos from "./Videos";
+import Link from "next/link";
 
 const RenderContentPage = ({
   activeTab,
@@ -134,16 +135,19 @@ const RenderContentPage = ({
               {friends &&
                 friends.map((friend, index) => (
                   <li key={index} className="flex items-center space-x-4">
-                    <Image
-                      width={48}
-                      height={48}
-                      src={
-                        friend?.avatar ||
-                        "https://i.pinimg.com/736x/f5/69/55/f569552914826d73dc72048b8ef7aa45.jpg"
-                      }
-                      alt={friend.lastName}
-                      className="size-12 rounded-full object-cover"
-                    />
+                    <Link href={`/profile/${friend?._id || null}`}>
+                      <Image
+                        width={48}
+                        height={48}
+                        src={
+                          friend?.avatar ||
+                          "https://i.pinimg.com/736x/f5/69/55/f569552914826d73dc72048b8ef7aa45.jpg"
+                        }
+                        alt={friend.lastName}
+                        className="size-12 rounded-full object-cover"
+                      />
+                    </Link>
+
                     <span className="text-dark100_light500 font-medium">
                       {friend.firstName} {friend.lastName}
                     </span>

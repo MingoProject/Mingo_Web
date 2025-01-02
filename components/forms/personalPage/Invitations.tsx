@@ -96,7 +96,7 @@ const Invitations = ({ onClose }: any) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
+      <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-md border shadow-lg dark:border-transparent dark:shadow-none">
         <div className="mt-3 flex">
           <div className=" flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
             Friend invitation

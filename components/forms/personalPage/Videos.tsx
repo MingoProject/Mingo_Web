@@ -54,9 +54,14 @@ const Videos = ({ me, profileUser }: any) => {
         </div>
         <div className="mx-[20%] mt-10 flex flex-wrap gap-4">
           {videos.map((video, index) => (
-            <div key={index} className="flex flex-col items-center">
+            <div key={index} className="flex flex-col items-center w-[150px]">
               <div className="size-40" onClick={() => handleClick(video)}>
-                <video width={150} height={150} controls>
+                <video
+                  width={150}
+                  height={150}
+                  controls
+                  className="size-[200px]"
+                >
                   <source src={video.url} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
