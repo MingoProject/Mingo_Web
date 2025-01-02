@@ -323,13 +323,7 @@ const ListUserChat = () => {
               </span>
               <FontAwesomeIcon icon={faChevronDown} />
             </MenubarTrigger>
-            <MenubarContent className="  absolute top-full ml-20 mt-2 w-40 font-sans text-sm shadow-md z-50 dark:z-50 dark:bg-gray-700 rounded-md dark:text-white">
-              <MenubarItem className="flex w-full cursor-pointer justify-center  hover:bg-primary-100 hover:text-white py-2 rounded-md">
-                Message Request
-              </MenubarItem>
-              <MenubarItem className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md">
-                Save chatchat
-              </MenubarItem>
+            <MenubarContent className="  absolute top-full ml-20 mt-2 w-40 font-sans text-sm shadow-md z-50 dark:z-50 bg-white text-primary-100 dark:bg-gray-700 rounded-md dark:text-white">
               <MenubarItem
                 onClick={toggleForm}
                 className="flex w-full cursor-pointer justify-center hover:bg-primary-100 hover:text-white py-2 rounded-md"
