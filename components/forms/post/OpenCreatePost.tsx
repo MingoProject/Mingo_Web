@@ -51,7 +51,7 @@ const OpenCreatePost = ({ me, setPostsData }: any) => {
             />
             <label className="ml-1 text-sm text-primary-100">Video</label>
           </div>
-          <div className="ml-[10%] flex font-light">
+          {/* <div className="ml-[10%] flex font-light">
             <Icon
               className="text-lg text-primary-100"
               icon="icon-park-outline:emotion-happy"
@@ -59,7 +59,7 @@ const OpenCreatePost = ({ me, setPostsData }: any) => {
             <label className="ml-1 text-sm font-light text-primary-100">
               Emotion
             </label>
-          </div>
+          </div> */}
         </div>
       </div>
       {isFormOpen && (

@@ -37,7 +37,7 @@ const TagModal: React.FC<TagModalProps> = ({ tags, isOpen, onClose }) => {
                 height={45}
                 className="mr-2 size-8 rounded-full object-cover"
               />
-              {tag.firstName}
+              {tag.firstName} {tag.lastName}
             </li>
           ))}
         </ul>

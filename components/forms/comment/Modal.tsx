@@ -1,4 +1,5 @@
 import ReportCard from "@/components/cards/ReportCard";
+import ButtonClose from "@/components/ui/buttonClose";
 import {
   deleteComment,
   deleteCommentMedia,
@@ -45,9 +46,9 @@ const CommentMenu = ({
     setIsEditing(true);
   };
 
-  const handleCloseEditComment = () => {
-    setIsEditing(false);
-  };
+  // const handleCloseEditComment = () => {
+  //   setIsEditing(false);
+  // };
 
   const isCommentOwner = (commentUserId: string) => {
     return commentUserId === userId;
@@ -69,10 +70,12 @@ const CommentMenu = ({
       setCommentsData((prev: any) =>
         prev.map((comment: any) =>
           comment._id === commentId
-            ? { ...comment, content: updatedComment.comment.content }
+            ? { ...comment, content: newComment }
             : comment
         )
       );
+      // console.log(commentsData);
+
       handleCloseMenu();
     } catch (error) {
       console.error("Failed to update comment:", error);
@@ -145,49 +148,52 @@ const CommentMenu = ({
   return (
     <div
       ref={menuRef}
-      className="background-light800_dark400 mt-2 w-48 rounded-lg border shadow-lg"
+      className="absolute rounded-md mr-10 shadow-lg background-light800_dark400"
     >
       {isCommentOwner(commentUserId) ? (
         <>
           <button
             onClick={handleOpenEditComment}
-            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            className="text-dark100_light500 w-full px-4 pb-1 pt-2 text-left text-sm "
           >
             Edit
           </button>
+
           {isEditing && (
-            <div className="absolute">
-              <div>
+            <div className="fixed inset-0 z-50 flex text-dark100_light500 items-center justify-center bg-black bg-opacity-50">
+              <div className="background-light700_dark300 w-[400px] rounded-md p-4 shadow-lg">
+                <h3 className="text-lg font-bold">Edit Comment</h3>
                 <textarea
                   value={newComment}
-                  onChange={(e) => setNewComment(e.target.value)} // Cập nhật giá trị khi người dùng sửa
-                  className="background-light800_dark400 text-dark100_light500 w-full rounded-xl p-2"
+                  onChange={(e) => setNewComment(e.target.value)}
+                  className="bg-transparent border border-gray-300 text-dark100_light500 mt-2 w-full rounded-md p-2"
                 />
-                <button
-                  onClick={() => handleEditComment(commentId, newComment)}
-                  className="rounded-md bg-primary-100 px-3 py-1 text-sm text-white"
-                >
-                  Save
-                </button>
-                <button
-                  onClick={handleCloseEditComment}
-                  className="text-dark100_light500 ml-2 rounded-md bg-gray-300 px-3 py-1 text-sm"
-                >
-                  Close
-                </button>
+                <div className="mt-4 flex justify-end space-x-2">
+                  <ButtonClose
+                    onClick={() => {
+                      setIsEditing(false), handleCloseMenu();
+                    }}
+                  />
+                  <button
+                    onClick={() => handleEditComment(commentId, newComment)}
+                    className="rounded-md bg-primary-100 px-3 py-1 text-sm text-white"
+                  >
+                    Save
+                  </button>
+                </div>
               </div>
             </div>
           )}
           <button
             onClick={() => handleDeleteComment(commentId, postId)}
-            className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+            className="text-dark100_light500 w-full px-4 pt-1 pb-2 text-left text-sm "
           >
             Delete
           </button>
         </>
       ) : (
         <button
-          className="text-dark100_light500 w-full px-4 py-1 text-left text-sm hover:bg-gray-200"
+          className="text-dark100_light500 w-full px-4 py-2 text-left text-sm "
           onClick={() => setIsReport(true)}
         >
           Report

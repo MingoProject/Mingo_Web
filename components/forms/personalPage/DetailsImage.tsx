@@ -8,6 +8,7 @@ import CommentCard from "@/components/cards/CommentCard";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";
+import ButtonClose from "@/components/ui/buttonClose";
 
 const DetailsImage = ({
   image,
@@ -122,7 +123,7 @@ const DetailsImage = ({
               </div>
             </div>
             <div className="mt-20 flex w-full items-center justify-center">
-              <div className=" mx-auto flex h-64 w-full items-center justify-center">
+              <div className="mx-auto flex h-64 w-full items-center justify-center">
                 <Image
                   src={image?.url || "/assets/images/placeholder.jpg"}
                   alt="Image"
@@ -134,6 +135,7 @@ const DetailsImage = ({
             </div>
           </div>
           <div className="w-full lg:w-1/2">
+            <p>{image.caption}</p>
             <div className="mx-10 my-5">
               <ImageAction
                 likes={image?.likes}
@@ -198,16 +200,14 @@ const DetailsImage = ({
                   onClick={handleAddComment}
                   className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
                 >
-                  Đăng
+                  Add
                 </button>
               </div>
             </div>
           </div>
         </div>
         <div className="mt-3 flex justify-end space-x-2">
-          <Button className="bg-gray-300 text-black" onClick={onClose}>
-            Close
-          </Button>
+          <ButtonClose onClick={onClose} />
         </div>
       </div>
     </div>

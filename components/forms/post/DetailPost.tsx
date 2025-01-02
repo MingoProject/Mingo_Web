@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
 import { getTimestamp } from "@/lib/utils";
 import {
   createComment,
@@ -15,6 +18,7 @@ import { CldImage } from "next-cloudinary";
 import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
+import Link from "next/link";
 
 interface DetailPostProps {
   postId: string;
@@ -171,19 +175,21 @@ const DetailPost = ({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
       {isDetailVisible && (
-        <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
+        <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-md border shadow-lg dark:border-transparent dark:shadow-none custom-scrollbar">
           <div className="p-4">
             <div className="flex">
               <div className="ml-4 mt-3 flex items-center">
-                <Image
-                  src={
-                    author?.avatar ? author.avatar : "/assets/images/capy.jpg"
-                  }
-                  alt="Avatar"
-                  width={45}
-                  height={45}
-                  className="size-11 rounded-full object-cover"
-                />
+                <Link href={`/profile/${author?._id || null}`}>
+                  <Image
+                    src={
+                      author?.avatar ? author.avatar : "/assets/images/capy.jpg"
+                    }
+                    alt="Avatar"
+                    width={45}
+                    height={45}
+                    className="size-11 rounded-full object-cover"
+                  />
+                </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
                     {author?.firstName ? author.firstName : ""}
@@ -234,38 +240,45 @@ const DetailPost = ({
             </div>
 
             {media && media.length > 0 && (
-              <div className="mx-5 mt-3 flex h-auto justify-around">
+              <div className=" mx-5 mt-3 flex h-auto justify-around">
                 <Swiper
-                  spaceBetween={10}
-                  slidesPerView={1}
-                  navigation
-                  pagination={{ clickable: true }}
-                  className="h-auto w-[300px]"
+                  cssMode={true}
+                  navigation={true}
+                  mousewheel={true}
+                  keyboard={true}
+                  modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+                  className="h-auto w-[400px] flex justify-center items-center"
                 >
-                  {media.map((item) => (
-                    <SwiperSlide key={item.url}>
+                  {media.map((item, index) => (
+                    <SwiperSlide key={item.url + index}>
                       {item.type === "image" ? (
-                        <CldImage
-                          src={item.url}
-                          width="500"
-                          height="500"
-                          alt=""
-                          crop={{
-                            type: "auto",
-                            source: true,
-                          }}
-                          onClick={() => handleClick(item)}
-                        />
+                        <>
+                          <CldImage
+                            src={item.url} // Use this sample image or upload your own via the Media Explorer
+                            width="500" // Transform the image: auto-crop to square aspect_ratio
+                            height="500"
+                            alt=""
+                            className="h-[250px] w-[250px] mx-auto"
+                            crop={{
+                              type: "auto",
+                              source: true,
+                            }}
+                            onClick={() => handleClick(item)}
+                          />
+                        </>
                       ) : (
-                        <video
-                          width={250}
-                          height={250}
-                          controls
-                          onClick={() => handleClick(item)}
-                        >
-                          <source src={item.url} type="video/mp4" />
-                          Your browser does not support the video tag.
-                        </video>
+                        <>
+                          <video
+                            width={250}
+                            height={250}
+                            className="h-[250px] mx-auto"
+                            controls
+                            onClick={() => handleClick(item)}
+                          >
+                            <source src={item.url} type="video/mp4" />
+                            Your browser does not support the video tag.
+                          </video>
+                        </>
                       )}
                     </SwiperSlide>
                   ))}
@@ -315,7 +328,7 @@ const DetailPost = ({
                 )}
               </div>
               <div className="flex">
-                <div className="size-[40px] overflow-hidden rounded-full">
+                <div className="w-[10%] overflow-hidden rounded-full">
                   <Image
                     src={
                       profile?.avatar
@@ -331,15 +344,15 @@ const DetailPost = ({
                 <input
                   type="text"
                   placeholder="Write a comment..."
-                  className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full pl-3 text-base"
+                  className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full px-4 text-base"
                   value={newComment}
                   onChange={handleInputChange}
                 />
                 <button
                   onClick={handleAddComment}
-                  className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
+                  className="rounded-md bg-primary-100 px-3 py-1 text-sm ml-2 text-white"
                 >
-                  Post
+                  Add
                 </button>
               </div>
             </div>
@@ -372,6 +385,26 @@ const DetailPost = ({
           setCommentsData={setCommentsMediaData}
         />
       )}
+      <style jsx>{`
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 6px; /* Độ rộng của thanh cuộn */
+          height: 6px; /* Độ cao của thanh cuộn ngang */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
+          border-radius: 10px; /* Bo góc */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
+        }
+
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
+          border-radius: 10px;
+        }
+      `}</style>
     </div>
   );
 };

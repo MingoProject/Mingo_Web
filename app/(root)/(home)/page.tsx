@@ -149,7 +149,7 @@ export default function Home() {
       </div>
 
       <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[28%]">
-        <Hashtag />
+        {/* <Hashtag /> */}
       </div>
     </div>
   );

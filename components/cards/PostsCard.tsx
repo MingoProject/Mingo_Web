@@ -5,6 +5,9 @@ import { getTimestamp } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
+import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
 import DetailPost from "../forms/post/DetailPost";
 import { CldImage } from "next-cloudinary";
 import Link from "next/link";
@@ -237,14 +240,15 @@ const PostsCard = ({
       {media && media.length > 0 && (
         <div className=" mx-5 mt-3 flex h-auto justify-around">
           <Swiper
-            spaceBetween={10}
-            slidesPerView={1}
-            navigation
-            pagination={{ clickable: true }}
-            className="h-auto w-[300px]"
+            cssMode={true}
+            navigation={true}
+            mousewheel={true}
+            keyboard={true}
+            modules={[Navigation, Pagination, Mousewheel, Keyboard]}
+            className="h-auto w-[400px] flex justify-center items-center"
           >
-            {media.map((item) => (
-              <SwiperSlide key={item.url}>
+            {media.map((item, index) => (
+              <SwiperSlide key={item.url + index}>
                 {item.type === "image" ? (
                   <>
                     <CldImage
@@ -252,6 +256,7 @@ const PostsCard = ({
                       width="500" // Transform the image: auto-crop to square aspect_ratio
                       height="500"
                       alt=""
+                      className="h-[250px] w-[250px] mx-auto"
                       crop={{
                         type: "auto",
                         source: true,
@@ -264,6 +269,7 @@ const PostsCard = ({
                     <video
                       width={250}
                       height={250}
+                      className="h-[250px] mx-auto"
                       controls
                       onClick={() => handleClick(item)}
                     >
