@@ -1,8 +1,12 @@
 // app/message/layout.tsx
+"use client";
 import React from "react";
 import MessageSearch from "@/components/message/MessageSearch";
 import ListUserChat from "@/components/message/ListUserChat";
 import { ChatItemProvider } from "@/context/ChatItemContext";
+import { SocketProvider } from "@/providers/SocketProvider";
+import CallNotification from "@/components/message/CallNotification";
+import { VideoCall } from "@/components/message/VideoCall";
 
 const MessageLayout = ({ children }: { children: React.ReactNode }) => {
   return (
@@ -11,6 +15,8 @@ const MessageLayout = ({ children }: { children: React.ReactNode }) => {
         {/* Phần bên trái cố định */}
         <div className="no-scrollbar h-full text-dark100_light500 background-light700_dark300 flex w-2/5 flex-col gap-2 overflow-y-auto px-4 lg:w-1/5">
           <ListUserChat />
+          <CallNotification />
+          <VideoCall />
         </div>
 
         {/* Phần bên phải, thay đổi theo [id] */}

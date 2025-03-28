@@ -12,7 +12,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     try {
       const userId = localStorage.getItem("userId");
       const result = await IsOnline(userId?.toString() || "");
-      console.log("User online status:", result);
+      // console.log("User online status:", result);
     } catch (error) {
       console.error("Error checking online status:", error);
     }

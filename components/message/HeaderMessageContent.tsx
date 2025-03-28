@@ -11,6 +11,8 @@ import { ItemChat } from "@/dtos/MessageDTO";
 import { FindUserDTO } from "@/dtos/UserDTO";
 import { getMyProfile } from "@/lib/services/user.service";
 import { useChatContext } from "@/context/ChatContext";
+import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
 
 const HeaderMessageContent = ({
   item,
@@ -20,11 +22,16 @@ const HeaderMessageContent = ({
   toggleRightSide: () => void;
 }) => {
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
+  const { profile } = useAuth();
+  const { onlineUsers, handleCall } = useSocket();
+  const [isOnlineUser, setIsOnlineUser] = useState("");
+
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         if (item) {
           const data = await getMyProfile(item?.receiverId?.toString() || "");
+          setIsOnlineUser(data.userProfile._id);
           setIsOnlineChat((prevState) => ({
             ...prevState,
             [item?.receiverId?.toString() || ""]: data.userProfile.status,
@@ -36,6 +43,26 @@ const HeaderMessageContent = ({
     };
     fetchProfile();
   }, [item, item?.receiverId]);
+
+  if (!onlineUsers) {
+    console.warn("onlineUsers is undefined");
+    return;
+  }
+  const onlineUser = onlineUsers.find(
+    (user) => user?.userId?.toString() === isOnlineUser.toString()
+  );
+
+  console.log("Online Users:", onlineUsers);
+
+  console.log("Selected User:", onlineUser);
+
+  // useEffect(() => {
+  //   if (onlineUser) {
+  //     console.log("Call started with:", onlineUser);
+  //     handleCall(onlineUser);
+  //   }
+  // }, [onlineUser]); // Chỉ chạy lại khi `onlineUser` thay đổi
+
   return (
     <div className="w-full border-b border-gray-200 dark:border-gray-900 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
@@ -72,7 +99,8 @@ const HeaderMessageContent = ({
           <FontAwesomeIcon
             icon={faVideo}
             size="xl"
-            className="text-primary-100"
+            className="text-primary-100 cursor-pointer"
+            onClick={() => onlineUser && handleCall(onlineUser)}
           />
           <FontAwesomeIcon
             icon={faCircleInfo}

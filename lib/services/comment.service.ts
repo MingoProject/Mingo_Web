@@ -447,9 +447,9 @@ export async function getCommentByCommentId(commentId: String) {
     const response = await fetch(
       `${BASE_URL}/comment/get-comment?commentId=${commentId}`
     );
-    if (!response.ok) {
-      throw new Error("Error fetching comment by commentId");
-    }
+    // if (!response.ok) {
+    //   throw new Error("Error fetching comment by commentId");
+    // }
     const data = await response.json();
     return data;
   } catch (error) {
