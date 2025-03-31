@@ -163,53 +163,8 @@ export const SocketContextProvider = ({
     [socket, user, localStream]
   );
 
-  // const createPeer = useCallback(
-  //   (stream: MediaStream, initiator: boolean) => {
-  //     const iceServers: RTCIceServer[] = [
-  //       {
-  //         urls: [
-  //           "stun:stun.l.google.com:19302",
-  //           "stun:stun1.l.google.com:19302",
-  //           "stun:stun2.l.google.com:19302",
-  //           "stun:stun3.l.google.com:19302",
-  //         ],
-  //       },
-  //     ];
-  //     const peer = new Peer({
-  //       stream,
-  //       initiator,
-  //       trickle: true,
-  //       config: { iceServers },
-  //     });
-
-  //     peer.on("stream", (stream) => {
-  //       setPeer((prevPeer) => {
-  //         if (prevPeer) {
-  //           return { ...prevPeer, stream };
-  //         }
-  //         return prevPeer;
-  //       });
-  //     });
-  //     peer.on("error", console.error);
-  //     peer.on("close", () => handleHangUp({}));
-
-  //     const rtcPeerConnection: RTCPeerConnection = (peer as any)._pc;
-  //     rtcPeerConnection.oniceconnectionstatechange = async () => {
-  //       if (
-  //         rtcPeerConnection.iceConnectionState === "disconnected" ||
-  //         rtcPeerConnection.iceConnectionState === "failed"
-  //       ) {
-  //         handleHangUp({});
-  //       }
-  //     };
-
-  //     return peer;
-  //   },
-  //   [ongoingCall, setPeer]
-  // );
-
   const createPeer = useCallback(
-    (stream: MediaStream, initiator: boolean, ongoingCall?: OngoingCall) => {
+    (stream: MediaStream, initiator: boolean) => {
       const iceServers: RTCIceServer[] = [
         {
           urls: [
@@ -220,81 +175,89 @@ export const SocketContextProvider = ({
           ],
         },
       ];
-
       const peer = new Peer({
-        initiator,
         stream,
+        initiator,
         trickle: true,
         config: { iceServers },
       });
 
-      peer.on("stream", (remoteStream) => {
-        console.log("Received remote stream", remoteStream);
-        setPeer((prev) => ({
-          ...prev,
-          stream: remoteStream,
-        }));
+      peer.on("stream", (stream) => {
+        setPeer((prevPeer) => {
+          if (prevPeer) {
+            return { ...prevPeer, stream };
+          }
+          return prevPeer;
+        });
       });
+      peer.on("error", console.error);
+      peer.on("close", () => handleHangUp({}));
 
-      peer.on("signal", (data) => {
-        if (socket && ongoingCall) {
-          socket.emit("webrtcSignal", {
-            sdp: data,
-            ongoingCall,
-            isCaller: initiator,
-          });
+      const rtcPeerConnection: RTCPeerConnection = (peer as any)._pc;
+      rtcPeerConnection.oniceconnectionstatechange = async () => {
+        if (
+          rtcPeerConnection.iceConnectionState === "disconnected" ||
+          rtcPeerConnection.iceConnectionState === "failed"
+        ) {
+          handleHangUp({});
         }
-      });
-
-      peer.on("error", (err) => {
-        console.error("Peer error:", err);
-        handleHangUp({});
-      });
-
-      peer.on("close", () => {
-        handleHangUp({});
-      });
+      };
 
       return peer;
     },
-    [socket, handleHangUp]
+    [ongoingCall, setPeer]
   );
 
-  // const completePeerConnection = useCallback(
-  //   async (connectionData: {
-  //     sdp: SignalData;
-  //     ongoingCall: OngoingCall;
-  //     isCaller: boolean;
-  //   }) => {
-  //     if (!localStream) {
-  //       console.log("Missing the localStream");
-  //       return;
-  //     }
+  // const createPeer = useCallback(
+  //   (stream: MediaStream, initiator: boolean, ongoingCall?: OngoingCall) => {
+  //     const iceServers: RTCIceServer[] = [
+  //       {
+  //         urls: [
+  //           "stun:stun.l.google.com:19302",
+  //           "stun:stun1.l.google.com:19302",
+  //           "stun:stun2.l.google.com:19302",
+  //           "stun:stun3.l.google.com:19302",
+  //         ],
+  //       },
+  //     ];
 
-  //     if (peer) {
-  //       peer.peerConnection?.signal(connectionData.sdp);
-  //       return;
-  //     }
-
-  //     const newPeer = createPeer(localStream, true);
-
-  //     setPeer({
-  //       peerConnection: newPeer,
-  //       participantUser: connectionData.ongoingCall.participants.receiver,
-  //       stream: undefined,
+  //     const peer = new Peer({
+  //       initiator,
+  //       stream,
+  //       trickle: true,
+  //       config: { iceServers },
   //     });
 
-  //     newPeer.on("signal", async (data: SignalData) => {
-  //       if (socket) {
+  //     peer.on("stream", (remoteStream) => {
+  //       console.log("Received remote stream", remoteStream);
+  //       setPeer((prev) => ({
+  //         ...prev,
+  //         stream: remoteStream,
+  //       }));
+  //     });
+
+  //     peer.on("signal", (data) => {
+  //       if (socket && ongoingCall) {
   //         socket.emit("webrtcSignal", {
   //           sdp: data,
   //           ongoingCall,
-  //           isCaller: true,
+  //           isCaller: initiator,
   //         });
   //       }
   //     });
+
+  //     peer.on("error", (err) => {
+  //       console.error("Peer error:", err);
+  //       handleHangUp({});
+  //     });
+
+  //     peer.on("close", () => {
+  //       handleHangUp({});
+  //     });
+
+  //     return peer;
   //   },
-  //   [localStream, createPeer, peer, ongoingCall]
+  //   [socket, handleHangUp]
   // );
 
   const completePeerConnection = useCallback(
@@ -303,91 +266,128 @@ export const SocketContextProvider = ({
       ongoingCall: OngoingCall;
       isCaller: boolean;
     }) => {
-      const stream = await getMediaStream();
-      if (!stream) return;
-
-      // If we're the receiver and don't have a peer yet
-      if (!connectionData.isCaller && !peer) {
-        const newPeer = createPeer(stream, false, connectionData.ongoingCall);
-
-        setPeer({
-          peerConnection: newPeer,
-          participantUser: connectionData.ongoingCall.participants.caller,
-          stream: undefined,
-        });
-
-        newPeer.signal(connectionData.sdp);
+      if (!localStream) {
+        console.log("Missing the localStream");
+        return;
       }
-      // If we're the caller and have a peer
-      else if (connectionData.isCaller && peer?.peerConnection) {
-        peer.peerConnection.signal(connectionData.sdp);
+
+      if (peer) {
+        peer.peerConnection?.signal(connectionData.sdp);
+        return;
       }
+
+      const newPeer = createPeer(localStream, true);
+
+      setPeer({
+        peerConnection: newPeer,
+        participantUser: connectionData.ongoingCall.participants.receiver,
+        stream: undefined,
+      });
+
+      newPeer.on("signal", async (data: SignalData) => {
+        if (socket) {
+          socket.emit("webrtcSignal", {
+            sdp: data,
+            ongoingCall,
+            isCaller: true,
+          });
+        }
+      });
     },
-    [getMediaStream, peer, createPeer]
+    [localStream, createPeer, peer, ongoingCall]
   );
 
-  // const handleJoinCall = useCallback(
-  //   async (ongoingCall: OngoingCall) => {
-  //     if (!ongoingCall) {
-  //       console.error("⚠️ OngoingCall is undefined!");
-  //       return;
-  //     }
-  //     console.log("✅ Received ongoingCall:", ongoingCall);
-
-  //     setOngoingCall((prev) => {
-  //       if (prev) {
-  //         return { ...prev, isRinging: false };
-  //       }
-  //       return prev;
-  //     });
-
+  // const completePeerConnection = useCallback(
+  //   async (connectionData: {
+  //     sdp: SignalData;
+  //     ongoingCall: OngoingCall;
+  //     isCaller: boolean;
+  //   }) => {
   //     const stream = await getMediaStream();
-  //     if (!stream) {
-  //       console.log("Could not get stream in handleJoinCall");
-  //       return;
+  //     if (!stream) return;
+
+  //     // If we're the receiver and don't have a peer yet
+  //     if (!connectionData.isCaller && !peer) {
+  //       const newPeer = createPeer(stream, false, connectionData.ongoingCall);
+
+  //       setPeer({
+  //         peerConnection: newPeer,
+  //         participantUser: connectionData.ongoingCall.participants.caller,
+  //         stream: undefined,
+  //       });
+
+  //       newPeer.signal(connectionData.sdp);
   //     }
-
-  //     const newPeer = createPeer(stream, true);
-  //     console.log(newPeer, "da xuong toi day");
-
-  //     setPeer({
-  //       peerConnection: newPeer,
-  //       participantUser: ongoingCall.participants.caller,
-  //       stream: undefined,
-  //     });
-
-  //     newPeer.on("signal", async (data: SignalData) => {
-  //       if (socket) {
-  //         socket.emit("webrtcSignal", {
-  //           sdp: data,
-  //           ongoingCall,
-  //           isCaller: false,
-  //         });
-  //       }
-  //     });
+  //     // If we're the caller and have a peer
+  //     else if (connectionData.isCaller && peer?.peerConnection) {
+  //       peer.peerConnection.signal(connectionData.sdp);
+  //     }
   //   },
-  //   [socket, currentSocketUser]
+  //   [getMediaStream, peer, createPeer]
   // );
 
   const handleJoinCall = useCallback(
     async (ongoingCall: OngoingCall) => {
-      if (!ongoingCall || !socket) return;
+      if (!ongoingCall) {
+        console.error("⚠️ OngoingCall is undefined!");
+        return;
+      }
+      console.log("✅ Received ongoingCall:", ongoingCall);
+
+      setOngoingCall((prev) => {
+        if (prev) {
+          return { ...prev, isRinging: false };
+        }
+        return prev;
+      });
 
       const stream = await getMediaStream();
-      if (!stream) return;
+      if (!stream) {
+        console.log("Could not get stream in handleJoinCall");
+        return;
+      }
 
-      setOngoingCall((prev) => ({ ...prev, isRinging: false }));
-
-      const newPeer = createPeer(stream, false, ongoingCall);
+      const newPeer = createPeer(stream, true);
+      console.log(newPeer, "da xuong toi day");
 
       setPeer({
         peerConnection: newPeer,
         participantUser: ongoingCall.participants.caller,
         stream: undefined,
       });
+
+      newPeer.on("signal", async (data: SignalData) => {
+        if (socket) {
+          socket.emit("webrtcSignal", {
+            sdp: data,
+            ongoingCall,
+            isCaller: false,
+          });
+        }
+      });
     },
-    [socket, getMediaStream, createPeer]
+    [socket, currentSocketUser]
   );
+
+  // const handleJoinCall = useCallback(
+  //   async (ongoingCall: OngoingCall) => {
+  //     if (!ongoingCall || !socket) return;
+
+  //     const stream = await getMediaStream();
+  //     if (!stream) return;
+
+  //     setOngoingCall((prev) => ({ ...prev, isRinging: false }));
+
+  //     const newPeer = createPeer(stream, false, ongoingCall);
+
+  //     setPeer({
+  //       peerConnection: newPeer,
+  //       participantUser: ongoingCall.participants.caller,
+  //       stream: undefined,
+  //     });
+  //   },
+  //   [socket, getMediaStream, createPeer]
+  // );
 
   useEffect(() => {
     const newSocket = io();

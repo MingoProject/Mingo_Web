@@ -58,9 +58,8 @@ export const VideoCall = () => {
   const isOnCall = !!(localStream && peer && ongoingCall);
 
   return (
-    <div className="relative h-full w-full bg-gray-900">
-      {/* Main video container */}
-      <div className="h-full w-full">
+    <div>
+      <div className="absolute w-[900px] h-[900px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-50">
         {remoteStream && (
           <VideoContainer
             stream={remoteStream}
@@ -71,7 +70,7 @@ export const VideoCall = () => {
 
         {/* Local video preview */}
         {localStream && (
-          <div className="absolute bottom-20 right-4 w-1/4 h-1/4">
+          <div className="absolute top-56 right-12 w-1/4 h-1/4 ">
             <SmallVideoContainer
               stream={localStream}
               isLocalStream={true}
@@ -81,53 +80,49 @@ export const VideoCall = () => {
         )}
       </div>
 
-      {/* Controls */}
-      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex space-x-4 p-4 z-50">
-        <button
-          onClick={toggleMic}
-          className="rounded-full bg-gray-700 p-3 hover:bg-gray-600"
-        >
-          {isMicOn ? (
+      <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex space-x-4  p-4  z-50">
+        <button onClick={toggleMic} className=" rounded-full bg-gray-200 p-2">
+          {isMicOn && (
             <Icon
               icon="material-symbols:mic"
-              width={24}
-              height={24}
-              className="text-white"
+              width={28}
+              height={28}
+              className="text-black"
             />
-          ) : (
+          )}
+          {!isMicOn && (
             <Icon
               icon="material-symbols:mic-off"
-              width={24}
-              height={24}
-              className="text-red-400"
+              width={28}
+              height={28}
+              className="text-black"
             />
           )}
         </button>
-
         <button
-          className="px-4 py-2 bg-red-600 text-white rounded-lg mx-4 text-sm hover:bg-red-700"
-          onClick={endCall}
+          className="px-4 py-2 bg-red-500 text-white rounded-lg mx-4 text-sm"
+          onClick={() => {}}
         >
           End Call
         </button>
-
         <button
           onClick={toggleCamera}
-          className="rounded-full bg-gray-700 p-3 hover:bg-gray-600"
+          className=" rounded-full bg-gray-200 p-2"
         >
-          {isVidOn ? (
+          {isVidOn && (
             <Icon
               icon="mynaui:video-solid"
-              width={24}
-              height={24}
-              className="text-white"
+              width={28}
+              height={28}
+              className="text-black"
             />
-          ) : (
+          )}
+          {!isVidOn && (
             <Icon
               icon="bxs:video-off"
-              width={24}
-              height={24}
-              className="text-red-400"
+              width={28}
+              height={28}
+              className="text-black"
             />
           )}
         </button>
