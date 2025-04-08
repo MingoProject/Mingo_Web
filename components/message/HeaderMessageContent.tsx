@@ -106,7 +106,7 @@ const HeaderMessageContent = ({
             icon={faCircleInfo}
             size="xl"
             className="text-primary-100 cursor-pointer"
-            onClick={toggleRightSide} // Gọi hàm toggle
+            // onClick={toggleRightSide} // Gọi hàm toggle
           />
         </div>
       </div>

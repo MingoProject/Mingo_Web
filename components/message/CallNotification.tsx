@@ -34,23 +34,23 @@ const CallNotification = () => {
         <p className="text-sm sb-2">Incoming Call</p>
         <div className="flex gap-8">
           <button
-            className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white"
+            className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white cursor-pointer"
             onClick={() => handleJoinCall(ongoingCall)}
           >
             <Icon
               icon="material-symbols:call"
               width={24}
               height={24}
-              className="text-white"
+              className="text-white cursor-pointer"
             />
           </button>
 
-          <button className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white">
+          <button className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white cursor-pointer">
             <Icon
               icon="material-symbols:call"
               width={24}
               height={24}
-              className="text-white"
+              className="text-white cursor-pointer"
             />
           </button>
         </div>

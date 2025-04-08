@@ -49,6 +49,7 @@ export const SocketContextProvider = ({
   const [peer, setPeer] = useState<PeerData | null>(null);
   const [isCallEnded, setIsCallEnded] = useState(false);
   console.log("online User", onlineUsers);
+  console.log("socket", socket);
   const requestPermissions = async () => {
     try {
       const permissions = await navigator.permissions.query({
@@ -390,7 +391,7 @@ export const SocketContextProvider = ({
   // );
 
   useEffect(() => {
-    const newSocket = io();
+    const newSocket = io("http://localhost:3000");
     setSocket(newSocket);
 
     return () => {

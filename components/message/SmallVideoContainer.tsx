@@ -28,7 +28,7 @@ const SmallVideoContainer = ({
   console.log(isLocalStream, "local small");
 
   return (
-    <div className="absolute flex justify-center items-center z-[1000] shadow-lg rounded-lg overflow-hidden">
+    <div className="absolute flex justify-center items-center z-[1000] shadow-lg rounded-lg overflow-hidden ">
       <video
         className="rounded border"
         autoPlay
