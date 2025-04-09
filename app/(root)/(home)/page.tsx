@@ -82,8 +82,8 @@ export default function Home() {
   }, [selectedFilter, postsData]);
 
   return (
-    <div className="background-light800_dark400 mt-[20px] flex w-full pt-[70px] justify-between">
-      <div className="background-light800_dark400 hidden w-[28%] pl-[2%] lg:block">
+    <div className="background-light800_dark400 mt-[20px] flex w-full pt-[70px] justify-between px-[16px]">
+      <div className="background-light800_dark400 hidden w-[25%] lg:block">
         {profile && (
           <>
             <h1 className="text-dark100_light500 text-2xl">
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[28%]">
+      <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[25%]">
         {/* <Hashtag /> */}
       </div>
     </div>
