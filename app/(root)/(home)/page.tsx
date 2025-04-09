@@ -82,8 +82,8 @@ export default function Home() {
   }, [selectedFilter, postsData]);
 
   return (
-    <div className="background-light800_dark400 mt-7 flex w-full pt-20">
-      <div className="background-light800_dark400 hidden w-[28%] pl-[2%] lg:block">
+    <div className="background-light800_dark400 mt-[20px] flex w-full pt-[70px] justify-between px-[16px]">
+      <div className="background-light800_dark400 hidden w-[25%] lg:block">
         {profile && (
           <>
             <h1 className="text-dark100_light500 text-2xl">
@@ -106,9 +106,9 @@ export default function Home() {
         )}
       </div>
 
-      <div className="background-light800_dark400 w-full justify-center px-3 lg:w-[44%]">
+      <div className="background-light800_dark400 w-[645px] justify-center px-3 lg:w-[44%]">
         <OpenCreatePost me={profile} setPostsData={setPostsData} />
-        <div className="my-2 flex items-center">
+        {/* <div className="my-2 flex items-center">
           <div className="ml-auto flex shrink-0 items-center pl-4">
             <p className="text-dark100_light500 mr-2">Filter: </p>
             <FilterPost
@@ -116,7 +116,7 @@ export default function Home() {
               setSelectedFilter={setSelectedFilter}
             />
           </div>
-        </div>
+        </div> */}
         <div className="background-light800_dark400 flex w-full flex-col gap-6">
           {filteredPosts.length === 0 ? (
             <NoResult
@@ -148,7 +148,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[28%]">
+      <div className="background-light800_dark400 hidden items-center justify-center bg-light-600 px-1 md:block md:w-[45%] lg:w-[25%]">
         {/* <Hashtag /> */}
       </div>
     </div>

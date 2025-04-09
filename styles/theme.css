@@ -3,27 +3,27 @@
 @tailwind utilities;
 
 @layer utilities {
-  .background-light500_dark100 {
-    @apply bg-light-500 dark:bg-dark-100;
+  .background-light100_dark100 {
+    @apply bg-light-100 dark:bg-dark-100;
   }
 
-  .background-light700_dark400 {
-    @apply bg-light-700 dark:bg-dark-400;
+  .background-light200_dark200 {
+    @apply bg-light-200 dark:bg-dark-200;
   }
 
-  .background-light800_dark300 {
-    @apply bg-light-800 dark:bg-dark-300;
+  .background-light300_dark300 {
+    @apply bg-light-300 dark:bg-dark-300;
   }
 
-  .background-light700_dark200 {
-    @apply bg-light-700 dark:bg-dark-200;
+  .background-light400_dark400 {
+    @apply bg-light-400 dark:bg-dark-400;
   }
 
-  .background-light600_dark200 {
-    @apply bg-light-600 dark:bg-dark-200;
+  .background-light500_dark500 {
+    @apply bg-light-500 dark:bg-dark-500;
   }
 
-  .background-light700_dark300 {
+  /* .background-light700_dark300 {
     @apply bg-light-700 dark:bg-dark-300;
   }
 
@@ -33,19 +33,22 @@
 
   .background-light800_dark400 {
     @apply bg-light-800 dark:bg-dark-400 !important;
+  } */
+
+  .text-dark100_light100 {
+    @apply dark:text-dark-100 text-light-100 !important;
+  }
+  .text-dark300_light300 {
+    @apply dark:text-dark-300 text-light-300 !important;
   }
 
-  .text-dark100_light500 {
-    @apply dark:text-dark-100 text-light-500 !important;
-  }
-
-  .text-dark100_primary100 {
+  /* .text-dark100_primary100 {
     @apply text-dark-100 dark:text-primary-100;
-  }
+  } */
 
-  .light-border {
+  /* .light-border {
     @apply border-light-500;
-  }
+  } */
 
   .h1-bold {
     @apply text-[30px] font-bold leading-[42px] tracking-tighter;

@@ -8,7 +8,7 @@ export const themes = [
 
 export const navbarLinks: NavbarLink[] = [
   {
-    icon: "fluent:home-20-regular",
+    icon: "fluent:home-16-regular",
     route: "/",
     label: "Home",
   },
@@ -23,7 +23,7 @@ export const navbarLinks: NavbarLink[] = [
     label: "Notifications",
   },
   {
-    icon: "ant-design:message-outlined",
+    icon: "mynaui:chat-dots",
     route: "/message",
     label: "Messages",
   },

@@ -146,7 +146,7 @@ const PostsCard = ({
   };
 
   return (
-    <div className="background-light700_dark300 h-auto w-full rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
+    <div className="background-light200_dark200 h-auto w-full  rounded-[10px] border shadow-lg dark:border-transparent dark:shadow-none">
       <div className="ml-4 mt-3 flex items-center">
         <div className="flex items-center">
           <Link href={`/profile/${author?._id || null}`}>
@@ -159,7 +159,7 @@ const PostsCard = ({
             />
           </Link>
           <div>
-            <span className="text-dark100_light500 ml-3 text-base">
+            <span className="text-dark100_light100 ml-3 text-base">
               {author?.firstName ? author.firstName : ""}{" "}
               {author?.lastName ? author.lastName : ""}
               {tags?.length > 0 && (
@@ -169,7 +169,7 @@ const PostsCard = ({
                     <Link href={`/profile/${tag._id}`} key={tag._id}>
                       <span
                         key={tag._id}
-                        className="cursor-pointer text-primary-100"
+                        className="cursor-pointer text-dark100_light100"
                       >
                         {tag?.firstName}
                         {index < tags.slice(0, 2).length - 1 ? ", " : ""}

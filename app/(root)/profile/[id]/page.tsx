@@ -245,8 +245,8 @@ const ProfilePage = () => {
             </div>
 
             {!isMe ? (
-              <div className="relative flex-1">
-                <div className="flex justify-between items-center">
+              <div className="relative flex-1 ml-10">
+                <div className="flex ml-5 justify-between items-center">
                   {/* Nút Message */}
                   <MyButton
                     title="Message"
