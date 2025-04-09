@@ -13,55 +13,50 @@ const OpenCreatePost = ({ me, setPostsData }: any) => {
   return (
     <>
       <div
-        className="background-light700_dark300 h-[135px] w-full rounded-md border px-2 shadow-lg dark:border-transparent dark:shadow-none"
+        className="background-light200_dark200 h-[126px] w-full rounded-[10px] px-[26px] py-[20px]"
         onClick={toggleForm}
       >
-        <div className="mx-[1%] pl-4 pt-6">
-          <div className="flex">
-            <div className="size-[40px] overflow-hidden rounded-full">
-              <Image
-                src={me?.avatar || "/assets/images/capy.jpg"}
-                alt="Avatar"
-                width={40}
-                height={40}
-                className="size-10 rounded-full object-cover"
-              />
-            </div>
-            <input
-              type="text"
-              placeholder="    Share something..."
-              className="background-light800_dark400 ml-3 h-[40px] w-full rounded-full text-base"
-              readOnly
+        <div className="flex gap-[9px]">
+          <div className="size-[40px] overflow-hidden rounded-full">
+            <Image
+              src={me?.avatar || "/assets/images/capy.jpg"}
+              alt="Avatar"
+              width={40}
+              height={40}
+              className="size-10 rounded-full object-cover"
             />
           </div>
+          <input
+            type="text"
+            placeholder="Share something..."
+            className="background-light400_dark400 pl-[15px] py-[10px] h-[40px] w-full rounded-full text-[16px] font-normal text-dark300_light300"
+            readOnly
+          />
         </div>
-
-        <div className="ml-7 mt-3 flex justify-center">
+        <hr className="my-[13px] background-light300_dark300"></hr>
+        <div className=" flex justify-between items-center">
           <div className="flex">
-            <Icon
-              className="text-lg text-primary-100"
-              icon="gravity-ui:picture"
-            />
-            <label className="ml-1 text-sm text-primary-100">Image</label>
+            <span className="text-[16px] font-normal text-dark100_light100">
+              Add to your post
+            </span>
           </div>
-          <div className="ml-[10%] flex">
+          <div className="ml-[10%] flex gap-[5px]">
             <Icon
-              className="text-lg text-primary-100"
-              icon="lets-icons:video-light"
+              className="text-[20px] text-dark100_light100"
+              icon="bx:music"
             />
-            <label className="ml-1 text-sm text-primary-100">Video</label>
+            <Icon
+              className="text-[20px] text-dark100_light100"
+              icon="fluent:video-16-regular"
+            />
+            <Icon
+              className="text-[20px] text-dark100_light100"
+              icon="stash:image"
+            />
           </div>
-          {/* <div className="ml-[10%] flex font-light">
-            <Icon
-              className="text-lg text-primary-100"
-              icon="icon-park-outline:emotion-happy"
-            />
-            <label className="ml-1 text-sm font-light text-primary-100">
-              Emotion
-            </label>
-          </div> */}
         </div>
       </div>
+
       {isFormOpen && (
         <CreatePost
           onClose={() => setIsFormOpen(false)}

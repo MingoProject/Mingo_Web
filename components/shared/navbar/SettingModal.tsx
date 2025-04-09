@@ -120,8 +120,8 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
   };
   return (
     <>
-      <Link href="/" className="mr-3 text-primary-100 ">
-        <p className="hidden md:block">
+      <Link href="/" className=" text-primary-100">
+        <p className="hidden md:block text-[16px] font-semibold">
           {profile.firstName} {profile.lastName}
         </p>
       </Link>
@@ -132,9 +132,9 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
             <Image
               src={profile?.avatar || "/assets/images/capy.jpg"}
               alt="Avatar"
-              width={30}
-              height={30}
-              className="size-7 rounded-full object-cover"
+              width={40}
+              height={40}
+              className="size-[40px] rounded-full object-cover"
             />
           </MenubarTrigger>
           <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">

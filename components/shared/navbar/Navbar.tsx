@@ -110,39 +110,38 @@ const Navbar = () => {
   if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
-    <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
-      <Link href="/" className="flex items-center gap-1">
-        <p className="text-dark100_light500 text-3xl">
-          Min<span className="text-3xl text-primary-100 ">gle</span>
+    <nav className="flex-between background-light200_dark200 fixed z-50 w-full py-[10px] px-[35px]">
+      <Link href="/" className="flex items-center gap-1 w-[256px]">
+        <p className="text-dark100_light100 text-[40px] font-medium logo">
+          Min
+          <span className="text-[40px] font-medium text-primary-100">gle</span>
         </p>
       </Link>
 
-      {/* Sidebar links */}
-      <div className="hidden w-auto sm:flex">
+      <div className="hidden w-[34%] sm:flex gap-[84px]">
         <Sheet>
           {navbarLinks.map((item) => {
-            // Check if the route is for a drawer (Search, Notifications) or a regular link
             const isDrawerLink =
               item.route === "/search" || item.route === "/notifications";
 
-            // Modify the active condition to check both the pathname and activeDrawer state for drawer links
             const isActive = isDrawerLink
-              ? activeDrawer === item.route // Use activeDrawer for Search and Notifications
-              : pathname === item.route; // Use pathname for regular links
-
+              ? activeDrawer === item.route
+              : pathname === item.route;
             return isDrawerLink ? (
               <div
                 key={item.route}
                 onClick={() => toggleDrawer(item.route)}
                 className={`${
                   isActive
-                    ? "background-light600_dark200 text-dark100_light500 rounded-lg"
-                    : "text-dark100_light500"
-                } ml-[12%] flex h-[43px] cursor-pointer items-center justify-start gap-4 bg-transparent p-4`}
+                    ? "background-light400_dark400 text-dark100_light100 rounded-[12px] px-[15px] py-[10px]"
+                    : "text-dark100_light100"
+                }  flex cursor-pointer items-center justify-center gap-[20px] bg-transparent`}
               >
-                <Icon className="text-2xl text-light-500" icon={item.icon} />
+                <Icon className="text-[30px]" icon={item.icon} />
                 {isActive && (
-                  <p className={`${isActive ? "font-medium" : "font-medium"}`}>
+                  <p
+                    className={`text-[16px] ${isActive ? "font-medium" : "font-medium"}`}
+                  >
                     {item.label}
                   </p>
                 )}
@@ -153,14 +152,14 @@ const Navbar = () => {
                   href={item.route}
                   className={`${
                     isActive
-                      ? "background-light600_dark200 text-dark100_light500 rounded-lg"
-                      : "text-dark100_light500"
-                  } ml-[12%] flex h-[43px] items-center justify-start gap-4 bg-transparent p-4`}
+                      ? "background-light400_dark400 text-dark100_light100 rounded-[12px] px-[15px] py-[10px]"
+                      : "text-dark100_light100"
+                  }  flex cursor-pointer items-center justify-center gap-[20px] bg-transparent`}
                 >
-                  <Icon className="text-2xl text-light-500" icon={item.icon} />
+                  <Icon className="text-[30px]" icon={item.icon} />
                   {isActive && (
                     <p
-                      className={`${isActive ? "font-medium" : "font-medium"}`}
+                      className={`text-[16px] ${isActive ? "font-medium" : "font-medium"}`}
                     >
                       {item.label}
                     </p>
@@ -172,8 +171,7 @@ const Navbar = () => {
         </Sheet>
       </div>
 
-      {/* Right side options */}
-      <div className="flex-between w-auto">
+      <div className="flex justify-center items-center gap-4 w-[256px]">
         <Theme />
         {profile ? (
           <SettingModal
