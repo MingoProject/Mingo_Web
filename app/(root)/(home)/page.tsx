@@ -106,7 +106,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="background-light800_dark400 w-[645px] justify-center px-3 lg:w-[44%]">
+      <div className="background-light800_dark400 w-[645px] flex flex-col gap-[15px] justify-center px-3 lg:w-[44%]">
         <OpenCreatePost me={profile} setPostsData={setPostsData} />
         {/* <div className="my-2 flex items-center">
           <div className="ml-auto flex shrink-0 items-center pl-4">
@@ -117,13 +117,13 @@ export default function Home() {
             />
           </div>
         </div> */}
-        <div className="background-light800_dark400 flex w-full flex-col gap-6">
+        <div className="background-light800_dark400 flex w-full flex-col gap-[15px]">
           {filteredPosts.length === 0 ? (
             <NoResult
               title="No Result"
-              description="No articles found"
+              description="No posts found"
               link="/"
-              linkTitle="Trở lại"
+              linkTitle="Reload"
             />
           ) : (
             filteredPosts.map((post) => (

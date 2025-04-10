@@ -12,6 +12,7 @@ import SettingModal from "./SettingModal";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Notification from "../notification/Notification";
+import NavbarTab from "@/components/ui/navbarTab";
 
 export const notifications = [
   {
@@ -118,7 +119,7 @@ const Navbar = () => {
         </p>
       </Link>
 
-      <div className="hidden w-[34%] sm:flex gap-[84px]">
+      <div className="hidden w-[32%] sm:flex gap-[84px]">
         <Sheet>
           {navbarLinks.map((item) => {
             const isDrawerLink =
@@ -127,45 +128,14 @@ const Navbar = () => {
             const isActive = isDrawerLink
               ? activeDrawer === item.route
               : pathname === item.route;
-            return isDrawerLink ? (
-              <div
+            return (
+              <NavbarTab
                 key={item.route}
-                onClick={() => toggleDrawer(item.route)}
-                className={`${
-                  isActive
-                    ? "background-light400_dark400 text-dark100_light100 rounded-[12px] px-[15px] py-[10px]"
-                    : "text-dark100_light100"
-                }  flex cursor-pointer items-center justify-center gap-[20px] bg-transparent`}
-              >
-                <Icon className="text-[30px]" icon={item.icon} />
-                {isActive && (
-                  <p
-                    className={`text-[16px] ${isActive ? "font-medium" : "font-medium"}`}
-                  >
-                    {item.label}
-                  </p>
-                )}
-              </div>
-            ) : (
-              <SheetClose asChild key={item.route}>
-                <Link
-                  href={item.route}
-                  className={`${
-                    isActive
-                      ? "background-light400_dark400 text-dark100_light100 rounded-[12px] px-[15px] py-[10px]"
-                      : "text-dark100_light100"
-                  }  flex cursor-pointer items-center justify-center gap-[20px] bg-transparent`}
-                >
-                  <Icon className="text-[30px]" icon={item.icon} />
-                  {isActive && (
-                    <p
-                      className={`text-[16px] ${isActive ? "font-medium" : "font-medium"}`}
-                    >
-                      {item.label}
-                    </p>
-                  )}
-                </Link>
-              </SheetClose>
+                item={item}
+                isActive={isActive}
+                type={isDrawerLink ? "drawer" : "link"}
+                toggleDrawer={toggleDrawer}
+              />
             );
           })}
         </Sheet>
