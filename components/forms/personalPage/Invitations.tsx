@@ -2,7 +2,6 @@ import { getMyFollowers } from "@/lib/services/user.service";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "@/components/ui/button";
 import {
   acceptAddFriend,
   unfollowOrRefuseFriendRequest,
@@ -135,7 +134,7 @@ const Invitations = ({ onClose }: any) => {
                 <div className="ml-4 font-bold">
                   {invitation.firstName} {invitation.lastName}
                 </div>
-                <Button
+                <button
                   onClick={() =>
                     handleAcceptFriend(
                       invitation._id,
@@ -146,8 +145,8 @@ const Invitations = ({ onClose }: any) => {
                   className=" mx-2 rounded-lg bg-primary-100 px-4 text-white"
                 >
                   Accept
-                </Button>
-                <Button
+                </button>
+                <button
                   onClick={() =>
                     handleRefuseFriend(
                       invitation._id,
@@ -158,7 +157,7 @@ const Invitations = ({ onClose }: any) => {
                   className="background-light800_dark400 text-dark100_light500 ml-3 rounded-lg px-4 "
                 >
                   Refuse
-                </Button>
+                </button>
               </div>
             ))
           ) : (

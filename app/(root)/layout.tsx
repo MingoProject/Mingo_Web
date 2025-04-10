@@ -1,12 +1,11 @@
 "use client";
-import Navbar from "@/components/shared/navbar/Navbar";
-import { ChatItemProvider } from "@/context/ChatItemContext";
 import React, { useEffect } from "react";
 import { IsOffline, IsOnline } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { OnlineEvent } from "@/dtos/MessageDTO";
+import Navbar from "@/components/shared/navbar/Navbar";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const checkOnlineStatus = async () => {
     try {

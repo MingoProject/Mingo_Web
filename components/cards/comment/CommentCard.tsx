@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import CommentMenu from "../forms/comment/Modal";
+import CommentMenu from "../../forms/comment/Modal";
 import {
   addReplyToComment,
   createReplyCommentMedia,
@@ -9,7 +9,7 @@ import {
   dislikeComment,
   likeComment,
 } from "@/lib/services/comment.service";
-import ReplyCard from "./ReplyCard";
+import ReplyCard from "../ReplyCard";
 import { createNotification } from "@/lib/services/notification.service";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
@@ -19,8 +19,8 @@ interface CommentCardProps {
   setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
   profileBasic: UserBasicInfo;
   author: UserBasicInfo;
-  postId: string;
-  mediaId: string;
+  postId?: string;
+  mediaId?: string;
   setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
   numberOfComments: number;
 }
@@ -70,16 +70,12 @@ const CommentCard = ({
     };
   }, [comment.replies]);
 
-  // const handleOpenMenu = (commentId: string) => {
-  //   setSelectedCommentId(commentId);
-  // };
-
   const handleOpenMenu = (commentId: string, iconRef: HTMLDivElement) => {
     setSelectedCommentId(commentId);
-    const rect = iconRef.getBoundingClientRect(); // Lấy vị trí của dấu ba chấm
+    const rect = iconRef.getBoundingClientRect();
     setPosition({
-      top: rect.bottom, // Tính cả khoảng cuộn dọc
-      left: rect.left, // Tính cả khoảng cuộn ngang
+      top: rect.bottom,
+      left: rect.left,
     });
   };
 
@@ -163,11 +159,9 @@ const CommentCard = ({
 
   const toggleLike = async () => {
     if (isLiked) {
-      // Dislike
       await handleDislikeComment();
       setNumberOfLikes((prev: any) => prev - 1);
     } else {
-      // Like
       await handleLikeComment();
       setNumberOfLikes((prev: any) => prev + 1);
     }
@@ -326,21 +320,21 @@ const CommentCard = ({
 
   return (
     <div className="w-full">
-      <div className="flex">
+      <div className="flex gap-[10px]">
         <Image
           src={comment.author?.avatar || "/assets/images/capy.jpg"}
           alt={comment.author?.avatar}
           width={40}
           height={40}
-          className="size-11 rounded-full object-cover"
+          className="size-10 rounded-full object-cover"
         />
 
-        <div className="ml-3 w-full">
-          <p className="text-dark100_light500 font-bold">
+        <div className=" w-full">
+          <p className="text-dark100_light100 text-[16px] font-medium">
             {comment.author.firstName} {comment.author.lastName}
           </p>
           <div className="flex">
-            <p className="text-dark100_light500 inline-block rounded-r-lg rounded-bl-lg border p-2">
+            <p className="text-dark100_light100 text-[16px] font-normal inline-block rounded-r-[20px] rounded-bl-[20px] px-[15px] py-[10px] background-light400_dark400">
               {comment.content}
             </p>
             <Icon
@@ -376,31 +370,31 @@ const CommentCard = ({
             )}
           </div>
 
-          <div className="mt-2 flex items-center text-sm text-gray-500">
-            <span className="mx-2 text-gray-600">
+          <div className="flex items-center gap-[15px]">
+            <span className="text-dark100_light100 text-[12px] font-normal">
               {timeSinceMessage(comment.createAt)}
             </span>
 
             <div className="flex">
-              <button
-                className={`hover:underline ${
+              <div
+                className={`hover:underline text-[14px] ${
                   isLiked
                     ? "font-bold text-primary-100"
-                    : "text-dark100_light500"
+                    : "text-dark100_light100"
                 }`}
                 onClick={toggleLike}
               >
                 Like {numberOfLikes}
-              </button>
+              </div>
             </div>
 
-            <span className="mx-2">·</span>
-            <button
-              className="text-dark100_light500 hover:underline"
+            <span className="text-dark100_light100">·</span>
+            <div
+              className="text-dark100_light100 hover:underline text-[14px]"
               onClick={() => setReplyingTo(comment._id)}
             >
               Reply
-            </button>
+            </div>
           </div>
 
           {replyingTo === comment._id && (

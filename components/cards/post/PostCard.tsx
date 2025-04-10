@@ -1,11 +1,9 @@
 "use client";
-import React, { useEffect, useRef, useState } from "react";
-import Image from "next/image";
+import React, { useEffect, useState } from "react";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
 import DetailPost from "../../forms/post/DetailPost";
 import DetailsImage from "../../forms/personalPage/DetailsImage";
 import DetailsVideo from "../../forms/personalPage/DetailsVideo";
@@ -33,7 +31,6 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
   const [numberOfComments, setNumberOfComments] = useState(comments.length);
   const [numberOfLikes, setNumberOfLikes] = useState(likes.length);
 
-  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -42,9 +39,6 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
 
   const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
   const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
-  const handleTagsModalToggle = () => {
-    setIsTagsModalOpen((prev) => !prev);
-  };
 
   useEffect(() => {
     let isMounted = true;
@@ -109,12 +103,7 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
 
   return (
     <div className="background-light200_dark200 px-[24px] py-[21px] h-auto w-full  rounded-[10px] border shadow-lg dark:border-transparent dark:shadow-none flex flex-col gap-[15px]">
-      <PostHeader
-        post={post}
-        handleTagsModalToggle={handleTagsModalToggle}
-        isTagsModalOpen={isTagsModalOpen}
-        setPostsData={setPostsData}
-      />
+      <PostHeader post={post} setPostsData={setPostsData} />
       <div className="">
         <p className="text-dark100_light100">{post?.content}</p>
       </div>
@@ -141,7 +130,7 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
           setIsLiked={setIsLiked}
           numberOfComments={numberOfComments}
         />
-        <div className="text-dark100_light500">
+        <div className="text-dark100_light100">
           <Input
             avatarSrc={profileBasic?.avatar || "/assets/images/capy.jpg"}
             placeholder="Write a comment"
@@ -163,6 +152,7 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
             numberOfComments={numberOfComments}
             commentsData={commentsData}
             setCommentsData={setCommentsData}
+            setPostsData={setPostsData}
           />
         )}
       </div>

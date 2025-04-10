@@ -9,20 +9,17 @@ import { PostResponseDTO } from "@/dtos/PostDTO";
 
 interface PostHeaderProps {
   post: PostResponseDTO;
-  handleTagsModalToggle: () => void;
-  isTagsModalOpen: boolean;
   setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
 }
 
-const PostHeader = ({
-  post,
-  handleTagsModalToggle,
-  isTagsModalOpen,
-  setPostsData,
-}: PostHeaderProps) => {
+const PostHeader = ({ post, setPostsData }: PostHeaderProps) => {
   const tags = post?.tags ?? [];
   const [menuModal, setMenuModal] = useState(false);
   const menuRef = useRef<HTMLDivElement | null>(null);
+  const [isTagsModalOpen, setIsTagsModalOpen] = useState(false);
+  const handleTagsModalToggle = () => {
+    setIsTagsModalOpen((prev) => !prev);
+  };
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {

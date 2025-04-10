@@ -6,7 +6,6 @@ import {
   deleteNotification,
   getNotifications,
 } from "@/lib/services/notification.service";
-import { Button } from "@/components/ui/button";
 import {
   acceptAddBff,
   acceptAddFriend,
@@ -562,7 +561,7 @@ const Notification = ({ closeDrawer }: any) => {
               </p>
               {notification.type === "friend_request" && (
                 <div>
-                  <Button
+                  <button
                     onClick={() =>
                       handleAcceptFriend(
                         notification.senderId._id,
@@ -573,8 +572,8 @@ const Notification = ({ closeDrawer }: any) => {
                     className=" rounded-lg bg-primary-100 px-4 text-white"
                   >
                     Accept
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={() =>
                       handleRefuseFriend(
                         notification.senderId._id,
@@ -585,12 +584,12 @@ const Notification = ({ closeDrawer }: any) => {
                     className="background-light800_dark400 text-dark100_light500 ml-3 rounded-lg px-4 "
                   >
                     Refuse
-                  </Button>
+                  </button>
                 </div>
               )}
               {notification.type === "bff_request" && (
                 <div className="my-1">
-                  <Button
+                  <button
                     onClick={() =>
                       handleAcceptBff(
                         notification.senderId._id,
@@ -601,8 +600,8 @@ const Notification = ({ closeDrawer }: any) => {
                     className=" rounded-lg bg-primary-100 px-4 text-white"
                   >
                     Accept
-                  </Button>
-                  <Button
+                  </button>
+                  <button
                     onClick={() =>
                       handleRefuseBff(
                         notification.senderId._id,
@@ -613,7 +612,7 @@ const Notification = ({ closeDrawer }: any) => {
                     className="background-light800_dark400 text-dark100_light500 ml-3 rounded-lg px-4 "
                   >
                     Refuse
-                  </Button>
+                  </button>
                 </div>
               )}
               <p className="text-sm text-gray-500">

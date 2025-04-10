@@ -7,8 +7,9 @@ import OpenCreatePost from "@/components/forms/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
-import { PostResponseDTO, UserBasicInfo } from "@/dtos/PostDTO";
+import { PostResponseDTO } from "@/dtos/PostDTO";
 import { useAuth } from "@/context/AuthContext";
+import { UserBasicInfo } from "@/dtos/UserDTO";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);

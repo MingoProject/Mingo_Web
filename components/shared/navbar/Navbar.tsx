@@ -9,7 +9,6 @@ import Theme from "./Theme";
 import Search from "../search/Search";
 import { getMyProfile } from "@/lib/services/user.service";
 import SettingModal from "./SettingModal";
-import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
 import Notification from "../notification/Notification";
 import NavbarTab from "@/components/ui/navbarTab";
@@ -151,9 +150,9 @@ const Navbar = () => {
           />
         ) : (
           <Link href="/sign-in">
-            <Button className="rounded bg-primary-100 px-4 py-2 text-white">
+            <button className="rounded bg-primary-100 px-4 py-2 text-white">
               Login
-            </Button>
+            </button>
           </Link>
         )}
       </div>
