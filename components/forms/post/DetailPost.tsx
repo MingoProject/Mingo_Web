@@ -10,7 +10,6 @@ import {
   createComment,
   getCommentByCommentId,
 } from "@/lib/services/comment.service";
-import Action from "./Action";
 import CommentCard from "@/components/cards/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
@@ -19,50 +18,31 @@ import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import Link from "next/link";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import PostAction from "./PostAction";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
 
 interface DetailPostProps {
-  postId: string;
-  author: any;
-  content: string;
-  media: any[] | undefined;
-  createdAt: Date;
-  likes: any[];
-  comments: any[];
-  shares: any[];
-  location?: string;
-  privacy: {
-    type: string;
-    allowedUsers?: any[];
-  };
-  tags: any[];
+  post: PostResponseDTO;
   onClose: () => void;
-  profile: any;
-  likesCount: any;
-  setLikesCount: any;
-  isLiked: any;
-  setIsLiked: any;
-  setNumberOfComments: any;
-  numberOfComments: any;
-  commentsData: any;
-  setCommentsData: any;
+  profileBasic: UserBasicInfo;
+  numberOfLikes: number;
+  setNumberOfLikes: React.Dispatch<React.SetStateAction<number>>;
+  isLiked: boolean;
+  setIsLiked: React.Dispatch<React.SetStateAction<boolean>>;
+  setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
+  numberOfComments: number;
+  commentsData: CommentResponseDTO[];
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
 }
 
 const DetailPost = ({
-  postId,
-  author,
-  content,
-  media,
-  createdAt,
-  likes,
-  comments,
-  shares,
-  location,
-  privacy,
-  tags,
+  post,
   onClose,
-  profile,
-  likesCount,
-  setLikesCount,
+  profileBasic,
+  numberOfLikes,
+  setNumberOfLikes,
   isLiked,
   setIsLiked,
   setNumberOfComments,
@@ -75,7 +55,7 @@ const DetailPost = ({
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isDetailVisible, setIsDetailVisible] = useState(true);
   const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
-
+  const tags = post?.tags ?? [];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };
@@ -98,7 +78,7 @@ const DetailPost = ({
       const newCommentData = await createComment(
         { content: newComment },
         token,
-        postId
+        post?._id
       );
       const currentTime = new Date();
       const isoStringWithOffset = currentTime
@@ -112,11 +92,11 @@ const DetailPost = ({
       const enrichedComment = {
         ...newCommentData,
         userId: {
-          _id: profile?._id,
+          _id: profileBasic?._id,
 
-          avatar: profile?.avatar || "/assets/images/capy.jpg",
-          firstName: profile?.firstName || "Anonymous",
-          lastName: profile?.lastName || "Anonymous",
+          avatar: profileBasic?.avatar || "/assets/images/capy.jpg",
+          firstName: profileBasic?.firstName || "Anonymous",
+          lastName: profileBasic?.lastName || "Anonymous",
         },
         createAt: isoStringWithOffset,
       };
@@ -124,12 +104,12 @@ const DetailPost = ({
       // Cập nhật state commentsData
       setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
-      if (author._id !== profile._id) {
+      if (post?.author._id !== profileBasic._id) {
         const notificationParams = {
-          senderId: profile._id,
-          receiverId: author._id,
+          senderId: profileBasic._id,
+          receiverId: post?.author._id,
           type: "comment",
-          postId,
+          postId: post?._id,
         };
 
         await createNotification(notificationParams, token);
@@ -179,10 +159,12 @@ const DetailPost = ({
           <div className="p-4">
             <div className="flex">
               <div className="ml-4 mt-3 flex items-center">
-                <Link href={`/profile/${author?._id || null}`}>
+                <Link href={`/profile/${post?.author?._id || null}`}>
                   <Image
                     src={
-                      author?.avatar ? author.avatar : "/assets/images/capy.jpg"
+                      post?.author?.avatar
+                        ? post?.author.avatar
+                        : "/assets/images/capy.jpg"
                     }
                     alt="Avatar"
                     width={45}
@@ -192,8 +174,8 @@ const DetailPost = ({
                 </Link>
                 <div>
                   <p className="text-dark100_light500 ml-3 text-base">
-                    {author?.firstName ? author.firstName : ""}
-                    {tags?.length > 0 && (
+                    {post?.author?.firstName ? post?.author.firstName : ""}
+                    {tags.length > 0 && (
                       <span>
                         <span className="">{" with "}</span>
 
@@ -211,13 +193,13 @@ const DetailPost = ({
                         <span>
                           <span className="">{" - "}</span>
 
-                          {location}
+                          {post?.location}
                         </span>
                       </div>
                     )}
                   </p>
                   <span className="text-dark100_light500 ml-3 text-sm">
-                    {getTimestamp(createdAt)}
+                    {getTimestamp(post?.createdAt)}
                   </span>
                 </div>
               </div>
@@ -236,10 +218,10 @@ const DetailPost = ({
             </div>
 
             <div className="ml-4 mt-5">
-              <p className="text-dark100_light500">{content}</p>
+              <p className="text-dark100_light500">{post?.content}</p>
             </div>
 
-            {media && media.length > 0 && (
+            {post?.media && post?.media.length > 0 && (
               <div className=" mx-5 mt-3 flex h-auto justify-around">
                 <Swiper
                   cssMode={true}
@@ -249,13 +231,13 @@ const DetailPost = ({
                   modules={[Navigation, Pagination, Mousewheel, Keyboard]}
                   className="h-auto w-[400px] flex justify-center items-center"
                 >
-                  {media.map((item, index) => (
+                  {post?.media.map((item, index) => (
                     <SwiperSlide key={item.url + index}>
                       {item.type === "image" ? (
                         <>
                           <CldImage
-                            src={item.url} // Use this sample image or upload your own via the Media Explorer
-                            width="500" // Transform the image: auto-crop to square aspect_ratio
+                            src={item.url}
+                            width="500"
                             height="500"
                             alt=""
                             className="h-[250px] w-[250px] mx-auto"
@@ -287,15 +269,11 @@ const DetailPost = ({
             )}
 
             <div className="mx-10 my-5">
-              <Action
-                likes={likes}
-                postId={postId}
-                comments={comments}
-                shares={shares}
-                author={author}
-                profile={profile}
-                likesCount={likesCount}
-                setLikesCount={setLikesCount}
+              <PostAction
+                post={post}
+                userId={profileBasic?._id}
+                numberOfLikes={numberOfLikes}
+                setNumberOfLikes={setNumberOfLikes}
                 isLiked={isLiked}
                 setIsLiked={setIsLiked}
                 numberOfComments={numberOfComments}
@@ -314,9 +292,9 @@ const DetailPost = ({
                           <CommentCard
                             comment={comment}
                             setCommentsData={setCommentsData}
-                            profile={profile}
-                            author={author}
-                            postId={postId}
+                            profileBasic={profileBasic}
+                            author={post?.author}
+                            postId={post?._id}
                             setNumberOfComments={setNumberOfComments}
                             numberOfComments={numberOfComments}
                           />
@@ -331,8 +309,8 @@ const DetailPost = ({
                 <div className="w-[10%] overflow-hidden rounded-full">
                   <Image
                     src={
-                      profile?.avatar
-                        ? profile.avatar
+                      profileBasic?.avatar
+                        ? profileBasic.avatar
                         : "/assets/images/capy.jpg"
                     }
                     alt="Avatar"
@@ -366,8 +344,8 @@ const DetailPost = ({
             setSelectedImage(null);
             setIsDetailVisible(true);
           }}
-          profileUser={author}
-          me={profile}
+          profileUser={post?.author}
+          me={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />
@@ -379,8 +357,8 @@ const DetailPost = ({
             setSelectedVideo(null);
             setIsDetailVisible(true); // Hiển thị lại DetailPost
           }}
-          profileUser={author}
-          me={profile}
+          profileUser={post?.author}
+          me={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />

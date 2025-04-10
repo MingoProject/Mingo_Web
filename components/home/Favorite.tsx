@@ -1,7 +1,7 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import PostYouLikeCard from "../cards/PostYouLikeCard";
+import PostYouLikeCard from "../cards/post/PostYouLikeCard";
 
 const Favorite = ({ onClose, post, setListLikePosts }: any) => {
   // Hàm kiểm tra và phân tích ngày hợp lệ

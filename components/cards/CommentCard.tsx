@@ -11,17 +11,29 @@ import {
 } from "@/lib/services/comment.service";
 import ReplyCard from "./ReplyCard";
 import { createNotification } from "@/lib/services/notification.service";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
 
+interface CommentCardProps {
+  comment: CommentResponseDTO;
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+  profileBasic: UserBasicInfo;
+  author: UserBasicInfo;
+  postId: string;
+  mediaId: string;
+  setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
+  numberOfComments: number;
+}
 const CommentCard = ({
   comment,
   setCommentsData,
-  profile,
+  profileBasic,
   author,
   postId,
   mediaId,
   setNumberOfComments,
   numberOfComments,
-}: any) => {
+}: CommentCardProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [numberOfLikes, setNumberOfLikes] = useState(comment?.likes.length);
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
@@ -29,7 +41,7 @@ const CommentCard = ({
   );
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
   const [showReplies, setShowReplies] = useState(false);
-  const [replies, setReplies] = useState<any[]>([]);
+  const [replies, setReplies] = useState<string[] | undefined>([]);
   const [newComment, setNewComment] = useState("");
   const [position, setPosition] = useState({ top: 0, left: 0 });
   const menuRef = useRef<HTMLDivElement | null>(null);
@@ -48,7 +60,7 @@ const CommentCard = ({
     let isMounted = true;
     try {
       if (isMounted) {
-        setReplies(comment.replies);
+        setReplies(comment?.replies);
       }
     } catch (error) {
       console.error("Error fetching profile:", error);
@@ -95,10 +107,10 @@ const CommentCard = ({
       if (token) {
         await likeComment(comment._id, token);
         setIsLiked(!isLiked);
-        if (profile._id !== comment.userId._id) {
+        if (profileBasic._id !== comment.author._id) {
           const params = {
-            senderId: profile._id,
-            receiverId: comment.userId._id,
+            senderId: profileBasic._id,
+            receiverId: comment.author._id,
             type: "like_comment",
             commentId: comment._id,
             ...(postId && { postId }),
@@ -200,20 +212,20 @@ const CommentCard = ({
         const enrichedComment = {
           ...newCommentData,
           userId: {
-            _id: profile?._id,
-            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-            firstName: profile?.firstName || "Anonymous",
-            lastName: profile?.lastName || "Anonymous",
+            _id: profileBasic?._id,
+            avatar: profileBasic?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profileBasic?.firstName || "Anonymous",
+            lastName: profileBasic?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
         };
 
         setReplies((prev) => [enrichedComment, ...prev]);
 
-        if (comment.userId._id !== profile._id) {
+        if (comment.author._id !== profileBasic._id) {
           const notificationParams = {
-            senderId: profile._id,
-            receiverId: comment.userId._id,
+            senderId: profileBasic._id,
+            receiverId: comment.author._id,
             type: "reply_comment",
             commentId: comment._id,
             ...(postId && { postId }),
@@ -222,9 +234,9 @@ const CommentCard = ({
 
           await createNotification(notificationParams, token);
         }
-        if (author._id !== profile._id) {
+        if (author._id !== profileBasic._id) {
           const notificationParams2 = {
-            senderId: profile._id,
+            senderId: profileBasic._id,
             receiverId: author._id,
             type: "comment",
             ...(postId && { postId }),
@@ -255,10 +267,10 @@ const CommentCard = ({
         const enrichedComment = {
           ...newCommentData,
           userId: {
-            _id: profile?._id,
-            avatar: profile?.avatar || "/assets/images/default-avatar.jpg",
-            firstName: profile?.firstName || "Anonymous",
-            lastName: profile?.lastName || "Anonymous",
+            _id: profileBasic?._id,
+            avatar: profileBasic?.avatar || "/assets/images/default-avatar.jpg",
+            firstName: profileBasic?.firstName || "Anonymous",
+            lastName: profileBasic?.lastName || "Anonymous",
           },
           createAt: isoStringWithOffset,
           originalCommentId: comment._id,
@@ -266,10 +278,10 @@ const CommentCard = ({
 
         setReplies((prev) => [enrichedComment, ...prev]);
 
-        if (comment.userId._id !== profile._id) {
+        if (comment.author._id !== profileBasic._id) {
           const notificationParams = {
-            senderId: profile._id,
-            receiverId: comment.userId._id,
+            senderId: profileBasic._id,
+            receiverId: comment.author._id,
             type: "reply_comment",
             commentId: comment._id,
             ...(postId && { postId }),
@@ -279,9 +291,9 @@ const CommentCard = ({
           await createNotification(notificationParams, token);
         }
 
-        if (author._id !== profile._id) {
+        if (author._id !== profileBasic._id) {
           const notificationParams2 = {
-            senderId: profile._id,
+            senderId: profileBasic._id,
             receiverId: author._id,
             type: "comment",
             ...(postId && { postId }),
@@ -316,8 +328,8 @@ const CommentCard = ({
     <div className="w-full">
       <div className="flex">
         <Image
-          src={comment.userId.avatar || "/assets/images/capy.jpg"}
-          alt={comment.userId.avatar}
+          src={comment.author?.avatar || "/assets/images/capy.jpg"}
+          alt={comment.author?.avatar}
           width={40}
           height={40}
           className="size-11 rounded-full object-cover"
@@ -325,7 +337,7 @@ const CommentCard = ({
 
         <div className="ml-3 w-full">
           <p className="text-dark100_light500 font-bold">
-            {comment.userId.firstName} {comment.userId.lastName}
+            {comment.author.firstName} {comment.author.lastName}
           </p>
           <div className="flex">
             <p className="text-dark100_light500 inline-block rounded-r-lg rounded-bl-lg border p-2">
@@ -348,7 +360,7 @@ const CommentCard = ({
                 }}
               >
                 <CommentMenu
-                  commentUserId={comment.userId._id}
+                  commentUserId={comment.author?._id}
                   commentId={comment._id}
                   originalCommentId={comment.originalCommentId}
                   content={comment.content}
@@ -422,7 +434,7 @@ const CommentCard = ({
             </div>
           )}
 
-          {replies?.length > 0 && (
+          {replies && replies?.length > 0 && (
             <p
               className="mb-1 cursor-pointer text-primary-100"
               onClick={toggleShowReplies}
@@ -438,7 +450,7 @@ const CommentCard = ({
                   reply={reply}
                   setReplies={setReplies}
                   replies={replies}
-                  profile={profile}
+                  profile={profileBasic}
                   commentId={comment._id}
                   author={author}
                   postId={postId}

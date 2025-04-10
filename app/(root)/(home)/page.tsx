@@ -2,19 +2,24 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import NoResult from "@/components/shared/NoResult";
-import PostsCard from "@/components/cards/PostsCard";
+import PostsCard from "@/components/cards/post/PostCard";
 import OpenCreatePost from "@/components/forms/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
-import Hashtag from "@/components/forms/home/Hashtag";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
-import { PostResponseDTO } from "@/dtos/PostDTO";
+import { PostResponseDTO, UserBasicInfo } from "@/dtos/PostDTO";
 import { useAuth } from "@/context/AuthContext";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
-  const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const { profile } = useAuth();
+
+  const profileBasic: UserBasicInfo = {
+    _id: profile?._id,
+    avatar: profile?.avatar,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -22,7 +27,7 @@ export default function Home() {
       try {
         const data = await fetchPosts();
         if (isMounted) {
-          setPosts(data);
+          setPostsData(data);
         }
       } catch (error) {
         console.error("Error loading posts:", error);
@@ -33,24 +38,6 @@ export default function Home() {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchPostsData = async () => {
-      const detailedPosts = await fetchDetailedPosts(posts);
-      // console.log(detailedPosts);
-      if (isMounted) {
-        setPostsData(detailedPosts);
-      }
-    };
-
-    if (posts.length > 0) {
-      fetchPostsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [posts]);
 
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
@@ -128,19 +115,8 @@ export default function Home() {
           ) : (
             filteredPosts.map((post) => (
               <PostsCard
-                key={post._id}
-                postId={post._id}
-                author={post.author}
-                content={post.content}
-                media={post.media}
-                createdAt={post.createdAt}
-                likes={post.likes || []}
-                comments={post.comments || []}
-                shares={post.shares || []}
-                location={post.location}
-                tags={post.tags || []}
-                privacy={post.privacy}
-                profile={profile}
+                post={post}
+                profileBasic={profileBasic}
                 setPostsData={setFilteredPosts}
               />
             ))
