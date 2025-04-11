@@ -34,36 +34,13 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  // const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
 
   const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
   const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
 
-  // useEffect(() => {
-  //   let isMounted = true;
-
-  //   const getComments = async () => {
-  //     const detailsComments: CommentResponseDTO[] = await Promise.all(
-  //       post?.comments.map(async (comment: any) => {
-  //         return await getCommentByCommentId(comment);
-  //       })
-  //     );
-
-  //     if (isMounted) {
-  //       setCommentsData(detailsComments);
-  //     }
-  //   };
-
-  //   getComments();
-
-  //   return () => {
-  //     isMounted = false;
-  //   };
-  // }, [post?.comments]);
   const openModal = async () => {
     setIsModalOpen(true);
-    // if (commentsData.length === 0) {
     try {
       const detailsComments: CommentResponseDTO[] = await Promise.all(
         post?.comments.map(async (comment: any) => {
@@ -74,7 +51,6 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
     } catch (error) {
       console.error("Error fetching comments:", error);
     }
-    // }
   };
 
   useEffect(() => {
