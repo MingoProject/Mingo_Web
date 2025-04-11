@@ -12,6 +12,7 @@ interface PostActionProps {
   setIsLiked: React.Dispatch<React.SetStateAction<boolean>>;
   numberOfComments: number;
 }
+
 const PostAction = ({
   post,
   userId,

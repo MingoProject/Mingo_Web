@@ -1,11 +1,4 @@
 import React, { useState } from "react";
-import Image from "next/image";
-import { Swiper, SwiperSlide } from "swiper/react";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Navigation, Pagination, Mousewheel, Keyboard } from "swiper/modules";
-import { getTimestamp } from "@/lib/utils";
 import {
   createComment,
   getCommentByCommentId,
@@ -13,13 +6,11 @@ import {
 import CommentCard from "@/components/cards/comment/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
-import { CldImage } from "next-cloudinary";
 import DetailsImage from "../personalPage/DetailsImage";
 import DetailsVideo from "../personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
-import Link from "next/link";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import PostAction from "./PostAction";
+import PostAction from "../../cards/post/PostAction";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import PostHeader from "@/components/cards/post/PostHeader";
@@ -61,7 +52,6 @@ const DetailPost = ({
   const [selectedVideo, setSelectedVideo] = useState(null);
   const [isDetailVisible, setIsDetailVisible] = useState(true);
   const [commentsMediaData, setCommentsMediaData] = useState<any[]>([]);
-  const tags = post?.tags ?? [];
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setNewComment(e.target.value);
   };

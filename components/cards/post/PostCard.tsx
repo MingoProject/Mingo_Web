@@ -11,7 +11,7 @@ import { getCommentByCommentId } from "@/lib/services/comment.service";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import PostHeader from "./PostHeader";
-import PostAction from "../../forms/post/PostAction";
+import PostAction from "./PostAction";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import PostMedia from "./PostMedia";

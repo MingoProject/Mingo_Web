@@ -43,12 +43,15 @@ const Input = ({
         onClick={onClick}
       >
         {iconSrc && (
-          <Icon icon={iconSrc} className="size-[24px] mr-2 opacity-60" />
+          <Icon
+            icon={iconSrc}
+            className="size-[24px] placeholder:text-dark300_light300"
+          />
         )}
         <input
           type="text"
           placeholder={placeholder}
-          className={`w-full h-[17px] bg-transparent outline-none text-dark300_light300 text-[16px] font-normal cursor-${cursor}`}
+          className={`w-full h-[17px] bg-transparent outline-none placeholder:text-dark300_light300 text-dark100_light100 text-[16px] font-normal cursor-${cursor}`}
           readOnly={readOnly}
           value={value}
           onChange={onChange}

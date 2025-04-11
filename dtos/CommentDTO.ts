@@ -20,6 +20,6 @@ export interface CommentResponseDTO {
   replies?: string[];
   likes: string[];
   createAt: Date;
-  parentId: string;
+  parentId: UserBasicInfo | null;
   originalCommentId: string;
 }
