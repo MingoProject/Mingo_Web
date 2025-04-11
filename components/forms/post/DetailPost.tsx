@@ -76,28 +76,21 @@ const DetailPost = ({
         token,
         post?._id
       );
+
       const currentTime = new Date();
-      const isoStringWithOffset = currentTime
-        .toISOString()
-        .replace("Z", "+00:00");
-      console.log(
-        "Current Time (new Date()):",
-        currentTime.toISOString().replace("Z", "+00:00")
-      );
-
-      const enrichedComment = {
+      const enrichedComment: CommentResponseDTO = {
         ...newCommentData,
-        userId: {
+        author: {
           _id: profileBasic?._id,
-
-          avatar: profileBasic?.avatar || "/assets/images/capy.jpg",
+          avatar: profileBasic?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profileBasic?.firstName || "Anonymous",
           lastName: profileBasic?.lastName || "Anonymous",
         },
-        createAt: isoStringWithOffset,
+        createAt: currentTime,
+        likes: [],
       };
+      post.comments = [newCommentData._id, ...post.comments];
 
-      // Cập nhật state commentsData
       setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
       if (post?.author._id !== profileBasic._id) {
@@ -153,6 +146,13 @@ const DetailPost = ({
       {isDetailVisible && (
         <div className="background-light200_dark200 max-h-[90vh] w-[645px] overflow-auto rounded-[10px] border shadow-lg dark:border-transparent dark:shadow-none custom-scrollbar">
           <div className="px-[24px] py-[21px] flex flex-col gap-[15px]">
+            <div className="flex justify-end">
+              <Icon
+                icon="ic:round-close"
+                className="size-[30px] text-primary-100"
+                onClick={onClose}
+              />
+            </div>
             <PostHeader post={post} setPostsData={setPostsData} />
             <div className="">
               <p className="text-dark100_light100">{post?.content}</p>
