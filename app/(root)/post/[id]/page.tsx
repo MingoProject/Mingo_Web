@@ -1,5 +1,5 @@
 "use client";
-import PostsCard from "@/components/cards/PostsCard";
+import PostsCard from "@/components/cards/post/PostCard";
 import { useAuth } from "@/context/AuthContext";
 import { getPostByPostId } from "@/lib/services/post.service";
 import { useParams } from "next/navigation";

@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import ButtonClose from "@/components/ui/buttonClose";
 import { updateUserBio } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -85,12 +84,12 @@ const Bio = ({ profileUser, setProfileUser }: any) => {
             <div className="mt-10 flex justify-end space-x-2">
               <ButtonClose onClick={() => setShowEditBio(false)} />
 
-              <Button
+              <button
                 className="bg-primary-100 text-white"
                 onClick={handleSave}
               >
                 Save
-              </Button>
+              </button>
             </div>
           </div>
         </div>

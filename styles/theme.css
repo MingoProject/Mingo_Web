@@ -41,6 +41,9 @@
   .text-dark300_light300 {
     @apply dark:text-dark-300 text-light-300 !important;
   }
+  .text-dark100_light200 {
+    @apply dark:text-dark-100 text-light-200 !important;
+  }
 
   /* .text-dark100_primary100 {
     @apply text-dark-100 dark:text-primary-100;

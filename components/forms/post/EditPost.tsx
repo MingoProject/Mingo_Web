@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import { editPost, getPostByPostId } from "@/lib/services/post.service";
 import { createMedia } from "@/lib/services/media.service";
@@ -459,13 +458,13 @@ const EditPost = ({
           )}
 
           {error && <p className="text-red-500">{error}</p>}
-          <Button
+          <button
             type="submit"
             className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
             disabled={loading}
           >
             {loading ? "Updating..." : "Update Post"}
-          </Button>
+          </button>
         </form>
         <style jsx>{`
           .custom-scrollbar::-webkit-scrollbar {

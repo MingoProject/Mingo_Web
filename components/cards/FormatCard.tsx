@@ -1,7 +1,7 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React from "react";
-import { Button } from "../ui/button";
+// import { Button } from "../ui/button";
 
 type ActionType = "delete" | "block" | "disableNotifications"; // Các loại hành động
 
@@ -76,18 +76,18 @@ const Format = ({
             />
           </div>
           <div className="text-dark100_light500 flex items-center justify-between gap-4 px-8 py-4">
-            <Button
+            <button
               onClick={onClose}
               className="h-[35px] w-32 bg-white text-xs shadow-md dark:border dark:bg-transparent md:text-sm"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={getConfirmAction()} // Gọi hàm tương ứng
               className="h-[35px] w-32 bg-primary-100 text-xs text-white shadow-md md:text-sm"
             >
               Confirm
-            </Button>
+            </button>
           </div>
         </div>
       </div>

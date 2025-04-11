@@ -7,7 +7,6 @@ import {
   PaginationLink,
 } from "@/components/ui/pagination";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { Button } from "../ui/button";
 import { PaginationProps } from "@/types/pagination";
 
 interface pagination {
@@ -68,7 +67,7 @@ const PaginationUI: React.FC<pagination> = ({ paginationUI }) => {
         <Pagination className="mx-auto flex w-full justify-end">
           <PaginationContent className="flex flex-row items-center justify-end gap-[12px]">
             <PaginationItem>
-              <Button
+              <button
                 onClick={() => setCurrentPage(currentPage - 1)}
                 disabled={currentPage === 1}
                 className="flex w-fit h-fit bg-transparent hover:bg-transparent p-0"
@@ -79,7 +78,7 @@ const PaginationUI: React.FC<pagination> = ({ paginationUI }) => {
                   height={18}
                   className="dark:text-dark-450 text-light-550"
                 />
-              </Button>
+              </button>
             </PaginationItem>
 
             {displayedPages.map((page, index) => {
@@ -115,7 +114,7 @@ const PaginationUI: React.FC<pagination> = ({ paginationUI }) => {
             })}
 
             <PaginationItem>
-              <Button
+              <button
                 onClick={() => setCurrentPage(currentPage + 1)}
                 disabled={currentPage === totalPages}
                 className="flex w-fit h-fit bg-transparent hover:bg-transparent p-0"
@@ -126,7 +125,7 @@ const PaginationUI: React.FC<pagination> = ({ paginationUI }) => {
                   height={18}
                   className="dark:text-dark-450 text-light-550"
                 />
-              </Button>
+              </button>
             </PaginationItem>
           </PaginationContent>
         </Pagination>

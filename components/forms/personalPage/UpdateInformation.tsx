@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import ButtonClose from "@/components/ui/buttonClose";
 import { updateInfo } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -270,9 +269,9 @@ const UpdateInformation = ({
         {/* Buttons */}
         <div className="mt-10 flex justify-end space-x-2">
           <ButtonClose onClick={onClose} />
-          <Button className="bg-primary-100 text-white" onClick={handleSave}>
+          <button className="bg-primary-100 text-white" onClick={handleSave}>
             Save
-          </Button>
+          </button>
         </div>
       </div>
       <style jsx>{`

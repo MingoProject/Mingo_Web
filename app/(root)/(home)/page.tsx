@@ -2,19 +2,25 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import NoResult from "@/components/shared/NoResult";
-import PostsCard from "@/components/cards/PostsCard";
+import PostsCard from "@/components/cards/post/PostCard";
 import OpenCreatePost from "@/components/forms/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
-import Hashtag from "@/components/forms/home/Hashtag";
 import { fetchPosts } from "@/lib/services/post.service";
 import fetchDetailedPosts from "@/hooks/usePosts";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { useAuth } from "@/context/AuthContext";
+import { UserBasicInfo } from "@/dtos/UserDTO";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
-  const [posts, setPosts] = useState<PostResponseDTO[]>([]);
   const { profile } = useAuth();
+
+  const profileBasic: UserBasicInfo = {
+    _id: profile?._id,
+    avatar: profile?.avatar,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -22,7 +28,7 @@ export default function Home() {
       try {
         const data = await fetchPosts();
         if (isMounted) {
-          setPosts(data);
+          setPostsData(data);
         }
       } catch (error) {
         console.error("Error loading posts:", error);
@@ -33,24 +39,6 @@ export default function Home() {
       isMounted = false;
     };
   }, []);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchPostsData = async () => {
-      const detailedPosts = await fetchDetailedPosts(posts);
-      // console.log(detailedPosts);
-      if (isMounted) {
-        setPostsData(detailedPosts);
-      }
-    };
-
-    if (posts.length > 0) {
-      fetchPostsData();
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [posts]);
 
   const [selectedFilter, setSelectedFilter] =
     React.useState<string>("Mới nhất");
@@ -106,7 +94,7 @@ export default function Home() {
         )}
       </div>
 
-      <div className="background-light800_dark400 w-[645px] justify-center px-3 lg:w-[44%]">
+      <div className="background-light800_dark400 w-[645px] flex flex-col gap-[15px] justify-center px-3 lg:w-[44%]">
         <OpenCreatePost me={profile} setPostsData={setPostsData} />
         {/* <div className="my-2 flex items-center">
           <div className="ml-auto flex shrink-0 items-center pl-4">
@@ -117,30 +105,19 @@ export default function Home() {
             />
           </div>
         </div> */}
-        <div className="background-light800_dark400 flex w-full flex-col gap-6">
+        <div className="background-light800_dark400 flex w-full flex-col gap-[15px]">
           {filteredPosts.length === 0 ? (
             <NoResult
               title="No Result"
-              description="No articles found"
+              description="No posts found"
               link="/"
-              linkTitle="Trở lại"
+              linkTitle="Reload"
             />
           ) : (
             filteredPosts.map((post) => (
               <PostsCard
-                key={post._id}
-                postId={post._id}
-                author={post.author}
-                content={post.content}
-                media={post.media}
-                createdAt={post.createdAt}
-                likes={post.likes || []}
-                comments={post.comments || []}
-                shares={post.shares || []}
-                location={post.location}
-                tags={post.tags || []}
-                privacy={post.privacy}
-                profile={profile}
+                post={post}
+                profileBasic={profileBasic}
                 setPostsData={setFilteredPosts}
               />
             ))

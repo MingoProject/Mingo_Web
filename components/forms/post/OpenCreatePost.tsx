@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
 import CreatePost from "./CreatePost";
+import Input from "@/components/ui/input";
 
 const OpenCreatePost = ({ me, setPostsData }: any) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
@@ -16,23 +17,13 @@ const OpenCreatePost = ({ me, setPostsData }: any) => {
         className="background-light200_dark200 h-[126px] w-full rounded-[10px] px-[26px] py-[20px]"
         onClick={toggleForm}
       >
-        <div className="flex gap-[9px]">
-          <div className="size-[40px] overflow-hidden rounded-full">
-            <Image
-              src={me?.avatar || "/assets/images/capy.jpg"}
-              alt="Avatar"
-              width={40}
-              height={40}
-              className="size-10 rounded-full object-cover"
-            />
-          </div>
-          <input
-            type="text"
-            placeholder="Share something..."
-            className="background-light400_dark400 pl-[15px] py-[10px] h-[40px] w-full rounded-full text-[16px] font-normal text-dark300_light300"
-            readOnly
-          />
-        </div>
+        <Input
+          avatarSrc={me?.avatar || "/assets/images/capy.jpg"}
+          placeholder="Share something..."
+          readOnly={true}
+          cursor="pointer"
+          onClick={toggleForm}
+        />
         <hr className="my-[13px] background-light300_dark300"></hr>
         <div className=" flex justify-between items-center">
           <div className="flex">

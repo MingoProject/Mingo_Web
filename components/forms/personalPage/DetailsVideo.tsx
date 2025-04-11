@@ -7,7 +7,7 @@ import {
   createCommentMedia,
   getCommentByCommentId,
 } from "@/lib/services/comment.service";
-import CommentCard from "@/components/cards/CommentCard";
+import CommentCard from "@/components/cards/comment/CommentCard";
 import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";

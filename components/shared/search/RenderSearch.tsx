@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import NoResult from "@/components/shared/NoResult";
-import PostsCard from "@/components/cards/PostsCard";
+import PostsCard from "@/components/cards/post/PostCard";
 import UserCard from "./UserCard";
 import { fetchUsers } from "@/lib/services/user.service";
 import { fetchPosts, getPostByPostId } from "@/lib/services/post.service";

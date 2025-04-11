@@ -3,37 +3,14 @@ import React, { useEffect, useRef, useState } from "react";
 import EditPost from "./EditPost";
 import { useAuth } from "@/context/AuthContext";
 import ReportCard from "@/components/cards/ReportCard";
+import { PostResponseDTO } from "@/dtos/PostDTO";
 
-const PostMenu = ({
-  postId,
-  author,
-  content,
-  media,
-  createdAt,
-  likes,
-  comments,
-  shares,
-  location,
-  privacy,
-  onClose,
-  setPostsData,
-}: {
-  postId: string;
-  author: any;
-  content: string;
-  media: any[] | undefined;
-  createdAt: Date;
-  likes: any[];
-  comments: any[];
-  shares: any[];
-  location?: string;
-  privacy: {
-    type: string;
-    allowedUsers?: any[];
-  };
+interface PostMenuProps {
+  post: PostResponseDTO;
   onClose: () => void;
-  setPostsData: any;
-}) => {
+  setPostsData: (data: any) => void;
+}
+const PostMenu = ({ post, onClose, setPostsData }: PostMenuProps) => {
   const menuRef = useRef(null);
   const [userId, setUserId] = useState("");
   const [isEditing, setIsEditing] = useState(false);
@@ -72,12 +49,12 @@ const PostMenu = ({
   };
 
   useEffect(() => {
-    if (profile?.saveIds?.includes(postId)) {
+    if (profile?.saveIds?.includes(post?._id)) {
       setIsSaved(true);
     } else {
       setIsSaved(false);
     }
-  }, [profile, postId]);
+  }, [profile, post?._id]);
 
   const handleSavePost = async (postId: string) => {
     const token = localStorage.getItem("token");
@@ -108,7 +85,7 @@ const PostMenu = ({
       ref={menuRef}
       className="background-light800_dark400 absolute mt-2 w-48 rounded-md border shadow-lg"
     >
-      {isPostOwner(author._id) ? (
+      {isPostOwner(post?.author._id) ? (
         <>
           <button
             onClick={handleOpenEditPost}
@@ -118,13 +95,13 @@ const PostMenu = ({
           </button>
           {isEditing && (
             <EditPost
-              postId={postId}
+              postId={post?._id}
               onClose={() => setIsEditing(false)}
               setPostsData={setPostsData}
             />
           )}
           <button
-            onClick={() => handleDeletePost(postId)}
+            onClick={() => handleDeletePost(post?._id)}
             className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
           >
             Delete
@@ -134,14 +111,14 @@ const PostMenu = ({
         <>
           {isSaved ? (
             <button
-              onClick={() => handleUnsavePost(postId)}
+              onClick={() => handleUnsavePost(post?._id)}
               className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
             >
               Unsave post
             </button>
           ) : (
             <button
-              onClick={() => handleSavePost(postId)}
+              onClick={() => handleSavePost(post?._id)}
               className="text-dark100_light500 w-full px-4 py-1 text-left text-sm "
             >
               Save post
@@ -159,8 +136,8 @@ const PostMenu = ({
         <ReportCard
           onClose={() => setIsReport(false)}
           type="post"
-          entityId={postId}
-          reportedId={author._id}
+          entityId={post?._id}
+          reportedId={post?.author._id}
         />
       )}
     </div>

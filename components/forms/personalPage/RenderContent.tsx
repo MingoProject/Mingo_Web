@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
-import PostsCard from "@/components/cards/PostsCard";
+import PostsCard from "@/components/cards/post/PostCard";
 import NoResult from "@/components/shared/NoResult";
 import OpenCreatePost from "../post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";

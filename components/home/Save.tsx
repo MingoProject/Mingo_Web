@@ -1,7 +1,7 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect } from "react";
-import PostYouSaveCard from "../cards/PostYouSaveCard";
+import PostYouSaveCard from "../cards/post/PostYouSaveCard";
 
 const Save = ({ onClose, post, setListSavePosts }: any) => {
   useEffect(() => {

@@ -101,3 +101,10 @@ export interface FindUserDTO {
   relation: string;
   status: boolean;
 }
+
+export interface UserBasicInfo {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  avatar: string;
+}

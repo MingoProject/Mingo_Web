@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { formattedDate } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
@@ -179,12 +178,12 @@ const InfomationUser = ({
         </div>
       </div>
       <div className="mr-[5%] flex items-center">
-        <Button
+        <button
           className="ml-[5%] mr-[2%] mt-4 text-left  text-primary-100"
           onClick={() => setShowDetails(!showDetails)}
         >
           {showDetails ? "Hidden" : "See all"}
-        </Button>
+        </button>
         {isMe && (
           <Icon
             icon="solar:pen-broken"
