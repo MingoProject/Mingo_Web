@@ -15,16 +15,18 @@ import {
   SocketUser,
 } from "@/dtos/SocketDTO";
 import Peer, { SignalData } from "simple-peer";
+import { useRouter } from "next/navigation";
 
 interface iSocketContext {
   onlineUsers: SocketUser[] | null;
   ongoingCall: OngoingCall | null;
   localStream: MediaStream | null;
   peer: PeerData | null;
-  handleCall: (user: SocketUser) => void;
+  isCallEnded: boolean;
+  handleCall: (user: SocketUser, isVideoCall: boolean) => void;
   handleJoinCall: (ongoingCall: OngoingCall) => void;
   handleHangUp: (data: {
-    ongoingCall?: OngoingCall | null;
+    ongoingCall?: OngoingCall;
     isEmitHangUp?: boolean;
   }) => void;
 }
@@ -48,6 +50,7 @@ export const SocketContextProvider = ({
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [peer, setPeer] = useState<PeerData | null>(null);
   const [isCallEnded, setIsCallEnded] = useState(false);
+
   console.log("online User", onlineUsers);
   console.log("socket", socket);
   const requestPermissions = async () => {
@@ -116,7 +119,8 @@ export const SocketContextProvider = ({
   );
 
   const handleCall = useCallback(
-    async (user: SocketUser) => {
+    async (user: SocketUser, isVideoCall: boolean) => {
+      setIsCallEnded(false);
       if (!currentSocketUser || !socket) return;
       requestPermissions();
       const stream = await getMediaStream();
@@ -130,17 +134,19 @@ export const SocketContextProvider = ({
       setOngoingCall({
         participants,
         isRinging: false,
+        isVideoCall: isVideoCall,
       });
-      socket.emit("call", participants);
+      socket.emit("call", participants, isVideoCall);
     },
     [socket, currentSocketUser, ongoingCall]
   );
 
   const onIncomingCall = useCallback(
-    (participants: Participants) => {
+    (participants: Participants, isVideoCall: boolean) => {
       setOngoingCall({
         participants,
         isRinging: true,
+        isVideoCall: isVideoCall,
       });
     },
     [socket, user, ongoingCall]
@@ -148,7 +154,7 @@ export const SocketContextProvider = ({
 
   const handleHangUp = useCallback(
     (data: { ongoingCall?: OngoingCall | null; isEmitHangUp?: boolean }) => {
-      if (socket && user && data.ongoingCall && data.isEmitHangUp) {
+      if (socket && user && data?.ongoingCall && data?.isEmitHangUp) {
         socket.emit("hangup", {
           ongoingCall: data.ongoingCall,
           userHangingupId: user._id,
@@ -160,6 +166,7 @@ export const SocketContextProvider = ({
         localStream.getTracks().forEach((track) => track.stop());
         setLocalStream(null);
       }
+      setIsCallEnded(true);
     },
     [socket, user, localStream]
   );
@@ -209,58 +216,6 @@ export const SocketContextProvider = ({
     [ongoingCall, setPeer]
   );
 
-  // const createPeer = useCallback(
-  //   (stream: MediaStream, initiator: boolean, ongoingCall?: OngoingCall) => {
-  //     const iceServers: RTCIceServer[] = [
-  //       {
-  //         urls: [
-  //           "stun:stun.l.google.com:19302",
-  //           "stun:stun1.l.google.com:19302",
-  //           "stun:stun2.l.google.com:19302",
-  //           "stun:stun3.l.google.com:19302",
-  //         ],
-  //       },
-  //     ];
-
-  //     const peer = new Peer({
-  //       initiator,
-  //       stream,
-  //       trickle: true,
-  //       config: { iceServers },
-  //     });
-
-  //     peer.on("stream", (remoteStream) => {
-  //       console.log("Received remote stream", remoteStream);
-  //       setPeer((prev) => ({
-  //         ...prev,
-  //         stream: remoteStream,
-  //       }));
-  //     });
-
-  //     peer.on("signal", (data) => {
-  //       if (socket && ongoingCall) {
-  //         socket.emit("webrtcSignal", {
-  //           sdp: data,
-  //           ongoingCall,
-  //           isCaller: initiator,
-  //         });
-  //       }
-  //     });
-
-  //     peer.on("error", (err) => {
-  //       console.error("Peer error:", err);
-  //       handleHangUp({});
-  //     });
-
-  //     peer.on("close", () => {
-  //       handleHangUp({});
-  //     });
-
-  //     return peer;
-  //   },
-  //   [socket, handleHangUp]
-  // );
-
   const completePeerConnection = useCallback(
     async (connectionData: {
       sdp: SignalData;
@@ -298,37 +253,9 @@ export const SocketContextProvider = ({
     [localStream, createPeer, peer, ongoingCall]
   );
 
-  // const completePeerConnection = useCallback(
-  //   async (connectionData: {
-  //     sdp: SignalData;
-  //     ongoingCall: OngoingCall;
-  //     isCaller: boolean;
-  //   }) => {
-  //     const stream = await getMediaStream();
-  //     if (!stream) return;
-
-  //     // If we're the receiver and don't have a peer yet
-  //     if (!connectionData.isCaller && !peer) {
-  //       const newPeer = createPeer(stream, false, connectionData.ongoingCall);
-
-  //       setPeer({
-  //         peerConnection: newPeer,
-  //         participantUser: connectionData.ongoingCall.participants.caller,
-  //         stream: undefined,
-  //       });
-
-  //       newPeer.signal(connectionData.sdp);
-  //     }
-  //     // If we're the caller and have a peer
-  //     else if (connectionData.isCaller && peer?.peerConnection) {
-  //       peer.peerConnection.signal(connectionData.sdp);
-  //     }
-  //   },
-  //   [getMediaStream, peer, createPeer]
-  // );
-
   const handleJoinCall = useCallback(
     async (ongoingCall: OngoingCall) => {
+      setIsCallEnded(false);
       if (!ongoingCall) {
         console.error("⚠️ OngoingCall is undefined!");
         return;
@@ -337,9 +264,12 @@ export const SocketContextProvider = ({
 
       setOngoingCall((prev) => {
         if (prev) {
-          return { ...prev, isRinging: false };
-        }
-        return prev;
+          return {
+            ...prev,
+            isRinging: false,
+            isVideoCall: ongoingCall.isVideoCall,
+          };
+        } else return null;
       });
 
       const stream = await getMediaStream();
@@ -349,7 +279,6 @@ export const SocketContextProvider = ({
       }
 
       const newPeer = createPeer(stream, true);
-      console.log(newPeer, "da xuong toi day");
 
       setPeer({
         peerConnection: newPeer,
@@ -369,26 +298,6 @@ export const SocketContextProvider = ({
     },
     [socket, currentSocketUser]
   );
-
-  // const handleJoinCall = useCallback(
-  //   async (ongoingCall: OngoingCall) => {
-  //     if (!ongoingCall || !socket) return;
-
-  //     const stream = await getMediaStream();
-  //     if (!stream) return;
-
-  //     setOngoingCall((prev) => ({ ...prev, isRinging: false }));
-
-  //     const newPeer = createPeer(stream, false, ongoingCall);
-
-  //     setPeer({
-  //       peerConnection: newPeer,
-  //       participantUser: ongoingCall.participants.caller,
-  //       stream: undefined,
-  //     });
-  //   },
-  //   [socket, getMediaStream, createPeer]
-  // );
 
   useEffect(() => {
     const newSocket = io("http://localhost:3000");
@@ -446,11 +355,24 @@ export const SocketContextProvider = ({
     if (!socket || !isSocketConnected) return;
     socket.on("incomingCall", onIncomingCall);
     socket.on("webrtcSignal", completePeerConnection);
+    socket.on("hangup", handleHangUp);
     return () => {
       socket.off("incomingCall", onIncomingCall);
       socket.off("webrtcSignal", completePeerConnection);
+      socket.off("hangup", handleHangUp);
     };
   }, [socket, isSocketConnected, user, onIncomingCall, completePeerConnection]);
+
+  useEffect(() => {
+    let timeout: ReturnType<typeof setTimeout>;
+
+    if (isCallEnded) {
+      timeout = setTimeout(() => {
+        setIsCallEnded(false);
+      }, 2000);
+    }
+    return () => clearTimeout(timeout);
+  }, [isCallEnded]);
 
   return (
     <SocketContext.Provider
@@ -459,6 +381,7 @@ export const SocketContextProvider = ({
         ongoingCall,
         localStream,
         peer,
+        isCallEnded,
         handleCall,
         handleJoinCall,
         handleHangUp,

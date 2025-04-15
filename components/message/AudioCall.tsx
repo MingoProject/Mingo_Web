@@ -3,13 +3,16 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import VideoContainer from "./VideoContainer";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import SmallVideoContainer from "./SmallVideoContainer";
+import Image from "next/image";
+import { useAuth } from "@/context/AuthContext";
 
-export const VideoCall = () => {
+export const AudioCall = () => {
   const { localStream, peer, ongoingCall, handleHangUp } = useSocket();
   const [isMicOn, setIsMicOn] = useState(true);
   const [isVidOn, setIsVidOn] = useState(true);
   const [remoteStream, setRemoteStream] = useState<MediaStream | null>(null);
-  // const isVideoCall = ongoingCall?.isVideoCall ?? false;
+  const isVideoCall = ongoingCall?.isVideoCall;
+  const { profile } = useAuth();
   // Track stream changes
   useEffect(() => {
     if (peer?.stream) {
@@ -24,10 +27,16 @@ export const VideoCall = () => {
     if (localStream) {
       const videoTrack = localStream.getVideoTracks()[0];
       const audioTrack = localStream.getAudioTracks()[0];
+
+      // Tắt camera nếu không phải video call
+      if (!isVideoCall && videoTrack) {
+        videoTrack.enabled = false;
+      }
+
       setIsVidOn(videoTrack?.enabled ?? false);
       setIsMicOn(audioTrack?.enabled ?? false);
     }
-  }, [localStream]);
+  }, [localStream, isVideoCall]);
 
   const toggleCamera = useCallback(() => {
     if (localStream) {
@@ -50,31 +59,34 @@ export const VideoCall = () => {
   }, [localStream]);
 
   const isOnCall = !!(localStream && peer && ongoingCall);
-  if (!localStream) return;
+  if (!profile || !ongoingCall?.participants) return null;
+  const otherUser =
+    ongoingCall?.participants?.caller.profile._id === profile._id
+      ? ongoingCall?.participants?.receiver
+      : ongoingCall?.participants?.caller;
+  if (isVideoCall) {
+    return null; // <-- Đúng: Chỉ render AudioCall khi KHÔNG phải video call
+  }
   return (
     <div>
-      {/* Main video container */}
-      <div className="absolute w-[800px] h-[800px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-50">
-        {remoteStream && (
-          <VideoContainer
-            stream={remoteStream}
-            isLocalStream={false}
-            isOnCall={isOnCall}
+      <div className="absolute w-[900px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-start pt-20 z-50 bg-slate-200 rounded-md">
+        <div className="flex flex-col gap-8 ">
+          <Image
+            src={otherUser?.profile?.avatar || "/assets/images/capy.jpg"}
+            alt="Avatar"
+            width={100}
+            height={100}
+            className="size-28 rounded-full object-cover"
           />
-        )}
-
-        {/* Local video preview */}
-        {localStream && (
-          <div className="absolute top-56 right-12 w-1/4 h-1/4">
-            <SmallVideoContainer
-              stream={localStream}
-              isLocalStream={true}
-              isOnCall={isOnCall}
-            />
+          <div className="call-info text-center ">
+            <h3 className="text-xl font-semibold">
+              {ongoingCall?.participants?.receiver?.profile.firstName ??
+                "Unknown User"}
+            </h3>
+            <p className="text-gray-500 mt-8">Audio call in progress</p>
           </div>
-        )}
+        </div>
       </div>
-
       {/* Controls */}
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2 flex space-x-4 p-4 z-50">
         <button

@@ -3,10 +3,20 @@ import { useSocket } from "@/context/SocketContext";
 import Avatar from "../forms/personalPage/Avatar";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
+import { useRouter } from "next/navigation";
+import { OngoingCall } from "@/dtos/SocketDTO";
 
 const CallNotification = () => {
-  const { ongoingCall, handleJoinCall } = useSocket();
+  const { ongoingCall, handleJoinCall, handleHangUp } = useSocket();
   console.log("Ongoing Call:", ongoingCall);
+  const router = useRouter();
+
+  const handleAccept = async (ongoingCall: OngoingCall) => {
+    if (!ongoingCall) return;
+    router.push(`/call/${ongoingCall.participants.receiver.socketId}`);
+    handleJoinCall(ongoingCall);
+  };
+  console.log(ongoingCall, "ongoingcall hehe");
 
   if (!ongoingCall?.isRinging) return;
 
@@ -35,7 +45,7 @@ const CallNotification = () => {
         <div className="flex gap-8">
           <button
             className="w-10 h-10 bg-green-500 rounded-full flex items-center justify-center text-white cursor-pointer"
-            onClick={() => handleJoinCall(ongoingCall)}
+            onClick={() => handleAccept(ongoingCall)}
           >
             <Icon
               icon="material-symbols:call"
@@ -45,7 +55,15 @@ const CallNotification = () => {
             />
           </button>
 
-          <button className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white cursor-pointer">
+          <button
+            className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white cursor-pointer"
+            onClick={() =>
+              handleHangUp({
+                ongoingCall: ongoingCall ? ongoingCall : undefined,
+                isEmitHangUp: true,
+              })
+            }
+          >
             <Icon
               icon="material-symbols:call"
               width={24}

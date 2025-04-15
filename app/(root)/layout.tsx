@@ -7,6 +7,7 @@ import { useChatItemContext } from "@/context/ChatItemContext";
 import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { OnlineEvent } from "@/dtos/MessageDTO";
+import CallNotification from "@/components/message/CallNotification";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const checkOnlineStatus = async () => {
     try {
@@ -79,6 +80,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className=" background-light800_dark400 mx-auto size-full">
             {children}
           </div>
+          <CallNotification />
         </section>
       </div>
     </main>
