@@ -8,7 +8,7 @@ import { PostResponseDTO } from "@/dtos/PostDTO";
 interface PostMenuProps {
   post: PostResponseDTO;
   onClose: () => void;
-  setPostsData: (data: any) => void;
+  setPostsData?: (data: any) => void;
 }
 const PostMenu = ({ post, onClose, setPostsData }: PostMenuProps) => {
   const menuRef = useRef(null);
@@ -39,7 +39,7 @@ const PostMenu = ({ post, onClose, setPostsData }: PostMenuProps) => {
 
     try {
       await deletePost(postId, token);
-      setPostsData((prevPosts: any) =>
+      setPostsData?.((prevPosts: any) =>
         prevPosts.filter((post: any) => post._id !== postId)
       );
       onClose();

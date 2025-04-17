@@ -5,17 +5,9 @@ import React from "react";
 
 interface FriendCardProps {
   friend: UserBasicInfo;
-  //   mutualFriends: number;
-  //   mutualFriendAvatars: string[];
 }
 
-const FriendCard: React.FC<FriendCardProps> = ({
-  friend,
-  //   mutualFriends,
-  //   mutualFriendAvatars,
-  //   onAccept,
-  //   onDecline,
-}) => {
+const FriendCard: React.FC<FriendCardProps> = ({ friend }) => {
   return (
     <div>
       <div className="flex gap-[20px] items-center my-[7px]">
