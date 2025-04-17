@@ -34,12 +34,13 @@ module.exports = {
           400: "#F1F4F3",
           500: "#FAFAFA",
         },
-        "placeholder-input": "#1DA1F2",
-        "border-input": "#D9D9D9",
+        border: {
+          100: "#F5F5F5",
+        },
       },
 
       boxShadow: {
-        "light-100": "0F000000",
+        subtle: "0px 4px 15px rgba(0, 0, 0, 0.03)",
       },
 
       screens: {

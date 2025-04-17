@@ -42,3 +42,18 @@ export interface FriendProfileResponseDTO {
   attendDate: Date;
   relation: string;
 }
+
+export interface MutualFriendDTO {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+}
+
+export interface SuggestedFriendDTO {
+  _id: string;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  mutualFriends: MutualFriendDTO[];
+}

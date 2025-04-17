@@ -8,6 +8,7 @@ interface ButtonProps {
   onClick?: () => void;
   size?: "small" | "large"; // small: w-auto + px, large: w-full
   fontColor?: string;
+  border?: string;
 }
 
 const Button: React.FC<ButtonProps> = ({
@@ -15,7 +16,8 @@ const Button: React.FC<ButtonProps> = ({
   color = "bg-primary-100",
   onClick,
   size = "large",
-  fontColor = "",
+  fontColor = "text-dark100_light200",
+  border = "",
 }) => {
   const sizeClass =
     size === "small" ? "w-auto px-[30px] py-[10px]" : "w-full py-[12px]";
@@ -23,7 +25,7 @@ const Button: React.FC<ButtonProps> = ({
   return (
     <button
       onClick={onClick}
-      className={`text-[16px] font-medium whitespace-nowrap rounded-[12px] ${sizeClass} ${color} ${fontColor}`}
+      className={`text-[16px] ${border} font-medium dar whitespace-nowrap rounded-[12px] ${sizeClass} ${color} ${fontColor}`}
     >
       {title}
     </button>
