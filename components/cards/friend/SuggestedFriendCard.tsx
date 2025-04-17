@@ -1,12 +1,10 @@
-import Button from "@/components/ui/button";
-import { SuggestedFriendDTO } from "@/dtos/FriendDTO";
-import { UserBasicInfo } from "@/dtos/UserDTO";
+import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import React from "react";
 
 interface SuggestedFriendCardProps {
-  suggestedFriend: SuggestedFriendDTO;
+  suggestedFriend: FriendResponseDTO;
 }
 
 const SuggestedFriendCard: React.FC<SuggestedFriendCardProps> = ({
