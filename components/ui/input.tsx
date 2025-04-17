@@ -39,14 +39,11 @@ const Input = ({
         </div>
       )}
       <div
-        className={`flex items-center background-light400_dark400 rounded-full px-[20px] py-[12px] w-full`}
+        className={`flex items-center gap-[20px] background-light400_dark400 rounded-full px-[20px] py-[12px] w-full`}
         onClick={onClick}
       >
         {iconSrc && (
-          <Icon
-            icon={iconSrc}
-            className="size-[24px] placeholder:text-dark300_light300"
-          />
+          <Icon icon={iconSrc} className="size-[24px] text-dark300_light300" />
         )}
         <input
           type="text"

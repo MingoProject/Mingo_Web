@@ -14,7 +14,7 @@ const OpenCreatePost = ({ me, setPostsData }: any) => {
   return (
     <>
       <div
-        className="background-light200_dark200 h-[126px] w-full rounded-[10px] px-[26px] py-[20px]"
+        className="background-light200_dark200 shadow-subtle h-[126px] w-full rounded-[10px] px-[26px] py-[20px]"
         onClick={toggleForm}
       >
         <Input

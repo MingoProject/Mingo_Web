@@ -90,3 +90,12 @@ export function timeSinceMessage(timestamp: Date | string) {
   if (diffInMinutes > 0) return `${diffInMinutes} minutes ago`;
   return `${diffInSeconds} seconds ago`;
 }
+
+export function removeVietnameseTones(str: string) {
+  return str
+    .normalize("NFD") // tách dấu
+    .replace(/[\u0300-\u036f]/g, "") // xóa dấu
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}

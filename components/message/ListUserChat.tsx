@@ -337,7 +337,7 @@ const ListUserChat = () => {
 
         <div className="h-[75vh] w-full overflow-y-auto">
           {filteredChat.length === 0 ? (
-            <p>No conversations found!</p>
+            <span>No conversations found!</span>
           ) : (
             filteredChat.map((item) => (
               <div key={item.id} onClick={() => handleChatClick(item.id)}>

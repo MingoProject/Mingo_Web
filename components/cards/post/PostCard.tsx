@@ -93,7 +93,7 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
   };
 
   return (
-    <div className="background-light200_dark200 px-[24px] py-[21px] h-auto w-full  rounded-[10px] border shadow-lg dark:border-transparent dark:shadow-none flex flex-col gap-[15px]">
+    <div className="background-light200_dark200 px-[24px] py-[21px] h-auto w-full  rounded-[10px] shadow-subtle flex flex-col gap-[15px]">
       <PostHeader post={post} setPostsData={setPostsData} />
       <div className="">
         <p className="text-dark100_light100">{post?.content}</p>

@@ -135,7 +135,7 @@ const DetailsImage = ({
             </div>
           </div>
           <div className="w-full lg:w-1/2">
-            <p>{image.caption}</p>
+            <span>{image.caption}</span>
             <div className="mx-10 my-5">
               <ImageAction
                 likes={image?.likes}
