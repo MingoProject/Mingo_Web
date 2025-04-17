@@ -20,6 +20,7 @@ import { getListChat } from "@/lib/services/message.service";
 import FriendCard from "@/components/cards/friend/FriendCardHome";
 import { removeVietnameseTones } from "@/lib/utils";
 import { suggestFriends } from "@/lib/services/friend.service";
+import SuggestedFriendCard from "@/components/cards/friend/SuggestedFriendCard";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
@@ -186,18 +187,10 @@ export default function Home() {
                   See all
                 </span>
               </div>
-              <div>
+              <div className="flex flex-col gap-3">
                 {suggestedFriends.length > 0 &&
-                  suggestedFriends.map((invitation) => (
-                    <FriendRequestCard
-                      follower={invitation}
-                      mutualFriends={5}
-                      mutualFriendAvatars={[
-                        "/images/friend1.jpg",
-                        "/images/friend2.jpg",
-                        "/images/friend3.jpg",
-                      ]}
-                    />
+                  suggestedFriends.map((suggestedFriend) => (
+                    <SuggestedFriendCard suggestedFriend={suggestedFriend} />
                   ))}
               </div>
             </div>
