@@ -158,17 +158,8 @@ const Navbar = () => {
       </div>
 
       {isDrawerOpen && (
-        <div className="background-light700_dark300 fixed left-0 top-16 z-50 size-full shadow-lg md:w-1/2 lg:w-2/5">
-          <div className="p-6">
-            <button
-              className="absolute right-4 top-4 text-lg"
-              onClick={closeDrawer}
-            >
-              <Icon
-                icon="mingcute:close-line"
-                className="text-dark100_light500 mt-5"
-              />
-            </button>
+        <div className="background-light200_dark200 fixed left-0 top-16 z-50 size-full shadow-lg md:w-1/2 lg:w-1/3">
+          <div className="mt-5">
             {activeDrawer === "/search" && (
               <>
                 <Search closeDrawer={closeDrawer} />

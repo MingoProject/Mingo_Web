@@ -30,7 +30,7 @@ interface DetailPostProps {
   numberOfComments: number;
   commentsData: CommentResponseDTO[];
   setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
-  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+  setPostsData?: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
 }
 
 const DetailPost = ({

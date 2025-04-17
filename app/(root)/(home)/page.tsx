@@ -21,11 +21,12 @@ import FriendCard from "@/components/cards/friend/FriendCardHome";
 import { removeVietnameseTones } from "@/lib/utils";
 import { suggestFriends } from "@/lib/services/friend.service";
 import SuggestedFriendCard from "@/components/cards/friend/SuggestedFriendCard";
+import { FriendResponseDTO } from "@/dtos/FriendDTO";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   const { profile } = useAuth();
-  const [invitations, setInvitations] = useState<UserBasicInfo[]>([]);
+  const [invitations, setInvitations] = useState<FriendResponseDTO[]>([]);
   // const [chats, setChats] = useState<any[]>([]);
   const [combinedFriends, setCombinedFriends] = useState<UserBasicInfo[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
@@ -61,7 +62,7 @@ export default function Home() {
     const myFriends = async () => {
       try {
         const userId = localStorage.getItem("userId");
-        const Followers: UserBasicInfo[] = await getMyFollowers(userId);
+        const Followers: FriendResponseDTO[] = await getMyFollowers(userId);
 
         if (isMounted) {
           setInvitations(Followers.slice(0, 2)); // lấy 2 người đầu tiên
@@ -242,15 +243,7 @@ export default function Home() {
           <div>
             {invitations.length > 0 &&
               invitations.map((invitation) => (
-                <FriendRequestCard
-                  follower={invitation}
-                  mutualFriends={5}
-                  mutualFriendAvatars={[
-                    "/images/friend1.jpg",
-                    "/images/friend2.jpg",
-                    "/images/friend3.jpg",
-                  ]}
-                />
+                <FriendRequestCard follower={invitation} />
               ))}
           </div>
         </div>

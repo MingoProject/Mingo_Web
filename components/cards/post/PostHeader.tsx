@@ -9,7 +9,7 @@ import { PostResponseDTO } from "@/dtos/PostDTO";
 
 interface PostHeaderProps {
   post: PostResponseDTO;
-  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+  setPostsData?: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
 }
 
 const PostHeader = ({ post, setPostsData }: PostHeaderProps) => {

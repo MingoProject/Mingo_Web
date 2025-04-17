@@ -13,6 +13,7 @@ interface InputProps {
   onClick?: () => void;
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
 }
 
 const Input = ({
@@ -24,6 +25,7 @@ const Input = ({
   onClick,
   value,
   onChange,
+  onKeyDown,
 }: InputProps) => {
   return (
     <div className="flex gap-[9px] items-center w-full">
@@ -52,6 +54,7 @@ const Input = ({
           readOnly={readOnly}
           value={value}
           onChange={onChange}
+          onKeyDown={onKeyDown}
         />
       </div>
     </div>
