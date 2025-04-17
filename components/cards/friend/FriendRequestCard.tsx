@@ -1,20 +1,15 @@
 import Button from "@/components/ui/button";
+import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import Image from "next/image";
 import React from "react";
 
 interface FriendRequestCardProps {
-  follower: UserBasicInfo;
-  mutualFriends: number;
-  mutualFriendAvatars: string[];
-  //   onAccept: () => void;
-  //   onDecline: () => void;
+  follower: FriendResponseDTO;
 }
 
 const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
   follower,
-  mutualFriends,
-  mutualFriendAvatars,
   //   onAccept,
   //   onDecline,
 }) => {
@@ -35,23 +30,26 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
             </span>{" "}
             sent you friend request
           </span>
-          <div className="flex items-center gap-2 mt-1">
-            <div className="flex -space-x-2">
-              {mutualFriendAvatars.slice(0, 3).map((img, index) => (
-                <Image
-                  key={index}
-                  src={img}
-                  alt="mutual"
-                  width={20}
-                  height={20}
-                  className=" size-[20px] rounded-full border border-white"
-                />
-              ))}
+          {follower.mutualFriends.length > 0 && (
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex -space-x-2">
+                {follower.mutualFriends.slice(0, 3).map((img, index) => (
+                  <Image
+                    key={index}
+                    src={img.avatar ?? "/assets/images/capy.jpg"}
+                    alt="mutual"
+                    width={20}
+                    height={20}
+                    className=" size-[20px] rounded-full border border-white"
+                  />
+                ))}
+              </div>
+              <p className="text-[14px] font-normal text-dark100_light100">
+                {follower.mutualFriends.length} mutual friends
+              </p>
             </div>
-            <p className="text-[14px] font-normal text-dark100_light100">
-              {mutualFriends} mutual friends
-            </p>
-          </div>
+          )}
+
           <div className="flex gap-3 mt-2">
             <Button title="Accept" size="small" />
             <Button
