@@ -1,6 +1,6 @@
 import Favorite from "@/components/home/Favorite";
 import ViewProfile from "@/components/home/ViewProfile";
-import { Button } from "@/components/ui/button";
+// import { Button } from "@/components/ui/button";
 import {
   faGear,
   faFloppyDisk,
@@ -23,8 +23,9 @@ import Link from "next/link";
 import Save from "@/components/home/Save";
 import ChangePassword from "@/components/home/ChangePassword";
 import { getMyLikedPosts, getMySavedPosts } from "@/lib/services/user.service";
+import Button from "@/components/ui/button";
 
-const SettingModal = ({ profile, setProfile, logout }: any) => {
+const SettingModal = ({ profile, logout }: any) => {
   const router = useRouter();
   const [isSetting, setIsSetting] = useState(false);
   const [isViewProfile, setIsViewProfile] = useState(false);
@@ -55,7 +56,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
     return () => {
       isMounted = false; // Cleanup: Mark the component as unmounted
     };
-  }, [isFavorite, profile?._id]); // Safely access profile._id
+  }, [isFavorite, profile?._id]);
 
   useEffect(() => {
     if (!isSave || !profile?._id) return; // Ensure profile and _id are available
@@ -79,7 +80,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
     return () => {
       isMounted = false; // Cleanup: Mark the component as unmounted
     };
-  }, [isSave, profile?._id]); // Safely access profile._id
+  }, [isSave, profile?._id]);
 
   const handleIsSetting = () => {
     setIsSetting(true);
@@ -125,7 +126,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
           {profile.firstName} {profile.lastName}
         </p>
       </Link>
-      <Menubar className="relative border-none bg-transparent   shadow-none focus:outline-none">
+      <Menubar className="relative border-none bg-transparent  shadow-none focus:outline-none">
         <MenubarMenu>
           <MenubarTrigger>
             {" "}
@@ -137,7 +138,7 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
               className="size-[40px] rounded-full object-cover"
             />
           </MenubarTrigger>
-          <MenubarContent className="text-dark100_light500 background-light700_dark300 mt-2 h-auto w-52 border-none font-sans text-sm ">
+          <MenubarContent className="text-dark100_light100 rounded-[10px]  background-light200_dark200 mt-2 h-auto w-52 border-none font-sans text-sm ">
             <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20  ">
               <Link href={`/profile/${profile._id}`} className="">
                 <div className="flex items-center gap-2">
@@ -204,11 +205,12 @@ const SettingModal = ({ profile, setProfile, logout }: any) => {
             <MenubarItem className="flex cursor-pointer items-center px-4 py-2 before:border-none after:border-none focus:outline-none dark:hover:bg-primary-100/20">
               {" "}
               <Button
-                onClick={handleLogout}
-                className="h-[30px] w-full bg-primary-100 text-center text-base text-white"
-              >
-                Logout
-              </Button>
+                title="Logout"
+                size="large"
+                color="bg-primary-100"
+                fontColor="text-dark100_light100"
+                onClick={() => handleLogout()}
+              />
             </MenubarItem>
           </MenubarContent>
         </MenubarMenu>

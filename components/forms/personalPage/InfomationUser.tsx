@@ -2,210 +2,92 @@ import { formattedDate } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import UpdateInformation from "./UpdateInformation";
+import { UserResponseDTO } from "@/dtos/UserDTO";
+import TitleIcon from "@/components/ui/titleIcon";
+import Tag from "@/components/ui/tag";
 
 interface InfomationUserProps {
-  firstName: string;
-  lastName: string;
-  nickName: string;
-  gender: boolean;
-  job: string;
-  hobbies: string[];
-  address: string;
-  relationShip: string;
-  birthDay: string;
-  attendDate: string;
-  phoneNumber: string;
-  email: string;
-  _id: string;
+  user: UserResponseDTO;
   setProfileUser: any;
+  isMe: boolean;
 }
-// hobbyIcons.ts
-export const hobbyIcons: Record<string, string> = {
-  Soccer: "mdi:soccer",
-  Swimming: "mdi:swim",
-  Running: "mdi:run",
-  Reading: "mdi:book-open",
-  Gaming: "mdi:controller-classic",
-  Cooking: "mdi:chef-hat",
-  Traveling: "mdi:airplane",
-  Programming: "mdi:code-tags",
-  Photography: "mdi:camera",
-  Painting: "mdi:palette",
-  Dancing: "mdi:dance-ballroom",
-  Yoga: "mdi:yoga",
-  Cycling: "mdi:bike",
-  Fishing: "mdi:fishing",
-  Gardening: "mdi:flower",
-  Crafting: "mdi:scissors-cutting",
-  "Watching Movies": "mdi:movie-open",
-  "Listening to Music": "mdi:music",
-  "Playing Chess": "mdi:chess-king",
-  Singing: "mdi:microphone",
-};
 
 const InfomationUser = ({
-  firstName,
-  lastName,
-  nickName,
-  gender,
-  job,
-  hobbies,
-  address,
-  relationShip,
-  birthDay,
-  attendDate,
-  phoneNumber,
-  email,
-  _id,
+  user,
   setProfileUser,
+  isMe,
 }: InfomationUserProps) => {
-  const [showDetails, setShowDetails] = useState(false);
   const [showEdit, setShowEdit] = useState(false);
-  const [isMe, setIsMe] = useState(false);
-
-  useEffect(() => {
-    let isMounted = true;
-    const userId = localStorage.getItem("userId");
-
-    if (userId && userId === _id) {
-      if (isMounted) {
-        setIsMe(true);
-      }
-    }
-    return () => {
-      isMounted = false; // Cleanup: Mark the component as unmounted
-    };
-  }, [_id]);
 
   return (
-    <div className="mx-[10%] mt-4 rounded-lg border py-4">
-      <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-        Detailed Information
-      </div>
-      <div className="ml-[5%] mt-4 block w-full">
-        <div>
-          {job && (
-            <div>
-              <span className="text-dark100_light500">
-                Job: <span className="font-semibold">{job}</span>
-              </span>
-            </div>
+    <div className="w-[486px] ">
+      <div className="ml-[5%] mt-4 block w-full ">
+        <span className="text-dark100_light100 text-4 font-semibold">
+          Information
+        </span>
+        <div className="flex flex-col gap-[15px] mt-[10px] p-5 background-light200_dark200 rounded-[10px] shadow-subtle">
+          {user?.address && (
+            <TitleIcon iconSrc="mynaui:location" content={user?.address} />
           )}
-          {address && (
-            <div className="mt-4 flex w-full items-center">
-              <div className="text-dark100_light500">
-                <span>Address: </span>
-                <span className="font-semibold">{address}</span>
-              </div>
-            </div>
+          {user?.job && (
+            <TitleIcon iconSrc="basil:bag-outline" content={user?.job} />
           )}
-          {hobbies.length > 0 && (
-            <div className="mt-4 flex items-center">
-              <span className="text-dark100_light500">Hobbies: </span>
-              <div className="text-dark100_light500 flex w-4/5 overflow-x-auto">
-                {hobbies.map((hobby, index) => (
-                  <div
-                    key={index}
-                    className="mx-2 flex items-center rounded-lg border px-2 py-1"
-                  >
-                    <Icon
-                      icon={hobbyIcons[hobby] || "mdi:help-circle-outline"} // Default icon nếu không tìm thấy
-                      className="mr-1 text-xl text-primary-100"
-                    />
-                    <span>{hobby}</span>
+          {user?.relationShip && (
+            <TitleIcon
+              iconSrc="solar:heart-outline"
+              content={user?.relationShip}
+            />
+          )}
+          {user?.birthDay && (
+            <TitleIcon
+              iconSrc="fluent-mdl2:birthday-cake"
+              content={formattedDate(user?.birthDay)}
+            />
+          )}
+          {user?.gender && (
+            <TitleIcon
+              iconSrc={user?.gender ? "ph:gender-male" : "ph:gender-female"}
+              content={user?.gender ? "Male" : "Female"}
+            />
+          )}
+          {user?.email && (
+            <TitleIcon iconSrc="solar:letter-linear" content={user?.email} />
+          )}
+          {user?.attendDate && (
+            <TitleIcon
+              iconSrc="solar:calendar-linear"
+              content={formattedDate(user?.attendDate)}
+            />
+          )}
+          {user?.hobbies.length > 0 && (
+            <div className="flex items-center gap-[10px]">
+              <Icon icon="cbi:hobby" className="size-6 text-dark100_light100" />
+              <div className="text-dark100_light100 flex flex-wrap gap-2">
+                {user?.hobbies.map((hobby, index) => (
+                  <div key={index}>
+                    <Tag content={hobby} />
                   </div>
                 ))}
               </div>
             </div>
           )}
-          {relationShip && (
-            <div className="mt-4">
-              <span className="text-dark100_light500">
-                Relationship:{" "}
-                <span className="font-semibold">{relationShip}</span>
-              </span>
-            </div>
-          )}
-          {showDetails && (
-            <>
-              {birthDay && (
-                <div className="mt-4">
-                  <span className="text-dark100_light500">
-                    Birthday:{" "}
-                    <span className="font-semibold">
-                      {formattedDate(birthDay)}
-                    </span>
-                  </span>
-                </div>
-              )}
-              {gender && (
-                <div className="mt-4">
-                  <span className="text-dark100_light500">
-                    Gender:{" "}
-                    <span className="font-semibold">
-                      {gender ? "Male" : "Female"}
-                    </span>
-                  </span>
-                </div>
-              )}
-              {attendDate && (
-                <div className="mt-4">
-                  <span className="text-dark100_light500">
-                    Attend date:{" "}
-                    <span className="font-semibold">
-                      {formattedDate(attendDate)}
-                    </span>
-                  </span>
-                </div>
-              )}
-              {phoneNumber && (
-                <div className="mt-4">
-                  <span className="text-dark100_light500">
-                    Phone number:{" "}
-                    <span className="font-semibold">{phoneNumber}</span>
-                  </span>
-                </div>
-              )}
-              {email && (
-                <div className="mt-4">
-                  <span className="text-dark100_light500">
-                    Email: <span className="font-semibold">{email}</span>
-                  </span>
-                </div>
-              )}
-            </>
-          )}
+          <div className="flex ml-auto items-center">
+            {isMe && (
+              <div className="p-[7px] background-light400_dark400 rounded-full">
+                <Icon
+                  icon="solar:pen-broken"
+                  className="text-primary-100 size-[20px]"
+                  onClick={() => setShowEdit(true)}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </div>
-      <div className="mr-[5%] flex items-center">
-        <button
-          className="ml-[5%] mr-[2%] mt-4 text-left  text-primary-100"
-          onClick={() => setShowDetails(!showDetails)}
-        >
-          {showDetails ? "Hidden" : "See all"}
-        </button>
-        {isMe && (
-          <Icon
-            icon="solar:pen-broken"
-            className="ml-auto text-2xl text-primary-100"
-            onClick={() => setShowEdit(true)}
-          />
-        )}
-      </div>
+
       {showEdit && (
         <UpdateInformation
-          firstName={firstName}
-          lastName={lastName}
-          nickName={nickName}
-          gender={gender}
-          job={job}
-          hobbies={hobbies}
-          address={address}
-          relationShip={relationShip}
-          birthDay={birthDay}
-          attendDate={attendDate}
-          phoneNumber={phoneNumber}
-          email={email}
+          user={user}
           setProfileUser={setProfileUser}
           onClose={() => setShowEdit(false)}
         />

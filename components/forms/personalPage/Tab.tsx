@@ -5,12 +5,12 @@ const Tab = ({ activeTab, setActiveTab }: any) => {
     setActiveTab(tab);
   };
   return (
-    <div className="m-10 mx-[20%] mb-5 flex justify-around">
+    <div className="flex justify-around">
       <span
         className={`cursor-pointer ${
           activeTab === "posts"
             ? "border-b-2 border-primary-100 font-medium text-primary-100"
-            : "text-dark100_light500"
+            : "text-dark300_light300"
         }`}
         onClick={() => handleTabClick("posts")}
       >
@@ -20,7 +20,7 @@ const Tab = ({ activeTab, setActiveTab }: any) => {
         className={`cursor-pointer ${
           activeTab === "friends"
             ? "border-b-2 border-primary-100 font-medium text-primary-100"
-            : "text-dark100_light500"
+            : "text-dark300_light300"
         }`}
         onClick={() => handleTabClick("friends")}
       >
@@ -30,7 +30,7 @@ const Tab = ({ activeTab, setActiveTab }: any) => {
         className={`cursor-pointer ${
           activeTab === "photos"
             ? "border-b-2 border-primary-100 font-medium text-primary-100"
-            : "text-dark100_light500"
+            : "text-dark300_light300"
         }`}
         onClick={() => handleTabClick("photos")}
       >
@@ -40,7 +40,7 @@ const Tab = ({ activeTab, setActiveTab }: any) => {
         className={`cursor-pointer ${
           activeTab === "videos"
             ? "border-b-2 border-primary-100 font-medium text-primary-100"
-            : "text-dark100_light500"
+            : "text-dark300_light300"
         }`}
         onClick={() => handleTabClick("videos")}
       >

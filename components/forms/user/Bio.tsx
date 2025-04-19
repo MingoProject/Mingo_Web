@@ -55,17 +55,21 @@ const Bio = ({ profileUser, setProfileUser }: any) => {
   };
 
   return (
-    <div className="mt-[30px]">
-      <span className="text-dark100_light500">
+    <div className="mt-[15px]">
+      <span className="text-dark100_light100 font-normal text-[20px]">
         {profileUser?.bio || "Bio not provided"}
       </span>
-      {isMe && (
-        <Icon
-          icon="solar:pen-broken"
-          className="ml-auto text-lg text-primary-100"
-          onClick={() => setShowEditBio(true)}
-        />
-      )}
+      <div className=" w-full">
+        {isMe && (
+          <div className="p-[7px] flex ml-auto  w-fit background-light400_dark400 rounded-full">
+            <Icon
+              icon="solar:pen-broken"
+              className="text-primary-100 size-[20px]"
+              onClick={() => setShowEditBio(true)}
+            />
+          </div>
+        )}
+      </div>
 
       {showEditBio && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

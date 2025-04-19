@@ -1,21 +1,11 @@
 import ButtonClose from "@/components/ui/buttonClose";
+import { UserResponseDTO } from "@/dtos/UserDTO";
 import { updateInfo } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 
 interface InfomationUserProps {
-  firstName: string;
-  lastName: string;
-  nickName: string;
-  gender: boolean;
-  job: string;
-  hobbies: string[];
-  address: string;
-  relationShip: string;
-  birthDay: string;
-  attendDate: string;
-  phoneNumber: string;
-  email: string;
+  user: UserResponseDTO;
   setProfileUser: any;
   onClose: () => void;
 }
@@ -44,37 +34,27 @@ export const hobbyIcons: Record<string, string> = {
 };
 
 const UpdateInformation = ({
-  firstName,
-  lastName,
-  nickName,
-  gender,
-  job,
-  hobbies,
-  address,
-  relationShip,
-  birthDay,
-  attendDate,
-  phoneNumber,
-  email,
+  user,
   setProfileUser,
   onClose,
 }: InfomationUserProps) => {
   const [formValues, setFormValues] = useState({
-    firstName,
-    lastName,
-    nickName,
-    gender,
-    job,
-    hobbies,
-    address,
-    relationShip,
-    birthDay,
-    attendDate,
-    phoneNumber,
-    email,
+    firstName: user?.firstName || "",
+    lastName: user?.lastName || "",
+    nickName: user?.nickName || "",
+    gender: user?.gender || false,
+    job: user?.job || "",
+    address: user?.address || "",
+    relationShip: user?.relationShip || "",
+    birthDay: user?.birthDay?.split("T")[0] || "", // chỉ lấy ngày nếu có ISO date
+    attendDate: user?.attendDate || "",
+    phoneNumber: user?.phoneNumber || "",
+    email: user?.email || "",
   });
 
-  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(hobbies);
+  const [selectedHobbies, setSelectedHobbies] = useState<string[]>(
+    user?.hobbies
+  );
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -138,7 +118,7 @@ const UpdateInformation = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-4/5 overflow-y-auto rounded-md bg-white p-6 shadow-lg">
+      <div className="background-light700_dark300 text-dark100_light100 my-32 max-h-screen w-4/5 overflow-y-auto rounded-md bg-white p-6 shadow-lg">
         <h2 className="mb-4 text-xl font-semibold text-primary-100">
           Update Information
         </h2>

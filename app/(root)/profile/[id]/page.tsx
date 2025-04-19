@@ -3,9 +3,9 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getMyProfile } from "@/lib/services/user.service";
-import Background from "@/components/forms/personalPage/Background";
-import Avatar from "@/components/forms/personalPage/Avatar";
-import Bio from "@/components/forms/personalPage/Bio";
+import Background from "@/components/forms/user/Background";
+import Avatar from "@/components/forms/user/Avatar";
+import Bio from "@/components/forms/user/Bio";
 import InfomationUser from "@/components/forms/personalPage/InfomationUser";
 import Tab from "@/components/forms/personalPage/Tab";
 import RenderContentPage from "@/components/forms/personalPage/RenderContent";
@@ -20,56 +20,36 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import ReportMenu from "@/components/forms/report/MenuReport";
 import { pusherClient } from "@/lib/pusher";
 import Image from "next/image";
+import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
 
 const ProfilePage = () => {
-  const { id }: any = useParams();
-  const [profileUser, setProfileUser] = useState<any>(null);
-  const [activeTab, setActiveTab] = useState("posts");
-  const [relation, setRelation] = useState<string>("");
-  const { profile } = useAuth();
-  const [isMe, setIsMe] = useState(false);
-  const { allChat, setAllChat } = useChatItemContext();
-  const { filteredChat, setFilteredChat } = useChatItemContext();
-  const [isModalOpen, setModalOpen] = useState(false);
   const router = useRouter();
-  const [isReport, setIsReport] = useState(false);
-  const menuRef = useRef<HTMLDivElement | null>(null);
-  const [selectedReport, setSelectedReport] = useState(false);
-  const [isBlocked, setIsBlocked] = useState(false);
-
-  const fetchChats = useCallback(async () => {
-    try {
-      const allChat = await getListChat(); // Gọi API hoặc hàm lấy dữ liệu
-      setAllChat(allChat || []); // Cập nhật state với dữ liệu nhận được
-    } catch (error) {
-      console.error("Error loading chats:", error);
-    }
-  }, []);
-
-  console.log(allChat, "allChat check");
-
-  const handleCloseMenu = () => {
-    setSelectedReport(false);
-  };
-
+  const { id }: any = useParams();
+  const [profileUser, setProfileUser] = useState<UserResponseDTO | undefined>();
   useEffect(() => {
-    fetchChats();
-  }, []);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        handleCloseMenu();
+    const fetchProfile = async () => {
+      try {
+        if (id) {
+          const data = await getMyProfile(id.toString());
+          setProfileUser(data.userProfile);
+        }
+      } catch (error) {
+        console.error("Error fetching profile:", error);
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
+    fetchProfile();
+  }, [id]);
 
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, []);
+  const { profile } = useAuth();
+  const profileBasic: UserBasicInfo = {
+    _id: profile?._id,
+    avatar: profile?.avatar,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+  };
 
+  const [isMe, setIsMe] = useState(false);
   useEffect(() => {
     let isMounted = true;
     try {
@@ -87,6 +67,8 @@ const ProfilePage = () => {
     };
   }, [id]);
 
+  const [relation, setRelation] = useState<string>("");
+  const [isBlocked, setIsBlocked] = useState(false);
   useEffect(() => {
     let isMounted = true;
     const userId = localStorage.getItem("userId");
@@ -97,7 +79,6 @@ const ProfilePage = () => {
           if (isMounted) {
             if (!res) {
               setRelation("stranger");
-              // setRelationStatus(false);
             } else {
               const { relation, status, sender, receiver } = res;
 
@@ -159,20 +140,46 @@ const ProfilePage = () => {
     };
   }, [id]);
 
+  const [activeTab, setActiveTab] = useState("posts");
+  const { allChat, setAllChat } = useChatItemContext();
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const [isReport, setIsReport] = useState(false);
+  const menuRef = useRef<HTMLDivElement | null>(null);
+  const [selectedReport, setSelectedReport] = useState(false);
+
+  const fetchChats = useCallback(async () => {
+    try {
+      const allChat = await getListChat(); // Gọi API hoặc hàm lấy dữ liệu
+      setAllChat(allChat || []); // Cập nhật state với dữ liệu nhận được
+    } catch (error) {
+      console.error("Error loading chats:", error);
+    }
+  }, []);
+
+  console.log(allChat, "allChat check");
+
+  const handleCloseMenu = () => {
+    setSelectedReport(false);
+  };
+
   useEffect(() => {
-    const fetchProfile = async () => {
-      try {
-        if (id) {
-          const data = await getMyProfile(id.toString());
-          setProfileUser(data.userProfile);
-        }
-      } catch (error) {
-        console.error("Error fetching profile:", error);
+    fetchChats();
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+        handleCloseMenu();
       }
     };
 
-    fetchProfile();
-  }, [id]);
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   if (!profileUser) return <div>Loading...</div>;
 
@@ -223,7 +230,7 @@ const ProfilePage = () => {
   };
 
   return (
-    <div className="background-light700_dark400 h-full pt-20">
+    <div className="background-light500_dark500 h-full pt-[70px] mt-[20px] ">
       {!isBlocked ? (
         <div>
           <Background
@@ -231,11 +238,11 @@ const ProfilePage = () => {
             setProfileUser={setProfileUser}
           />
 
-          <div className="mt-[30px] flex">
+          <div className="mt-[25px] flex ml-[5%]">
             <Avatar profileUser={profileUser} setProfileUser={setProfileUser} />
 
-            <div className="ml-[5%]">
-              <h1 className="text-dark100_light500 text-[25px]">
+            <div className="ml-[7%]">
+              <h1 className="text-dark100_light100 text-[32px] font-semibold">
                 {profileUser?.firstName} {profileUser?.lastName}
                 {profileUser?.nickName && (
                   <span> ({profileUser?.nickName})</span>
@@ -247,7 +254,6 @@ const ProfilePage = () => {
             {!isMe ? (
               <div className="relative flex-1 ml-10">
                 <div className="flex ml-5 justify-between items-center">
-                  {/* Nút Message */}
                   <MyButton
                     title="Message"
                     backgroundColor="bg-primary-100"
@@ -257,7 +263,6 @@ const ProfilePage = () => {
                     onClick={handleMessage}
                   />
 
-                  {/* Nút ba chấm */}
                   <div className="relative mr-[15%]">
                     <Icon
                       icon="bi:three-dots"
@@ -267,7 +272,6 @@ const ProfilePage = () => {
                   </div>
                 </div>
 
-                {/* Hiển thị menu */}
                 {selectedReport && (
                   <div ref={menuRef} className="absolute right-0">
                     <ReportMenu isReported={isReport} userId={id.toString()} />
@@ -285,17 +289,6 @@ const ProfilePage = () => {
                 reportedId={profileUser._id}
               />
             )}
-
-            {/* {selectedReport && (
-      <div ref={menuRef}>
-        <ReportMenu isReported={isReport} userId={id} />
-      </div>
-    )} */}
-            {/* {selectedReport && (
-<div className="absolute right-0 mt-2">
-  <ReportMenu isReported={isReport} userId={id} />
-</div>
-)} */}
           </div>
 
           {!isMe && (
@@ -352,38 +345,29 @@ const ProfilePage = () => {
             </div>
           )}
 
-          <div>
-            <InfomationUser
-              firstName={profileUser?.firstName}
-              lastName={profileUser?.lastName}
-              nickName={profileUser?.nickName}
-              gender={profileUser?.gender}
-              job={profileUser?.job}
-              hobbies={profileUser?.hobbies}
-              address={profileUser?.address}
-              relationShip={profileUser?.relationShip}
-              birthDay={profileUser?.birthDay}
-              attendDate={profileUser?.attendDate}
-              phoneNumber={profileUser?.phoneNumber}
-              email={profileUser?.email}
-              _id={profileUser?._id}
-              setProfileUser={setProfileUser}
-            />
-          </div>
-
-          <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
-
-          <div className="mx-[5%] my-5">
-            <RenderContentPage
-              activeTab={activeTab}
-              profileUser={profileUser}
-              me={profile}
-              isMe={isMe}
-            />
+          <div className="w-full flex justify-center">
+            <div className="flex gap-[95px] w-fit">
+              <div>
+                <InfomationUser
+                  user={profileUser}
+                  setProfileUser={setProfileUser}
+                  isMe={isMe}
+                />
+              </div>
+              <div className="w-[645px] flex flex-col gap-8">
+                <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
+                <RenderContentPage
+                  activeTab={activeTab}
+                  profileUser={profileUser}
+                  profileBasic={profileBasic}
+                  isMe={isMe}
+                />
+              </div>
+            </div>
           </div>
         </div>
       ) : (
-        <div className="font-bold text-2xl text-dark100_light500 h-screen  justify-center flex items-center mx-auto">
+        <div className="font-bold text-2xl text-dark100_light100 h-screen  justify-center flex items-center mx-auto">
           <div className="dark:hidden">
             <Image
               src="/assets/images/CannotFound.png"

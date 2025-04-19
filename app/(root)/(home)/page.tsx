@@ -243,7 +243,10 @@ export default function Home() {
           <div>
             {invitations.length > 0 &&
               invitations.map((invitation) => (
-                <FriendRequestCard follower={invitation} />
+                <FriendRequestCard
+                  follower={invitation}
+                  profileBasic={profileBasic}
+                />
               ))}
           </div>
         </div>
