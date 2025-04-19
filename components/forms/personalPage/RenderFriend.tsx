@@ -2,15 +2,22 @@ import React, { useEffect, useState } from "react";
 
 import { Icon } from "@iconify/react";
 import Image from "next/image";
-import { UserResponseDTO } from "@/dtos/UserDTO";
 import {
   getMyBffs,
   getMyBlocks,
+  getMyFollowers,
   getMyFollowings,
   getMyFriends,
 } from "@/lib/services/user.service";
 import Link from "next/link";
-import Invitations from "./Invitations";
+import Input from "@/components/ui/input";
+import Tab from "@/components/ui/tab";
+import { FriendResponseDTO } from "@/dtos/FriendDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+
+interface RenderFriendProps {
+  profileUser: UserBasicInfo;
+}
 
 const FriendList = ({
   friends,
@@ -18,81 +25,70 @@ const FriendList = ({
   activeTabFriend,
   searchTerm,
   setSearchTerm,
-  setOpenInvitations,
 }: any) => (
-  <div className="mx-[8%] ">
+  <div className="flex flex-col gap-[15px]">
     <div className="flex w-full items-center">
-      <div className="flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-        Friends
-      </div>
-
-      <div className=" ml-[30%] flex grow">
-        {" "}
-        <input
-          type="text"
-          placeholder="Search..."
+      <div>
+        <Input
+          iconSrc="iconoir:search"
+          placeholder="search"
+          readOnly={false}
+          cursor="text"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="background-light800_dark300 text-dark100_light500 w-11/12 rounded-lg border px-4 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+      </div>
+    </div>
+    <div className="flex flex-col gap-[15px]">
+      <div className="flex space-x-2">
+        <Tab
+          content="Friend"
+          isActive={activeTabFriend === "friend"}
+          onClick={() => setActiveTabFriend("friend")}
+        />
+        <Tab
+          content="Best Friend"
+          isActive={activeTabFriend === "bestfriend"}
+          onClick={() => setActiveTabFriend("bestfriend")}
+        />
+        <Tab
+          content="Follower"
+          isActive={activeTabFriend === "follower"}
+          onClick={() => setActiveTabFriend("follower")}
+        />
+        <Tab
+          content="Following"
+          isActive={activeTabFriend === "following"}
+          onClick={() => setActiveTabFriend("following")}
+        />
+        <Tab
+          content="Blocked"
+          isActive={activeTabFriend === "blocked"}
+          onClick={() => setActiveTabFriend("blocked")}
         />
       </div>
 
-      <div
-        onClick={() => setOpenInvitations(true)}
-        className="flex h-[39px] w-[150px] items-center justify-center rounded-lg border border-primary-100 bg-primary-100 text-white"
-      >
-        Lời mời kết bạn
-      </div>
-    </div>
-    <div className="mt-5">
-      <div className="mb-4 flex space-x-4">
-        <button
-          className={`w-20 rounded-lg p-2 ${activeTabFriend === "friend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
-          onClick={() => setActiveTabFriend("friend")}
-        >
-          Friend
-        </button>
-        <button
-          className={`w-32 rounded-lg p-2 ${activeTabFriend === "bestfriend" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
-          onClick={() => setActiveTabFriend("bestfriend")}
-        >
-          Best Friend
-        </button>
-        <button
-          className={`w-24 rounded-lg p-2 ${activeTabFriend === "followed" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white "}`}
-          onClick={() => setActiveTabFriend("followed")}
-        >
-          Following
-        </button>
-        <button
-          className={`w-24 rounded-lg p-2 ${activeTabFriend === "blocked" ? "bg-primary-100 text-white" : "background-light800_dark300 text-light-500 dark:text-white"}`}
-          onClick={() => setActiveTabFriend("blocked")}
-        >
-          Blocked
-        </button>
-      </div>
-
-      <div className="mx-[5%] mt-10">
+      <div className="">
         <div className="grid grid-cols-2 gap-4">
           {friends.map((friend: any, index: number) => (
             <div
               key={index}
-              className="text-dark100_light500 flex w-3/5 items-center"
+              className="text-dark100_light100 flex w-3/5 items-center"
             >
               <Link href={`/profile/${friend._id}`}>
                 <Image
-                  width={80}
-                  height={80}
+                  width={50}
+                  height={50}
                   src={
                     friend?.avatar ||
                     "/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
                   }
                   alt={friend.lastName}
-                  className="mb-2 size-20 rounded-full object-cover"
+                  className="mb-2 size-[50px] rounded-full object-cover"
                 />
               </Link>
 
-              <div className="mb-1 ml-2 font-bold">
+              <div className="mb-1 ml-2 font-medium text-4">
                 {friend.firstName} {friend.lastName}
               </div>
               <Icon
@@ -107,26 +103,25 @@ const FriendList = ({
   </div>
 );
 
-const RenderFriend = () => {
-  const [friends, setFriends] = useState<UserResponseDTO[]>([]);
-  const [bffs, setBffs] = useState<UserResponseDTO[]>([]);
-  const [followings, setFollowings] = useState<UserResponseDTO[]>([]);
-  const [blocks, setBlocks] = useState<UserResponseDTO[]>([]);
+const RenderFriend = ({ profileUser }: RenderFriendProps) => {
+  const [friends, setFriends] = useState<FriendResponseDTO[]>([]);
+  const [bffs, setBffs] = useState<FriendResponseDTO[]>([]);
+  const [followings, setFollowings] = useState<FriendResponseDTO[]>([]);
+  const [blocks, setBlocks] = useState<FriendResponseDTO[]>([]);
+  const [followers, setFollowers] = useState<FriendResponseDTO[]>([]);
   const [activeTabFriend, setActiveTabFriend] = useState("friend");
   const [searchTerm, setSearchTerm] = useState("");
-  const [openInvitations, setOpenInvitations] = useState(false);
 
   useEffect(() => {
     let isMounted = true;
     const myFriends = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        const data = await getMyFriends(userId);
+        const data = await getMyFriends(profileUser._id);
         if (isMounted) {
           setFriends(data);
         }
       } catch (error) {
-        console.error("Error loading posts:", error);
+        console.error("Error loading friends:", error);
       }
     };
     myFriends();
@@ -139,13 +134,12 @@ const RenderFriend = () => {
     let isMounted = true;
     const myBffs = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        const data = await getMyBffs(userId);
+        const data = await getMyBffs(profileUser._id);
         if (isMounted) {
           setBffs(data);
         }
       } catch (error) {
-        console.error("Error loading posts:", error);
+        console.error("Error loading bffs:", error);
       }
     };
     myBffs();
@@ -158,13 +152,12 @@ const RenderFriend = () => {
     let isMounted = true;
     const myFollowings = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        const data = await getMyFollowings(userId);
+        const data = await getMyFollowings(profileUser._id);
         if (isMounted) {
           setFollowings(data);
         }
       } catch (error) {
-        console.error("Error loading posts:", error);
+        console.error("Error loading followings:", error);
       }
     };
     myFollowings();
@@ -177,13 +170,12 @@ const RenderFriend = () => {
     let isMounted = true;
     const myBlocks = async () => {
       try {
-        const userId = localStorage.getItem("userId");
-        const data = await getMyBlocks(userId);
+        const data = await getMyBlocks(profileUser._id);
         if (isMounted) {
           setBlocks(data);
         }
       } catch (error) {
-        console.error("Error loading posts:", error);
+        console.error("Error loading blockeds:", error);
       }
     };
     myBlocks();
@@ -191,19 +183,39 @@ const RenderFriend = () => {
       isMounted = false;
     };
   }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const myFollowers = async () => {
+      try {
+        const data = await getMyFollowers(profileUser._id);
+        if (isMounted) {
+          setFollowers(data);
+        }
+      } catch (error) {
+        console.error("Error loading followers:", error);
+      }
+    };
+    myFollowers();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
   const getFriendsList = () => {
     const list =
       activeTabFriend === "friend"
         ? friends
         : activeTabFriend === "bestfriend"
           ? bffs
-          : activeTabFriend === "followed"
+          : activeTabFriend === "following"
             ? followings
             : activeTabFriend === "blocked"
               ? blocks
-              : [];
+              : activeTabFriend === "follower"
+                ? followers
+                : [];
 
-    // Lọc danh sách theo searchTerm
     return list.filter(
       (friend) =>
         friend.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -219,11 +231,7 @@ const RenderFriend = () => {
         activeTabFriend={activeTabFriend}
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
-        setOpenInvitations={setOpenInvitations}
       />
-      {openInvitations && (
-        <Invitations onClose={() => setOpenInvitations(false)} />
-      )}
     </>
   );
 };

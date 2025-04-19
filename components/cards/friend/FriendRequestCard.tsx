@@ -1,4 +1,4 @@
-import Button from "@/components/ui/button";
+import FriendRequestAction from "@/components/forms/friend/FriendRequestAction";
 import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import Image from "next/image";
@@ -6,12 +6,12 @@ import React from "react";
 
 interface FriendRequestCardProps {
   follower: FriendResponseDTO;
+  profileBasic: UserBasicInfo;
 }
 
 const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
   follower,
-  //   onAccept,
-  //   onDecline,
+  profileBasic,
 }) => {
   return (
     <div className="background-light200_dark200 rounded-[10px] py-[15px] px-[13px] shadow-subtle w-full flex flex-col">
@@ -50,14 +50,10 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
             </div>
           )}
 
-          <div className="flex gap-3 mt-2">
-            <Button title="Accept" size="small" />
-            <Button
-              title="Decline"
-              size="small"
-              color="transparent"
-              border="border border-border-100"
-              fontColor="text-dark100_light100"
+          <div className="mt-2">
+            <FriendRequestAction
+              senderId={follower._id}
+              receiverId={profileBasic._id}
             />
           </div>
         </div>

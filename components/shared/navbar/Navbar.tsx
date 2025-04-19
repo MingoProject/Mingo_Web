@@ -13,51 +13,6 @@ import { useAuth } from "@/context/AuthContext";
 import Notification from "../notification/Notification";
 import NavbarTab from "@/components/ui/navbarTab";
 
-export const notifications = [
-  {
-    id: 1,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "John Doe đã thích bài viết của bạn.",
-    createdAt: "2024-09-28T14:35:00Z",
-  },
-  {
-    id: 2,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "Alice đã bình luận về bài viết của bạn: 'Thật tuyệt vời!'",
-    createdAt: "2024-09-28T13:20:00Z",
-  },
-  {
-    id: 3,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "Bob đã gửi cho bạn một lời mời kết bạn.",
-    createdAt: "2024-09-28T12:05:00Z",
-  },
-  {
-    id: 4,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "Charlie đã chia sẻ bài viết của bạn.",
-    createdAt: "2024-09-27T18:15:00Z",
-  },
-  {
-    id: 5,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "Diana đã nhắc đến bạn trong một bình luận.",
-    createdAt: "2024-09-27T16:45:00Z",
-  },
-  {
-    id: 6,
-    avatar:
-      "https://i.pinimg.com/originals/d5/d7/a1/d5d7a147b4693d7c1d8951dee97d2b0e.jpg",
-    content: "Eve đã thích ảnh hồ sơ mới của bạn.",
-    createdAt: "2024-09-27T15:30:00Z",
-  },
-];
-
 const Navbar = () => {
   const pathname = usePathname();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
@@ -143,11 +98,7 @@ const Navbar = () => {
       <div className="flex justify-center items-center gap-4 w-[256px]">
         <Theme />
         {profile ? (
-          <SettingModal
-            profile={profile}
-            setProfile={setProfile}
-            logout={logout}
-          />
+          <SettingModal profile={profile} logout={logout} />
         ) : (
           <Link href="/sign-in">
             <button className="rounded bg-primary-100 px-4 py-2 text-white">

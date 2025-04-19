@@ -75,9 +75,9 @@ const Avatar = ({ profileUser, setProfileUser }: any) => {
           onClick={handleAvatarClick}
           src={profileUser?.avatar || "/assets/images/capy.jpg"}
           alt="Avatar"
-          width={200}
-          height={200}
-          className="rounded-full object-cover"
+          width={150}
+          height={150}
+          className="size-[150px] rounded-full object-cover"
         />
       </div>
       {avatarMenuOpen && (

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { uploadBackground } from "@/lib/services/user.service";
+import NameCard from "@/components/cards/other/NameCard";
 
 const Background = ({ profileUser, setProfileUser }: any) => {
   const [backgroundMenuOpen, setBackgroundMenuOpen] = useState(false);
@@ -67,19 +68,20 @@ const Background = ({ profileUser, setProfileUser }: any) => {
   };
   return (
     <>
-      <div className="mx-[5%] flex">
-        <div>
-          <div className="absolute left-0 flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-            Personal page
-          </div>
-          <div className="ml-[20%] mt-10 hidden lg:block">
-            <span className="text-dark100_light500 text-[36px]">Hello,</span>
-            <h2 className="ml-5 text-[38px] text-primary-100">
-              I&apos;m {profileUser?.lastName}
-            </h2>
+      <div className="flex">
+        <div className="w-1/3">
+          <NameCard name="Personal page" />
+          <div className=" flex flex-col items-center">
+            <div className="ml-[5%] mt-10 hidden lg:block">
+              <span className="text-dark100_light100 text-[36px]">Hello,</span>
+              <h2 className="ml-5 text-[38px] text-primary-100">
+                I&apos;m {profileUser?.lastName}
+              </h2>
+            </div>
           </div>
         </div>
-        <div className="right-0 h-[274px] w-full overflow-hidden">
+
+        <div className="right-0 h-[274px] w-2/3 overflow-hidden">
           <Image
             onClick={handleBackgroundClick}
             src={
@@ -101,13 +103,13 @@ const Background = ({ profileUser, setProfileUser }: any) => {
         >
           <button
             onClick={() => console.log("View Avatar")}
-            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
+            className="text-dark100_light100 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
           >
             View Background
           </button>
           <button
             onClick={() => document.getElementById("avatarInput")?.click()}
-            className="text-dark100_light500 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
+            className="text-dark100_light100 block w-full px-4 py-2 text-left text-sm hover:bg-primary-100 hover:text-white"
           >
             Change Background
           </button>

@@ -105,11 +105,11 @@ const FriendRequestAction: React.FC<FriendRequestActionProps> = ({
       );
     } catch (error: any) {
       console.error("Error:", error);
-      alert(error.message || "Đã xảy ra lỗi.");
+      alert(error.message || "An error has occurred");
     }
   };
   return (
-    <div className="flex gap-3 mt-2">
+    <div className="flex gap-3">
       <Button
         title="Accept"
         size="small"

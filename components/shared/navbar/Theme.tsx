@@ -16,7 +16,7 @@ import "@/styles/theme.css";
 const Theme = () => {
   const { mode, setMode } = useTheme();
   return (
-    <Menubar className="relative border-none bg-transparent shadow-none">
+    <Menubar className="relative border-none bg-transparent text-dark100_light100 shadow-none">
       <MenubarMenu>
         <MenubarTrigger>
           {mode === "light" ? (
@@ -39,16 +39,14 @@ const Theme = () => {
         </MenubarTrigger>
         <MenubarContent
           className="absolute -right-12 mt-3 min-w-[120px]
-        rounded border py-2 dark:border-dark-400
-       dark:bg-dark-300
+        rounded-[10px]  py-2 
+       background-light200_dark200
         "
         >
           {themes.map((item) => (
             <MenubarItem
               key={item.value}
-              className="flex items-center
-              gap-4 px-2.5 py-2
-              dark:focus:bg-dark-400"
+              className="flex items-center gap-4 px-2.5 py-2  dark:focus:bg-dark-400"
               onClick={() => {
                 setMode(item.value);
                 if (item.value !== "system") {
@@ -66,7 +64,7 @@ const Theme = () => {
                 className={`${mode === item.value && "active-theme"}`}
               />
               <p
-                className={`body-semibold ${mode === item.value ? "text-primary-100" : "text-dark100_light500"}`}
+                className={`body-semibold ${mode === item.value ? "text-primary-100" : "text-dark100_light100"}`}
               >
                 {item.label}
               </p>
