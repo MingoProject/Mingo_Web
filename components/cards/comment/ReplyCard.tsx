@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import CommentMenu from "../forms/comment/Modal";
+import CommentMenu from "../../forms/comment/Modal";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
-import CommentAction from "./comment/CommentAction";
+import CommentAction from "./CommentAction";
 
 interface ReplyCardProps {
   reply: CommentResponseDTO;

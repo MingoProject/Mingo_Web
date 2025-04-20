@@ -1,6 +1,4 @@
-import Favorite from "@/components/home/Favorite";
-import ViewProfile from "@/components/home/ViewProfile";
-// import { Button } from "@/components/ui/button";
+import Favorite from "@/components/forms/user/setting/Favorite";
 import {
   faGear,
   faFloppyDisk,
@@ -20,8 +18,8 @@ import MobileNav from "./MobileNav";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Save from "@/components/home/Save";
-import ChangePassword from "@/components/home/ChangePassword";
+import Save from "@/components/forms/user/setting/Save";
+import ChangePassword from "@/components/forms/user/setting/ChangePassword";
 import { getMyLikedPosts, getMySavedPosts } from "@/lib/services/user.service";
 import Button from "@/components/ui/button";
 
@@ -218,7 +216,6 @@ const SettingModal = ({ profile, logout }: any) => {
       <div className="flex w-auto  sm:hidden">
         <MobileNav />
       </div>
-      {isViewProfile && <ViewProfile onClose={closeViewProfile} />}
       {isSetting && <ChangePassword onClose={closeSetting} />}
       {isFavorite && (
         <Favorite

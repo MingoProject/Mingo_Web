@@ -116,7 +116,7 @@ const PostAction = ({
             className="text-dark100_light100 size-[30px]"
           />
           <span className="text-dark100_light100 text-[16px] font-normal">
-            {post?.shares.length} Shares
+            {post?.shares?.length} Shares
           </span>
         </div>
       </div>
