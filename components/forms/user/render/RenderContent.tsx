@@ -1,15 +1,13 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
 import PostsCard from "@/components/cards/post/PostCard";
 import NoResult from "@/components/shared/NoResult";
-import OpenCreatePost from "../post/OpenCreatePost";
+import OpenCreatePost from "../../post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";
-import FilterPost from "../FilterPost";
+import FilterPost from "../../FilterPost";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import fetchDetailedPosts from "@/hooks/usePosts";
 import { getMyPosts } from "@/lib/services/user.service";
-import Images from "./Images";
-import Videos from "./Videos";
+import Images from "../../personalPage/Images";
+import Videos from "../../personalPage/Videos";
 import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
 
 interface RenderContentProps {
@@ -119,7 +117,7 @@ const RenderContentPage = ({
     case "videos":
       return <Videos me={profileBasic} profileUser={profileUser} />;
     default:
-      return <div>Chọn một mục để hiển thị nội dung</div>;
+      return <div></div>;
   }
 };
 

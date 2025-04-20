@@ -50,6 +50,20 @@ export interface AuthenticationDTO {
 //   createAt: Date;
 //   createBy: Schema.Types.ObjectId;
 // }
+export interface MutualFriendDTO {
+  _id: string;
+  firstName: string;
+  lastName: string;
+  avatar?: string;
+}
+
+export interface SearchUserResponseDTO {
+  _id: string;
+  avatar: string;
+  firstName: string;
+  lastName: string;
+  mutualFriends: MutualFriendDTO[];
+}
 
 export interface UserResponseDTO {
   _id: string;

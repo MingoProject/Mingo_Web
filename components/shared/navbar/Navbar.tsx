@@ -1,11 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { Icon } from "@iconify/react";
 import { Sheet, SheetClose } from "@/components/ui/sheet";
 import { navbarLinks } from "@/constants";
 import { usePathname } from "next/navigation";
-import Theme from "./Theme";
+import Theme from "../theme/Theme";
 import Search from "../search/Search";
 import { getMyProfile } from "@/lib/services/user.service";
 import SettingModal from "./SettingModal";
