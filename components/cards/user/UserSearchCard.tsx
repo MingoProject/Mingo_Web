@@ -48,12 +48,12 @@ const UserSearchCard: React.FC<UserSearchCardProps> = ({ user }) => {
               )}
             </div>
           </div>
-          <div className="pl-[9px] pr-[5px] py-[7px] background-light400_dark400 rounded-full">
+          {/* <div className="pl-[9px] pr-[5px] py-[7px] background-light400_dark400 rounded-full">
             <Icon
               icon="solar:user-plus-broken"
               className="text-primary-100 size-[20px]"
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </div>

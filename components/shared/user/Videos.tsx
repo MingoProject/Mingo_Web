@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { getMyVideos } from "@/lib/services/user.service";
-import DetailsVideo from "./DetailsVideo";
+import DetailsVideo from "../../forms/personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
 

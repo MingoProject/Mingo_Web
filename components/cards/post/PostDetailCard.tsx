@@ -6,19 +6,19 @@ import {
 import CommentCard from "@/components/cards/comment/CommentCard";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { createNotification } from "@/lib/services/notification.service";
-import DetailsImage from "../personalPage/DetailsImage";
-import DetailsVideo from "../personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import PostAction from "../../cards/post/PostAction";
+import PostAction from "../../shared/post/PostAction";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import PostHeader from "@/components/cards/post/PostHeader";
-import PostMedia from "@/components/cards/post/PostMedia";
+import PostHeader from "@/components/shared/post/PostHeader";
+import PostMedia from "@/components/shared/post/PostMedia";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
+import DetailsImage from "@/components/forms/personalPage/DetailsImage";
+import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
 
-interface DetailPostProps {
+interface PostDetailCardProps {
   post: PostResponseDTO;
   onClose: () => void;
   profileBasic: UserBasicInfo;
@@ -33,7 +33,7 @@ interface DetailPostProps {
   setPostsData?: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
 }
 
-const DetailPost = ({
+const PostDetailCard = ({
   post,
   onClose,
   profileBasic,
@@ -46,7 +46,7 @@ const DetailPost = ({
   commentsData,
   setCommentsData,
   setPostsData,
-}: DetailPostProps) => {
+}: PostDetailCardProps) => {
   const [newComment, setNewComment] = useState<string>("");
   const [selectedImage, setSelectedImage] = useState(null);
   const [selectedVideo, setSelectedVideo] = useState(null);
@@ -245,7 +245,7 @@ const DetailPost = ({
           video={selectedVideo}
           onClose={() => {
             setSelectedVideo(null);
-            setIsDetailVisible(true); // Hiển thị lại DetailPost
+            setIsDetailVisible(true); // Hiển thị lại PostDetailCard
           }}
           profileUser={post?.author}
           me={profileBasic}
@@ -277,4 +277,4 @@ const DetailPost = ({
   );
 };
 
-export default DetailPost;
+export default PostDetailCard;

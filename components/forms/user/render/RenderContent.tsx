@@ -1,13 +1,13 @@
 import React, { useEffect, useState } from "react";
 import PostsCard from "@/components/cards/post/PostCard";
 import NoResult from "@/components/shared/NoResult";
-import OpenCreatePost from "../../post/OpenCreatePost";
+import OpenCreatePost from "../../../shared/post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";
 import FilterPost from "../../FilterPost";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { getMyPosts } from "@/lib/services/user.service";
-import Images from "../../personalPage/Images";
-import Videos from "../../personalPage/Videos";
+import Images from "../../../shared/user/Images";
+import Videos from "../../../shared/user/Videos";
 import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
 
 interface RenderContentProps {
@@ -111,9 +111,11 @@ const RenderContentPage = ({
         </div>
       );
     case "friends":
-      return <RenderFriend profileUser={profileUser} />;
+      return (
+        <RenderFriend profileBasic={profileBasic} profileUser={profileUser} />
+      );
     case "photos":
-      return <Images me={profileBasic} profileUser={profileUser} />;
+      return <Images profileBasic={profileBasic} profileUser={profileUser} />;
     case "videos":
       return <Videos me={profileBasic} profileUser={profileUser} />;
     default:

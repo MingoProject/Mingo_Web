@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from "react";
-
-import { Icon } from "@iconify/react";
-import Image from "next/image";
 import {
   getMyBffs,
   getMyBlocks,
@@ -13,97 +10,15 @@ import Link from "next/link";
 import Input from "@/components/ui/input";
 import Tab from "@/components/ui/tab";
 import { FriendResponseDTO } from "@/dtos/FriendDTO";
-import { UserBasicInfo } from "@/dtos/UserDTO";
-
+import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
+import FriendRequestCard from "@/components/cards/friend/FriendRequestCard";
+import FriendCard from "@/components/cards/friend/FriendCard";
 interface RenderFriendProps {
-  profileUser: UserBasicInfo;
+  profileUser: UserResponseDTO;
+  profileBasic: UserBasicInfo;
 }
 
-const FriendList = ({
-  friends,
-  setActiveTabFriend,
-  activeTabFriend,
-  searchTerm,
-  setSearchTerm,
-}: any) => (
-  <div className="flex flex-col gap-[15px]">
-    <div className="flex w-full items-center">
-      <div>
-        <Input
-          iconSrc="iconoir:search"
-          placeholder="search"
-          readOnly={false}
-          cursor="text"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-      </div>
-    </div>
-    <div className="flex flex-col gap-[15px]">
-      <div className="flex space-x-2">
-        <Tab
-          content="Friend"
-          isActive={activeTabFriend === "friend"}
-          onClick={() => setActiveTabFriend("friend")}
-        />
-        <Tab
-          content="Best Friend"
-          isActive={activeTabFriend === "bestfriend"}
-          onClick={() => setActiveTabFriend("bestfriend")}
-        />
-        <Tab
-          content="Follower"
-          isActive={activeTabFriend === "follower"}
-          onClick={() => setActiveTabFriend("follower")}
-        />
-        <Tab
-          content="Following"
-          isActive={activeTabFriend === "following"}
-          onClick={() => setActiveTabFriend("following")}
-        />
-        <Tab
-          content="Blocked"
-          isActive={activeTabFriend === "blocked"}
-          onClick={() => setActiveTabFriend("blocked")}
-        />
-      </div>
-
-      <div className="">
-        <div className="grid grid-cols-2 gap-4">
-          {friends.map((friend: any, index: number) => (
-            <div
-              key={index}
-              className="text-dark100_light100 flex w-3/5 items-center"
-            >
-              <Link href={`/profile/${friend._id}`}>
-                <Image
-                  width={50}
-                  height={50}
-                  src={
-                    friend?.avatar ||
-                    "/assets/images/62ceabe8a02e045a0793ec431098bcc1.jpg"
-                  }
-                  alt={friend.lastName}
-                  className="mb-2 size-[50px] rounded-full object-cover"
-                />
-              </Link>
-
-              <div className="mb-1 ml-2 font-medium text-4">
-                {friend.firstName} {friend.lastName}
-              </div>
-              <Icon
-                icon="mdi:dots-horizontal"
-                className="text-dark100_light500 ml-auto size-6"
-              />
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  </div>
-);
-
-const RenderFriend = ({ profileUser }: RenderFriendProps) => {
+const RenderFriend = ({ profileUser, profileBasic }: RenderFriendProps) => {
   const [friends, setFriends] = useState<FriendResponseDTO[]>([]);
   const [bffs, setBffs] = useState<FriendResponseDTO[]>([]);
   const [followings, setFollowings] = useState<FriendResponseDTO[]>([]);
@@ -224,15 +139,79 @@ const RenderFriend = ({ profileUser }: RenderFriendProps) => {
   };
 
   return (
-    <>
-      <FriendList
-        friends={getFriendsList()}
-        setActiveTabFriend={setActiveTabFriend}
-        activeTabFriend={activeTabFriend}
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-      />
-    </>
+    <div className="flex flex-col gap-[15px]">
+      <div className="flex w-full items-center">
+        <div>
+          <Input
+            iconSrc="iconoir:search"
+            placeholder="search"
+            readOnly={false}
+            cursor="text"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+      </div>
+      <div className="flex flex-col gap-[15px] w-full">
+        <div className="flex space-x-2">
+          <Tab
+            content="Friend"
+            isActive={activeTabFriend === "friend"}
+            onClick={() => setActiveTabFriend("friend")}
+          />
+          <Tab
+            content="Best Friend"
+            isActive={activeTabFriend === "bestfriend"}
+            onClick={() => setActiveTabFriend("bestfriend")}
+          />
+          <Tab
+            content="Following"
+            isActive={activeTabFriend === "following"}
+            onClick={() => setActiveTabFriend("following")}
+          />
+          {profileBasic._id === profileUser._id && (
+            <>
+              <Tab
+                content="Follower"
+                isActive={activeTabFriend === "follower"}
+                onClick={() => setActiveTabFriend("follower")}
+              />
+              <Tab
+                content="Blocked"
+                isActive={activeTabFriend === "blocked"}
+                onClick={() => setActiveTabFriend("blocked")}
+              />
+            </>
+          )}
+        </div>
+
+        <div className="w-full">
+          <div className="grid grid-cols-2 gap-4">
+            {getFriendsList().map((friend: any, index: number) => (
+              <div
+                key={index}
+                className="text-dark100_light100 flex w-full flex-col"
+              >
+                {activeTabFriend === "follower" && (
+                  <FriendRequestCard
+                    follower={friend}
+                    profileBasic={profileBasic}
+                  />
+                )}
+
+                {activeTabFriend !== "follower" && (
+                  <FriendCard
+                    friend={friend}
+                    activeTabFriend={activeTabFriend}
+                    profileBasic={profileBasic}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import CreatePost from "./CreatePost";
+import CreatePost from "../../forms/post/CreatePost";
 import Input from "@/components/ui/input";
 
 const OpenCreatePost = ({ me, setPostsData }: any) => {

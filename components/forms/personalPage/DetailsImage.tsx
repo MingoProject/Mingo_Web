@@ -1,4 +1,3 @@
-import { Button } from "@/components/ui/button";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
@@ -14,7 +13,7 @@ const DetailsImage = ({
   image,
   onClose,
   profileUser,
-  me,
+  profileBasic,
   commentsData,
   setCommentsData,
 }: any) => {
@@ -61,19 +60,19 @@ const DetailsImage = ({
       const enrichedComment = {
         ...newCommentData,
         userId: {
-          _id: me?._id,
-          avatar: me?.avatar || "/assets/images/capy.jpg",
-          firstName: me?.firstName || "Anonymous",
-          lastName: me?.lastName || "Anonymous",
+          _id: profileBasic?._id,
+          avatar: profileBasic?.avatar || "/assets/images/capy.jpg",
+          firstName: profileBasic?.firstName || "Anonymous",
+          lastName: profileBasic?.lastName || "Anonymous",
         },
         createAt: isoStringWithOffset,
       };
 
       setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
-      if (profileUser._id !== me._id) {
+      if (profileUser._id !== profileBasic._id) {
         const notificationParams = {
-          senderId: me._id,
+          senderId: profileBasic._id,
           receiverId: profileUser._id,
           type: "comment_media",
           mediaId: image._id,
@@ -143,7 +142,7 @@ const DetailsImage = ({
                 numberOfComments={numberOfComments}
                 shares={image?.shares}
                 author={profileUser}
-                profile={me}
+                profile={profileBasic}
               />
               <hr className="background-light800_dark400 mt-2 h-px w-full border-0" />
 
@@ -167,7 +166,7 @@ const DetailsImage = ({
                             setCommentsData={setCommentsData}
                             mediaId={image._id}
                             author={profileUser}
-                            profile={me}
+                            profileBasic={profileBasic}
                             setNumberOfComments={setNumberOfComments}
                             numberOfComments={numberOfComments}
                           />
@@ -182,7 +181,11 @@ const DetailsImage = ({
               <div className="flex">
                 <div className="w-16 overflow-hidden rounded-full">
                   <Image
-                    src={me?.avatar ? me.avatar : "/assets/images/capy.jpg"}
+                    src={
+                      profileBasic?.avatar
+                        ? profileBasic.avatar
+                        : "/assets/images/capy.jpg"
+                    }
                     alt="Avatar"
                     width={40}
                     height={40}

@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import CommentMenu from "../../forms/comment/Modal";
+import CommentMenu from "../../modals/comment/Modal";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import CommentAction from "./CommentAction";

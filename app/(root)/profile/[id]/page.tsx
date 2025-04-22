@@ -3,14 +3,14 @@
 import { useParams, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { getMyProfile } from "@/lib/services/user.service";
-import Background from "@/components/forms/user/Background";
-import Avatar from "@/components/forms/user/Avatar";
-import Bio from "@/components/forms/user/Bio";
-import InfomationUser from "@/components/forms/user/InfomationUser";
+import Background from "@/components/shared/user/Background";
+import Avatar from "@/components/shared/user/Avatar";
+import Bio from "@/components/shared/user/Bio";
+import InfomationUser from "@/components/shared/user/InfomationUser";
 import Tab from "@/components/forms/personalPage/Tab";
 import RenderContentPage from "@/components/forms/user/render/RenderContent";
 import { checkRelation } from "@/lib/services/relation.service";
-import RelationModal from "@/components/forms/profile/RelationAction";
+import RelationModal from "@/components/shared/user/RelationAction";
 import { useAuth } from "@/context/AuthContext";
 import MyButton from "@/components/shared/MyButton";
 import { useChatItemContext } from "@/context/ChatItemContext";
@@ -354,7 +354,7 @@ const ProfilePage = () => {
                   isMe={isMe}
                 />
               </div>
-              <div className="w-[645px] flex flex-col gap-8">
+              <div className="w-[700px] flex flex-col gap-8">
                 <Tab activeTab={activeTab} setActiveTab={setActiveTab} />
                 <RenderContentPage
                   activeTab={activeTab}

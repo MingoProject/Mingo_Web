@@ -5,6 +5,7 @@ import { UserResponseDTO } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
+
 export async function fetchPosts(): Promise<PostResponseDTO[]> {
   try {
     const response = await fetch(`${BASE_URL}/post/all`);

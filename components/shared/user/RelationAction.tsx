@@ -75,6 +75,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
             token
           );
           break;
+
         case "unBFF":
           await unBFF(params, token);
           setRelation("friend");
