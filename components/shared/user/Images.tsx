@@ -1,12 +1,17 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMyImages } from "@/lib/services/user.service";
-import DetailsImage from "./DetailsImage";
+import DetailsImage from "../../forms/personalPage/DetailsImage";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
-// import { getMediaByMediaId } from "@/lib/services/media.service";
+import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
 
-const Images = ({ me, profileUser }: any) => {
+interface ImagesProps {
+  profileBasic: UserBasicInfo;
+  profileUser: UserResponseDTO;
+}
+
+const Images = ({ profileBasic, profileUser }: ImagesProps) => {
   const [images, setImages] = useState<any[]>([]);
   const [detailSelectedImage, setDetailSelectedImage] = useState<any>(null);
   const [openModal, setOpenModal] = useState(false);
@@ -51,10 +56,7 @@ const Images = ({ me, profileUser }: any) => {
   return (
     <div className="flex ">
       <div>
-        <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-          Pictures
-        </div>
-        <div className="mx-[10%] mt-10 flex flex-wrap gap-4">
+        <div className="mt-5 flex flex-wrap gap-4">
           {images.map((image, index) => (
             <div key={index} className="flex flex-col items-center">
               <Image
@@ -70,7 +72,7 @@ const Images = ({ me, profileUser }: any) => {
                   image={detailSelectedImage}
                   onClose={() => setOpenModal(false)}
                   profileUser={profileUser}
-                  me={me}
+                  profileBasic={profileBasic}
                   commentsData={commentsData}
                   setCommentsData={setCommentsData}
                 />

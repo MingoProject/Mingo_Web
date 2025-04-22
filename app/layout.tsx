@@ -25,7 +25,7 @@ export default function RootLayout({
       <ChatItemProvider>
         <ChatProvider>
           <html lang="en">
-            <body>
+            <body className="background-light500_dark500">
               <ClerkProvider
                 appearance={{
                   elements: {

@@ -1,7 +1,7 @@
 import { formattedDate } from "@/lib/utils";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
-import UpdateInformation from "./UpdateInformation";
+import UpdateInformation from "../../forms/user/UpdateInformation";
 import { UserResponseDTO } from "@/dtos/UserDTO";
 import TitleIcon from "@/components/ui/titleIcon";
 import Tag from "@/components/ui/tag";

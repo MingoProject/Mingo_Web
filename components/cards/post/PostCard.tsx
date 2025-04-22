@@ -4,18 +4,18 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import DetailPost from "../../forms/post/DetailPost";
 import DetailsImage from "../../forms/personalPage/DetailsImage";
 import DetailsVideo from "../../forms/personalPage/DetailsVideo";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";
-import PostHeader from "./PostHeader";
-import PostAction from "./PostAction";
+import PostHeader from "../../shared/post/PostHeader";
+import PostAction from "../../shared/post/PostAction";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import PostMedia from "./PostMedia";
+import PostMedia from "../../shared/post/PostMedia";
 import Input from "@/components/ui/input";
+import PostDetailCard from "./PostDetailCard";
 
 interface PostCardProps {
   post: PostResponseDTO;
@@ -131,7 +131,7 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
           />
         </div>
         {isModalOpen && (
-          <DetailPost
+          <PostDetailCard
             post={post}
             onClose={closeModal}
             profileBasic={profileBasic}

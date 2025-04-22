@@ -1,6 +1,6 @@
 import { deletePost, savePost, unsavePost } from "@/lib/services/post.service";
 import React, { useEffect, useRef, useState } from "react";
-import EditPost from "./EditPost";
+import EditPost from "../../forms/post/EditPost";
 import { useAuth } from "@/context/AuthContext";
 import ReportCard from "@/components/cards/ReportCard";
 import { PostResponseDTO } from "@/dtos/PostDTO";

@@ -3,7 +3,7 @@ import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/post/PostCard";
-import OpenCreatePost from "@/components/forms/post/OpenCreatePost";
+import OpenCreatePost from "@/components/shared/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
 import { fetchPosts } from "@/lib/services/post.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";

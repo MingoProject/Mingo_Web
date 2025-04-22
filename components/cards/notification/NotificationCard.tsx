@@ -2,30 +2,20 @@
 
 import DetailsImage from "@/components/forms/personalPage/DetailsImage";
 import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
-import DetailPost from "@/components/forms/post/DetailPost";
 import { useAuth } from "@/context/AuthContext";
 import { NotificationResponseDTO } from "@/dtos/NotificationDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
-import {
-  acceptAddBff,
-  acceptAddFriend,
-  unfollowOrRefuseFriendRequest,
-  unrequestBffOrRefuseBffRequest,
-} from "@/lib/services/friend.service";
 import { getMediaByMediaId } from "@/lib/services/media.service";
-import {
-  createNotification,
-  deleteNotification,
-} from "@/lib/services/notification.service";
 import { getPostByPostId } from "@/lib/services/post.service";
 import { getTimestamp } from "@/lib/utils";
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import RenderContentNotification from "./RenderContentNotification";
-import FriendRequestAction from "@/components/forms/friend/FriendRequestAction";
-import BffRequestAction from "@/components/forms/friend/BffRequestAction";
+import RenderContentNotification from "../../shared/notification/RenderContentNotification";
+import FriendRequestAction from "@/components/shared/friend/FriendRequestAction";
+import BffRequestAction from "@/components/shared/friend/BffRequestAction";
+import PostDetailCard from "../post/PostDetailCard";
 
 interface NotificationCardProps {
   notification: NotificationResponseDTO;
@@ -177,7 +167,7 @@ const NotificationCard = ({
       </div>
 
       {openDetailPost && (
-        <DetailPost
+        <PostDetailCard
           post={post}
           onClose={() => setOpenDetailPost(false)}
           profileBasic={profileBasic}

@@ -1,4 +1,4 @@
-import FriendRequestAction from "@/components/forms/friend/FriendRequestAction";
+import FriendRequestAction from "@/components/shared/friend/FriendRequestAction";
 import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
 import Image from "next/image";

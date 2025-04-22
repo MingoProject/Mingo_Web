@@ -1,10 +1,10 @@
 import Link from "next/link";
 import Image from "next/image";
 import { Icon } from "@iconify/react";
-import TagModal from "@/components/forms/post/TagModal";
+import TagModal from "@/components/modals/post/TagModal";
 import { getTimestamp } from "@/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import PostMenu from "@/components/forms/post/PostMenu";
+import PostMenu from "@/components/shared/post/PostMenu";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 
 interface PostHeaderProps {
