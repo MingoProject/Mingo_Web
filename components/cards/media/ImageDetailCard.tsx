@@ -4,19 +4,32 @@ import Image from "next/image";
 import Link from "next/link";
 import { createCommentMedia } from "@/lib/services/comment.service";
 import CommentCard from "@/components/cards/comment/CommentCard";
-import ImageAction from "./ImageAction";
 import { createNotification } from "@/lib/services/notification.service";
 import { getTimestamp } from "@/lib/utils";
-import ButtonClose from "@/components/ui/buttonClose";
+import Input from "@/components/ui/input";
+import Button from "@/components/ui/button";
+import ImageAction from "@/components/forms/personalPage/ImageAction";
+import { MediaResponseDTO } from "@/dtos/MediaDTO";
+import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
 
-const DetailsImage = ({
+interface ImageDetailCardProps {
+  image: MediaResponseDTO;
+  onClose: () => void;
+  profileUser: UserBasicInfo;
+  profileBasic: UserBasicInfo;
+  commentsData: CommentResponseDTO[];
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+}
+
+const ImageDetailCard = ({
   image,
   onClose,
   profileUser,
   profileBasic,
   commentsData,
   setCommentsData,
-}: any) => {
+}: ImageDetailCardProps) => {
   const [newComment, setNewComment] = useState<string>("");
   const [numberOfComments, setNumberOfComments] = useState(
     image.comments?.length
@@ -91,11 +104,18 @@ const DetailsImage = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="background-light700_dark300 text-dark100_light500 z-50 max-h-screen w-[90%] overflow-y-auto rounded-lg bg-white p-6 shadow-lg md:w-4/5 lg:w-[70%]">
-        <div className="block lg:flex">
-          <div className="w-full lg:w-1/2">
-            <div className="ml-4 mt-3 flex items-center">
-              <div className="flex items-center">
+      <div className="background-light200_dark200 flex flex-col gap-5 text-dark100_light100 z-50 max-h-screen w-[90%] overflow-y-auto rounded-[10px] p-6 shadow-lg md:w-4/5 lg:w-[70%]">
+        <div className="flex justify-end">
+          <Icon
+            icon="ic:round-close"
+            className="size-[30px] text-primary-100"
+            onClick={onClose}
+          />
+        </div>
+        <div className="block lg:flex gap-[20px]">
+          <div className="w-full lg:w-1/2 flex flex-col gap-[15px]">
+            <div className=" flex items-center">
+              <div className="flex items-center gap-[10px]">
                 <Link href={`/profile/${profileUser._id}`}>
                   <Image
                     src={profileUser?.avatar || "/assets/images/capy.jpg"}
@@ -106,36 +126,34 @@ const DetailsImage = ({
                   />
                 </Link>
                 <div>
-                  <p className="text-dark100_light500 ml-3 text-base">
+                  <p className="text-dark100_light100  text-[16px] font-medium">
                     {profileUser?.firstName || ""} {profileUser?.lastName || ""}
                   </p>
-                  <span className="text-dark100_light500 ml-3 text-sm">
+                  <span className="text-dark100_light100 text-[12px] font-normal">
                     {image?.createAt && getTimestamp(image?.createAt)}
                   </span>
                 </div>
               </div>
-              <div className="ml-auto pb-2 pr-4">
+              {/* <div className="ml-auto">
                 <Icon
                   icon="tabler:dots"
                   className="text-dark100_light500 cursor-pointer"
                 />
-              </div>
+              </div> */}
             </div>
-            <div className="mt-20 flex w-full items-center justify-center">
-              <div className="mx-auto flex h-64 w-full items-center justify-center">
-                <Image
-                  src={image?.url || "/assets/images/placeholder.jpg"}
-                  alt="Image"
-                  width={300}
-                  height={600}
-                  className="object-cover"
-                />
-              </div>
+            <span>{image.caption}</span>
+            <div className="flex w-full items-center justify-center">
+              <Image
+                src={image?.url || "/assets/images/placeholder.jpg"}
+                alt="Image"
+                width={300}
+                height={600}
+                className="object-cover"
+              />
             </div>
           </div>
-          <div className="w-full lg:w-1/2">
-            <span>{image.caption}</span>
-            <div className="mx-10 my-5">
+          <div className="w-full lg:w-1/2 flex flex-col gap-4">
+            <div className="">
               <ImageAction
                 likes={image?.likes}
                 mediaId={image?._id}
@@ -178,43 +196,29 @@ const DetailsImage = ({
                 )}
               </div>
 
-              <div className="flex">
-                <div className="w-16 overflow-hidden rounded-full">
-                  <Image
-                    src={
-                      profileBasic?.avatar
-                        ? profileBasic.avatar
-                        : "/assets/images/capy.jpg"
-                    }
-                    alt="Avatar"
-                    width={40}
-                    height={40}
-                    className="size-10 rounded-full object-cover"
-                  />
-                </div>
-                <input
-                  type="text"
-                  placeholder="Write a comment..."
-                  className="background-light800_dark400 text-dark100_light500 ml-3 h-[40px] w-full rounded-full pl-3 text-base"
+              <div className="flex w-full gap-[10px]">
+                <Input
+                  avatarSrc={profileBasic?.avatar || "/assets/images/capy.jpg"}
+                  placeholder="Write a comment"
+                  readOnly={false}
+                  cursor="text"
                   value={newComment}
                   onChange={handleInputChange}
                 />
-                <button
+                <Button
+                  title="Comment"
+                  size="small"
                   onClick={handleAddComment}
-                  className="ml-1 rounded-full bg-primary-100 p-2 px-5 text-white"
-                >
-                  Add
-                </button>
+                  color="bg-primary-100"
+                  fontColor="text-dark100_light200"
+                />
               </div>
             </div>
           </div>
-        </div>
-        <div className="mt-3 flex justify-end space-x-2">
-          <ButtonClose onClick={onClose} />
         </div>
       </div>
     </div>
   );
 };
 
-export default DetailsImage;
+export default ImageDetailCard;

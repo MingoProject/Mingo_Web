@@ -1,15 +1,22 @@
 import React, { useEffect, useState } from "react";
 import { MediaResponseDTO } from "@/dtos/MediaDTO";
 import { getMyVideos } from "@/lib/services/user.service";
-import DetailsVideo from "../../forms/personalPage/DetailsVideo";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+import VideoDetailCard from "@/components/cards/media/VideoDetailCard";
 
-const Videos = ({ me, profileUser }: any) => {
+interface VideosProps {
+  profileBasic: UserBasicInfo;
+  profileUser: UserBasicInfo;
+}
+const Videos = ({ profileBasic, profileUser }: VideosProps) => {
   const [videos, setVideos] = useState<MediaResponseDTO[]>([]);
-  const [detailSelectedVideo, setDetailSelectedVideo] = useState<any>(null);
+  const [detailSelectedVideo, setDetailSelectedVideo] =
+    useState<MediaResponseDTO>();
   const [openModal, setOpenModal] = useState(false);
-  const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -49,10 +56,8 @@ const Videos = ({ me, profileUser }: any) => {
   return (
     <div className="flex  ">
       <div>
-        <div className="mx-[8%]  flex h-[39px] w-[150px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-          Videos
-        </div>
-        <div className="mx-[20%] mt-10 flex flex-wrap gap-4">
+        \
+        <div className="mt-5 flex flex-wrap gap-4">
           {videos.map((video, index) => (
             <div key={index} className="flex flex-col items-center w-[150px]">
               <div className="size-40" onClick={() => handleClick(video)}>
@@ -60,7 +65,7 @@ const Videos = ({ me, profileUser }: any) => {
                   width={150}
                   height={150}
                   controls
-                  className="size-[200px]"
+                  className="size-[160px]"
                 >
                   <source src={video.url} type="video/mp4" />
                   Your browser does not support the video tag.
@@ -68,12 +73,12 @@ const Videos = ({ me, profileUser }: any) => {
               </div>
             </div>
           ))}
-          {openModal && (
-            <DetailsVideo
+          {openModal && detailSelectedVideo && (
+            <VideoDetailCard
               video={detailSelectedVideo}
               onClose={() => setOpenModal(false)}
               profileUser={profileUser}
-              me={me}
+              profileBasic={profileBasic}
               commentsData={commentsData}
               setCommentsData={setCommentsData}
             />

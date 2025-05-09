@@ -27,8 +27,8 @@ const NoResult = ({ title, description, link, linkTitle }: Props) => {
         className="hidden object-contain dark:flex"
       />
 
-      <h2 className="text-dark100_light500 mt-5">{title}</h2>
-      <p className="text-dark100_light500">{description}</p>
+      <h2 className="text-dark100_light100 mt-5">{title}</h2>
+      <p className="text-dark100_light100">{description}</p>
 
       <Link href={link}>
         <button className="mt-3 rounded-md border bg-primary-100 px-3 py-2 text-white">

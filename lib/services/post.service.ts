@@ -5,7 +5,6 @@ import { UserResponseDTO } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-
 export async function fetchPosts(): Promise<PostResponseDTO[]> {
   try {
     const response = await fetch(`${BASE_URL}/post/all`);
@@ -14,6 +13,45 @@ export async function fetchPosts(): Promise<PostResponseDTO[]> {
     }
     const data = await response.json();
     // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch posts:", error);
+    throw error;
+  }
+}
+
+export async function fetchTrendingPosts(): Promise<PostResponseDTO[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-trending-posts`);
+    if (!response.ok) {
+      throw new Error("Error fetching trending posts");
+    }
+    const data = await response.json();
+    // console.log(data);
+    return data;
+  } catch (error) {
+    console.error("Failed to fetch trending posts:", error);
+    throw error;
+  }
+}
+
+export async function fetchRelevantPosts(
+  token: string | null
+): Promise<PostResponseDTO[]> {
+  try {
+    const response = await fetch(`${BASE_URL}/post/get-relevant-posts`, {
+      method: "GET",
+      headers: {
+        Authorization: `${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.message || "Error creating media");
+    }
+
+    const data: PostResponseDTO[] = await response.json();
     return data;
   } catch (error) {
     console.error("Failed to fetch posts:", error);

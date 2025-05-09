@@ -1,21 +1,24 @@
 import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { getMyImages } from "@/lib/services/user.service";
-import DetailsImage from "../../forms/personalPage/DetailsImage";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
 import { UserBasicInfo, UserResponseDTO } from "@/dtos/UserDTO";
+import { MediaResponseDTO } from "@/dtos/MediaDTO";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import ImageDetailCard from "@/components/cards/media/ImageDetailCard";
 
 interface ImagesProps {
   profileBasic: UserBasicInfo;
-  profileUser: UserResponseDTO;
+  profileUser: UserBasicInfo;
 }
 
 const Images = ({ profileBasic, profileUser }: ImagesProps) => {
-  const [images, setImages] = useState<any[]>([]);
-  const [detailSelectedImage, setDetailSelectedImage] = useState<any>(null);
+  const [images, setImages] = useState<MediaResponseDTO[]>([]);
+  const [detailSelectedImage, setDetailSelectedImage] =
+    useState<MediaResponseDTO>();
   const [openModal, setOpenModal] = useState(false);
-  const [commentsData, setCommentsData] = useState<any[]>([]);
+  const [commentsData, setCommentsData] = useState<CommentResponseDTO[]>([]);
 
   useEffect(() => {
     let isMounted = true;
@@ -67,8 +70,8 @@ const Images = ({ profileBasic, profileUser }: ImagesProps) => {
                 alt={`Picture ${index + 1}`}
                 className="mb-2 size-36 rounded-sm object-cover"
               />
-              {openModal && (
-                <DetailsImage
+              {openModal && detailSelectedImage && (
+                <ImageDetailCard
                   image={detailSelectedImage}
                   onClose={() => setOpenModal(false)}
                   profileUser={profileUser}

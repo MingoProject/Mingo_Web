@@ -5,7 +5,11 @@ import NoResult from "@/components/shared/NoResult";
 import PostsCard from "@/components/cards/post/PostCard";
 import OpenCreatePost from "@/components/shared/post/OpenCreatePost";
 import FilterPost from "@/components/forms/FilterPost";
-import { fetchPosts } from "@/lib/services/post.service";
+import {
+  fetchPosts,
+  fetchRelevantPosts,
+  fetchTrendingPosts,
+} from "@/lib/services/post.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { useAuth } from "@/context/AuthContext";
 import { UserBasicInfo } from "@/dtos/UserDTO";
@@ -25,6 +29,10 @@ import { FriendResponseDTO } from "@/dtos/FriendDTO";
 
 export default function Home() {
   const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
+  const [trendingPostsData, settrendingPostsData] = useState<PostResponseDTO[]>(
+    []
+  );
+
   const { profile } = useAuth();
   const [invitations, setInvitations] = useState<FriendResponseDTO[]>([]);
   // const [chats, setChats] = useState<any[]>([]);
@@ -43,7 +51,8 @@ export default function Home() {
     let isMounted = true;
     const loadPosts = async () => {
       try {
-        const data = await fetchPosts();
+        const token = localStorage.getItem("token");
+        const data = await fetchRelevantPosts(token);
         if (isMounted) {
           setPostsData(data);
         }
@@ -52,6 +61,24 @@ export default function Home() {
       }
     };
     loadPosts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let isMounted = true;
+    const loadTrendingPosts = async () => {
+      try {
+        const data = await fetchTrendingPosts();
+        if (isMounted) {
+          settrendingPostsData(data);
+        }
+      } catch (error) {
+        console.error("Error loading posts:", error);
+      }
+    };
+    loadTrendingPosts();
     return () => {
       isMounted = false;
     };

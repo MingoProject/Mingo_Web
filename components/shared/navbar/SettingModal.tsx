@@ -1,4 +1,3 @@
-import Favorite from "@/components/forms/user/setting/Favorite";
 import {
   faGear,
   faFloppyDisk,
@@ -18,10 +17,12 @@ import MobileNav from "./MobileNav";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
-import Save from "@/components/forms/user/setting/Save";
 import ChangePassword from "@/components/forms/user/setting/ChangePassword";
 import { getMyLikedPosts, getMySavedPosts } from "@/lib/services/user.service";
 import Button from "@/components/ui/button";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import SavedPosts from "@/components/forms/user/setting/SavedPosts";
+import LikedPosts from "@/components/forms/user/setting/LikedPosts";
 
 const SettingModal = ({ profile, logout }: any) => {
   const router = useRouter();
@@ -29,30 +30,29 @@ const SettingModal = ({ profile, logout }: any) => {
   const [isViewProfile, setIsViewProfile] = useState(false);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isSave, setIsSave] = useState(false);
-  const [listLikePosts, setListLikePosts] = useState<any[]>([]);
-  const [listSavePosts, setListSavePosts] = useState<any[]>([]);
+  const [likedPosts, setLikedPosts] = useState<PostResponseDTO[]>([]);
+  const [savedPosts, setSavedPosts] = useState<PostResponseDTO[]>([]);
 
   useEffect(() => {
     if (!isFavorite || !profile?._id) return;
 
     let isMounted = true;
 
-    const fetchPostsData = async () => {
+    const fetchLikedPostsData = async () => {
       try {
         const listPost = await getMyLikedPosts(profile._id);
-        // console.log(listPost);
         if (isMounted) {
-          setListLikePosts(listPost);
+          setLikedPosts(listPost);
         }
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
 
-    fetchPostsData();
+    fetchLikedPostsData();
 
     return () => {
-      isMounted = false; // Cleanup: Mark the component as unmounted
+      isMounted = false;
     };
   }, [isFavorite, profile?._id]);
 
@@ -61,22 +61,22 @@ const SettingModal = ({ profile, logout }: any) => {
 
     let isMounted = true; // Flag to check if the component is still mounted
 
-    const fetchPostsData = async () => {
+    const fetchSavedPostsData = async () => {
       try {
         const listPost = await getMySavedPosts(profile._id); // Fetch saved posts
         // console.log(listPost);
         if (isMounted) {
-          setListSavePosts(listPost); // Set saved posts if component is still mounted
+          setSavedPosts(listPost); // Set saved posts if component is still mounted
         }
       } catch (error) {
         console.error("Error fetching posts:", error);
       }
     };
 
-    fetchPostsData();
+    fetchSavedPostsData();
 
     return () => {
-      isMounted = false; // Cleanup: Mark the component as unmounted
+      isMounted = false;
     };
   }, [isSave, profile?._id]);
 
@@ -218,16 +218,16 @@ const SettingModal = ({ profile, logout }: any) => {
       </div>
       {isSetting && <ChangePassword onClose={closeSetting} />}
       {isFavorite && (
-        <Favorite
+        <LikedPosts
           onClose={closeFavorite}
-          post={listLikePosts}
-          setListLikePosts={setListLikePosts}
+          likedPosts={likedPosts}
+          setLikedPosts={setLikedPosts}
         />
       )}
       {isSave && (
-        <Save
-          post={listSavePosts}
-          setListSavePosts={setListSavePosts}
+        <SavedPosts
+          savedPosts={savedPosts}
+          setSavedPosts={setSavedPosts}
           onClose={closeSave}
         />
       )}

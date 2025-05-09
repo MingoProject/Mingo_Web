@@ -1,4 +1,7 @@
+import NameCard from "@/components/cards/other/NameCard";
+import Button from "@/components/ui/button";
 import ButtonClose from "@/components/ui/buttonClose";
+import TextArea from "@/components/ui/textarea";
 import { updateUserBio } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
@@ -73,27 +76,26 @@ const Bio = ({ profileUser, setProfileUser }: any) => {
 
       {showEditBio && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-          <div className="background-light700_dark300 text-dark100_light500 my-32 max-h-screen w-[90%] overflow-y-auto rounded-md bg-white p-6 shadow-lg md:w-4/5 lg:w-1/2">
-            <div className="mt-4">
-              <h2 className="mb-4 text-xl font-semibold text-primary-100">
-                Update Bio
-              </h2>
-              <textarea
-                className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
+          <div className="background-light200_dark200 text-dark100_light500 my-32 max-h-screen w-[90%] overflow-y-auto rounded-md bg-white py-6 shadow-lg md:w-4/5 lg:w-1/2">
+            <div className="">
+              <NameCard name="Edit Bio" />
+              <TextArea
+                placeholder="Write something..."
                 value={bio}
                 onChange={handleChange}
-                rows={4}
+                className="mt-3 px-5"
               />
             </div>
-            <div className="mt-10 flex justify-end space-x-2">
-              <ButtonClose onClick={() => setShowEditBio(false)} />
-
-              <button
-                className="bg-primary-100 text-white"
-                onClick={handleSave}
-              >
-                Save
-              </button>
+            <div className="mt-4 flex justify-end space-x-2 px-5">
+              <Button
+                title="Close"
+                size="small"
+                color="transparent"
+                border="border border-border-100"
+                fontColor="text-dark100_light100"
+                onClick={() => setShowEditBio(false)}
+              />
+              <Button title="Save" size="small" onClick={handleSave} />
             </div>
           </div>
         </div>

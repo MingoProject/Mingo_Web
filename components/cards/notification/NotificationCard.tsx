@@ -1,7 +1,5 @@
 "use client";
 
-import DetailsImage from "@/components/forms/personalPage/DetailsImage";
-import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
 import { useAuth } from "@/context/AuthContext";
 import { NotificationResponseDTO } from "@/dtos/NotificationDTO";
 import { UserBasicInfo } from "@/dtos/UserDTO";
@@ -16,6 +14,8 @@ import RenderContentNotification from "../../shared/notification/RenderContentNo
 import FriendRequestAction from "@/components/shared/friend/FriendRequestAction";
 import BffRequestAction from "@/components/shared/friend/BffRequestAction";
 import PostDetailCard from "../post/PostDetailCard";
+import ImageDetailCard from "../media/ImageDetailCard";
+import VideoDetailCard from "../media/VideoDetailCard";
 
 interface NotificationCardProps {
   notification: NotificationResponseDTO;
@@ -183,22 +183,22 @@ const NotificationCard = ({
       )}
 
       {openDetailImage && (
-        <DetailsImage
+        <ImageDetailCard
           image={image}
           onClose={() => setOpenDetailImage(false)}
           profileUser={image.createBy}
-          me={profile}
+          profileBasic={profile}
           commentsData={commentsData}
           setCommentsData={setCommentsData}
         />
       )}
 
       {openDetailVideo && (
-        <DetailsVideo
+        <VideoDetailCard
           video={video}
           onClose={() => setOpenDetailVideo(false)}
           profileUser={video.createBy}
-          me={profile}
+          profileBasic={profile}
           commentsData={commentsData}
           setCommentsData={setCommentsData}
         />

@@ -15,8 +15,8 @@ import PostHeader from "@/components/shared/post/PostHeader";
 import PostMedia from "@/components/shared/post/PostMedia";
 import Input from "@/components/ui/input";
 import Button from "@/components/ui/button";
-import DetailsImage from "@/components/forms/personalPage/DetailsImage";
-import DetailsVideo from "@/components/forms/personalPage/DetailsVideo";
+import ImageDetailCard from "../media/ImageDetailCard";
+import VideoDetailCard from "../media/VideoDetailCard";
 
 interface PostDetailCardProps {
   post: PostResponseDTO;
@@ -228,27 +228,27 @@ const PostDetailCard = ({
         </div>
       )}
       {selectedImage && (
-        <DetailsImage
+        <ImageDetailCard
           image={selectedImage}
           onClose={() => {
             setSelectedImage(null);
             setIsDetailVisible(true);
           }}
           profileUser={post?.author}
-          me={profileBasic}
+          profileBasic={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
-        <DetailsVideo
+        <VideoDetailCard
           video={selectedVideo}
           onClose={() => {
             setSelectedVideo(null);
             setIsDetailVisible(true); // Hiển thị lại PostDetailCard
           }}
           profileUser={post?.author}
-          me={profileBasic}
+          profileBasic={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />

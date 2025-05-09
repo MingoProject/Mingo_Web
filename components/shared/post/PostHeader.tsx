@@ -87,6 +87,7 @@ const PostHeader = ({ post, setPostsData }: PostHeaderProps) => {
           </span>
         </div>
       </div>
+
       <div className="ml-auto pb-2">
         <Icon
           icon="tabler:dots"

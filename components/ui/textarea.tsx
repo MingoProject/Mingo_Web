@@ -11,6 +11,7 @@ interface TextAreaProps {
   value: string;
   onChange: (e: React.ChangeEvent<HTMLTextAreaElement>) => void;
   onClick?: () => void;
+  className?: string;
 }
 
 const TextArea = ({
@@ -20,9 +21,10 @@ const TextArea = ({
   value,
   onChange,
   onClick,
+  className = "",
 }: TextAreaProps) => {
   return (
-    <div className="flex gap-[9px] w-full">
+    <div className={`flex gap-[9px] w-full ${className}`}>
       {avatarSrc && (
         <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
           <Image
