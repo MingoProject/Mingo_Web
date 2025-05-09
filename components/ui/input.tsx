@@ -14,6 +14,7 @@ interface InputProps {
   value?: string;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
   onKeyDown?: (e: React.KeyboardEvent<HTMLInputElement>) => void;
+  className?: string;
 }
 
 const Input = ({
@@ -26,9 +27,10 @@ const Input = ({
   value,
   onChange,
   onKeyDown,
+  className = "",
 }: InputProps) => {
   return (
-    <div className="flex gap-[9px] items-center w-full">
+    <div className={`flex gap-[9px] items-center w-full ${className}`}>
       {avatarSrc && (
         <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0">
           <Image

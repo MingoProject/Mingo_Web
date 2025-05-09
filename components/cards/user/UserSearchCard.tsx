@@ -1,6 +1,7 @@
 import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
+import Link from "next/link";
 import React from "react";
 
 interface UserSearchCardProps {
@@ -12,19 +13,24 @@ const UserSearchCard: React.FC<UserSearchCardProps> = ({ user }) => {
   return (
     <div className="background-light200_dark200 rounded-[10px] py-[15px] px-[13px] shadow-subtle w-full flex flex-col">
       <div className="flex gap-[10px] ">
-        <Image
-          src={user?.avatar || "/assets/images/capy.jpg"}
-          alt="avatar"
-          width={50}
-          height={50}
-          className="size-[50px] rounded-full object-cover"
-        />
+        <Link href={`/profile/${user?._id || ""}`}>
+          <Image
+            src={user?.avatar || "/assets/images/capy.jpg"}
+            alt="avatar"
+            width={50}
+            height={50}
+            className="size-[50px] rounded-full object-cover"
+          />
+        </Link>
+
         <div className="flex items-center justify-between w-full">
           <div>
             <span className="text-dark100_light100 text-[16px] font-normal">
-              <span className="font-medium">
-                {user?.firstName} {user?.lastName}
-              </span>
+              <Link href={`/profile/${user?._id || ""}`}>
+                <span className="font-medium cursor-pointer hover:underline">
+                  {user?.firstName} {user?.lastName}
+                </span>
+              </Link>{" "}
             </span>
             <div className="flex items-center gap-2 mt-1">
               <div className="flex -space-x-2">

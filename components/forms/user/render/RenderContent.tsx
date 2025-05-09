@@ -117,7 +117,7 @@ const RenderContentPage = ({
     case "photos":
       return <Images profileBasic={profileBasic} profileUser={profileUser} />;
     case "videos":
-      return <Videos me={profileBasic} profileUser={profileUser} />;
+      return <Videos profileBasic={profileBasic} profileUser={profileUser} />;
     default:
       return <div></div>;
   }

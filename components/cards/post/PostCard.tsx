@@ -4,8 +4,6 @@ import { Icon } from "@iconify/react/dist/iconify.js";
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
-import DetailsImage from "../../forms/personalPage/DetailsImage";
-import DetailsVideo from "../../forms/personalPage/DetailsVideo";
 import { getCommentByCommentId } from "@/lib/services/comment.service";
 import { getMediaByMediaId } from "@/lib/services/media.service";
 import { PostResponseDTO } from "@/dtos/PostDTO";
@@ -16,6 +14,8 @@ import { CommentResponseDTO } from "@/dtos/CommentDTO";
 import PostMedia from "../../shared/post/PostMedia";
 import Input from "@/components/ui/input";
 import PostDetailCard from "./PostDetailCard";
+import ImageDetailCard from "../media/ImageDetailCard";
+import VideoDetailCard from "../media/VideoDetailCard";
 
 interface PostCardProps {
   post: PostResponseDTO;
@@ -148,21 +148,21 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
         )}
       </div>
       {selectedImage && (
-        <DetailsImage
+        <ImageDetailCard
           image={selectedImage}
           onClose={() => setSelectedImage(null)}
           profileUser={post?.author}
-          me={profileBasic}
+          profileBasic={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />
       )}
       {selectedVideo && (
-        <DetailsVideo
+        <VideoDetailCard
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
           profileUser={post?.author}
-          me={profileBasic}
+          profileBasic={profileBasic}
           commentsData={commentsMediaData}
           setCommentsData={setCommentsMediaData}
         />

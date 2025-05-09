@@ -1,4 +1,10 @@
+import HobbyCard from "@/components/cards/other/HobbyCard";
+import NameCard from "@/components/cards/other/NameCard";
+import Button from "@/components/ui/button";
 import ButtonClose from "@/components/ui/buttonClose";
+import DatePickerTitle from "@/components/ui/datePickerTitle";
+import InputTitle from "@/components/ui/inputTitle";
+import SelectTitle from "@/components/ui/selectTitle";
 import { UserResponseDTO } from "@/dtos/UserDTO";
 import { updateInfo } from "@/lib/services/user.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
@@ -118,12 +124,10 @@ const UpdateInformation = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="background-light700_dark300 text-dark100_light100 my-32 max-h-screen w-4/5 overflow-y-auto rounded-md bg-white p-6 shadow-lg">
-        <h2 className="mb-4 text-xl font-semibold text-primary-100">
-          Update Information
-        </h2>
-        <div className="flex space-x-4">
-          <div className="w-full">
+      <div className="background-light200_dark200 max-w-2xl text-dark100_light100 my-32 max-h-screen w-4/5 overflow-y-auto rounded-md bg-white py-6 shadow-lg">
+        <NameCard name="Update Information" />
+        <div className="flex space-x-4 mt-4 px-5">
+          {/* <div className="w-full">
             <label className="block text-sm font-medium ">First Name</label>
             <input
               type="text"
@@ -132,148 +136,103 @@ const UpdateInformation = ({
               onChange={handleChange}
               className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
             />
-          </div>
-          <div className="w-full">
-            <label className="block text-sm font-medium ">Last Name</label>
-            <input
-              type="text"
-              name="lastName"
-              value={formValues.lastName}
-              onChange={handleChange}
-              className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-            />
-          </div>
+          </div> */}
+          <InputTitle
+            label="First Name"
+            placeholder="Enter your first name"
+            value={formValues.firstName}
+            onChange={handleChange}
+          />
+          <InputTitle
+            label="Last Name"
+            placeholder="Enter your last name"
+            value={formValues.lastName}
+            onChange={handleChange}
+          />
         </div>
-        <div className="mt-4 flex space-x-4">
-          <div className="w-full">
-            <label className="block text-sm font-medium ">Relationship</label>
-            <select
-              name="gender"
-              value={formValues.gender ? "true" : "false"} // Chuyển boolean thành string "true" hoặc "false"
-              onChange={handleChange}
-              className="background-light800_dark400 mt-1 h-11 w-full rounded-md border border-gray-300 p-2"
-            >
-              <option value="">Select Gender</option>
-              <option value="true">Male</option>
-              <option value="false">Female</option>
-            </select>
-          </div>
-          <div className="w-full">
-            <label className="block text-sm font-medium ">Nickname</label>
-            <input
-              type="text"
-              name="nickName"
-              value={formValues.nickName}
-              onChange={handleChange}
-              className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-            />
-          </div>
+        <div className="mt-4 flex space-x-4 px-5">
+          <SelectTitle
+            label="Gender"
+            value={formValues.gender ? "true" : "false"}
+            onChange={handleChange}
+            options={["Male", "Female"]}
+          />
+          <InputTitle
+            label="Nickname"
+            placeholder="Enter your nickname"
+            value={formValues.nickName}
+            onChange={handleChange}
+          />
         </div>
-        <div className="mt-4 w-full space-y-4">
+        <div className="mt-4 w-full space-y-4 px-5">
           {/* Job */}
-          <div className="block lg:flex lg:space-x-4">
-            <div className="w-full">
-              <label className="block text-sm font-medium ">Job</label>
-              <input
-                type="text"
-                name="job"
-                value={formValues.job}
-                onChange={handleChange}
-                className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
+          <div className="block space-y-4">
+            <InputTitle
+              label="Job"
+              placeholder="Enter your job"
+              value={formValues.job}
+              onChange={handleChange}
+            />
             {/* Address */}
-            <div className="mt-4 w-full lg:mt-0">
-              <label className="block text-sm font-medium ">Address</label>
-              <input
-                type="text"
-                name="address"
-                value={formValues.address}
-                onChange={handleChange}
-                className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
+            <InputTitle
+              label="Address"
+              placeholder="Enter your address"
+              value={formValues.address}
+              onChange={handleChange}
+            />
           </div>
           {/* Relationship */}
           <div className="flex space-x-4">
-            <div className="w-full">
-              <label className="block text-sm font-medium ">Relationship</label>
-              <select
-                name="relationShip"
-                value={formValues.relationShip}
-                onChange={handleChange}
-                className="background-light800_dark400 mt-1 h-11 w-full rounded-md border border-gray-300 p-2"
-              >
-                <option value="">Select Relationship</option>
-                <option value="Single">Single</option>
-                <option value="In a relationship">In a relationship</option>
-                <option value="Married">Married</option>
-                <option value="Divorced">Divorced</option>
-                <option value="Widowed">Widowed</option>
-              </select>
-            </div>
-            <div className="w-full">
-              <label className="block text-sm font-medium ">Birthday</label>
-              <input
-                type="date"
-                name="birthDay"
-                value={formValues.birthDay}
-                onChange={handleChange}
-                className="background-light800_dark400 mt-1 w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
+            <SelectTitle
+              label="Relationship"
+              value={formValues.relationShip}
+              onChange={handleChange}
+              name="relationShip"
+              options={[
+                "Single",
+                "In a relationship",
+                "Married",
+                "Divorced",
+                "Widowed",
+              ]}
+            />
+            <DatePickerTitle
+              label="Date of birth"
+              value={formValues.birthDay}
+              onChange={handleChange}
+            />
           </div>
         </div>
         {/* Hobbies */}
-        <div className="mt-4 h-12">
+        <div className="mt-4 h-12 px-5">
           <label className="block text-sm font-medium ">Hobbies</label>
           <div className="mt-2 grid h-full grid-rows-1 gap-2 custom-scrollbar overflow-auto">
             <div className="flex w-max gap-2">
-              {Object.keys(hobbyIcons).map((hobby) => (
-                <div
-                  key={hobby}
-                  className={`flex items-center space-x-2 rounded-lg border px-2 py-1 ${
-                    selectedHobbies.includes(hobby)
-                      ? "bg-primary-100 text-white"
-                      : "background-light800_dark400"
-                  }`}
-                  onClick={() => handleHobbyToggle(hobby)}
-                >
-                  <Icon icon={hobbyIcons[hobby]} className="text-xl" />
-                  <span>{hobby}</span>
-                </div>
+              {Object.entries(hobbyIcons).map(([name, icon]) => (
+                <HobbyCard
+                  key={name}
+                  name={name}
+                  icon={icon}
+                  isSelected={selectedHobbies.includes(name)}
+                  onClick={() => handleHobbyToggle(name)}
+                />
               ))}
             </div>
           </div>
         </div>
         {/* Buttons */}
-        <div className="mt-10 flex justify-end space-x-2">
-          <ButtonClose onClick={onClose} />
-          <button className="bg-primary-100 text-white" onClick={handleSave}>
-            Save
-          </button>
+        <div className="mt-10 flex justify-end space-x-2 px-5">
+          <Button
+            title="Close"
+            size="small"
+            color="transparent"
+            border="border border-border-100"
+            fontColor="text-dark100_light100"
+            onClick={onClose}
+          />
+          <Button title="Save" size="small" onClick={handleSave} />
         </div>
       </div>
-      <style jsx>{`
-        .custom-scrollbar::-webkit-scrollbar {
-          width: 6px; /* Độ rộng của thanh cuộn */
-          height: 6px; /* Độ cao của thanh cuộn ngang */
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-          background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
-          border-radius: 10px; /* Bo góc */
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
-        }
-
-        .custom-scrollbar::-webkit-scrollbar-track {
-          background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
-          border-radius: 10px;
-        }
-      `}</style>
     </div>
   );
 };
