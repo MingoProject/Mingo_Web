@@ -7,48 +7,8 @@ import {
   updateUserStatus,
 } from "@/lib/services/user.service";
 import { useAuth } from "@/context/AuthContext";
-
-const FloatingLabelInput = ({ id, label, type, value, setValue }: any) => {
-  const [isFocused, setIsFocused] = useState(false);
-
-  const handleFocus = () => {
-    setIsFocused(true);
-  };
-
-  const handleBlur = () => {
-    if (value === "") {
-      setIsFocused(false);
-    }
-  };
-
-  return (
-    <div className="relative mb-6">
-      <input
-        type={type}
-        id={id}
-        value={value}
-        onChange={(e) => setValue(e.target.value)}
-        onFocus={handleFocus}
-        onBlur={handleBlur}
-        className={`text-dark100_light500 w-full border-b-2 bg-transparent p-2 transition-all duration-200 ${
-          isFocused || value ? "pt-5" : "pt-2"
-        }`}
-        placeholder=" "
-        required
-      />
-      <label
-        htmlFor={id}
-        className={`absolute left-2 transition-all duration-200 ${
-          isFocused || value
-            ? "text-dark100_light500 top-0 text-xs"
-            : "text-dark100_light500 top-2 text-sm"
-        }`}
-      >
-        {label}
-      </label>
-    </div>
-  );
-};
+import InputTitle from "@/components/ui/inputTitle";
+import Button from "@/components/ui/button";
 
 const SignIn = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
@@ -57,9 +17,7 @@ const SignIn = () => {
   const [errorMessage, setErrorMessage] = useState("");
   const { setProfile } = useAuth();
 
-  const handleSubmit = async (e: any) => {
-    e.preventDefault();
-
+  const handleSubmit = async () => {
     const userData = { phoneNumber, password };
 
     try {
@@ -70,7 +28,6 @@ const SignIn = () => {
         const decodedToken = JSON.parse(atob(user.token.split(".")[1]));
         const userId = decodedToken?.id;
         localStorage.setItem("userId", userId);
-        // localStorage.setItem("loginTime", String(Date.now()));
         const profileData = await getMyProfile(userId);
         setProfile(profileData.userProfile);
         router.push("/");
@@ -79,60 +36,73 @@ const SignIn = () => {
       }
     } catch (error: any) {
       console.error("Lỗi đăng nhập:", error);
-      setErrorMessage(error.message || "Có lỗi xảy ra.");
+
+      if (error?.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+      } else if (typeof error === "string") {
+        setErrorMessage(error);
+      } else {
+        setErrorMessage(
+          "Đăng nhập không thành công. Vui lòng kiểm tra lại thông tin."
+        );
+      }
     }
   };
 
   return (
-    <div className="background-light800_dark400 flex h-screen w-full items-center justify-center">
-      <div className="background-light700_dark300 my-[110px] w-[549px] rounded-lg px-[55px] py-[51px] shadow-md">
-        <h2 className="text-dark100_light500 mb-6 text-center text-2xl font-bold">
-          Login
-        </h2>
-
-        {errorMessage && (
-          <p className="text-center text-red-500">{errorMessage}</p>
-        )}
-
-        <form className="mt-[74px]" onSubmit={handleSubmit}>
-          <FloatingLabelInput
-            id="username"
-            label="Phone number"
-            type="text"
-            value={phoneNumber}
-            setValue={setPhoneNumber}
-          />
-          <FloatingLabelInput
-            id="password"
-            label="Password"
-            type="password"
-            value={password}
-            setValue={setPassword}
-          />
-          <button
-            type="submit"
-            className="mt-5 w-full rounded-lg bg-primary-100 py-2 text-white transition duration-200"
-          >
-            Login
-          </button>
-        </form>
-
-        <div className="mt-2 text-end">
-          <a
-            href="/forget-password"
-            className="text-dark100_light500 text-sm hover:underline"
-          >
-            Forget password?
-          </a>
-        </div>
-
-        <div className="mt-4 text-center">
-          <p className="text-dark100_light500 text-sm">
-            You don&apos;t have an account yet ?{" "}
-            <a href="/sign-up" className="text-primary-100 hover:underline">
-              Signup
-            </a>
+    <div className="background-light500_dark500 flex h-screen w-full items-center justify-center">
+      <div className="background-light200_dark200 my-[110px] w-[540px] rounded-lg p-12 shadow-md flex flex-col gap-8">
+        <div>
+          <p className="text-dark100_light100 text-center text-[48px] font-medium">
+            Welcome Back !
           </p>
+          <p className="text-dark100_light100 text-center text-4 font-normal">
+            Enter your phone number and password to access your account
+          </p>
+          {errorMessage && (
+            <p className="text-center text-red-500">{errorMessage}</p>
+          )}
+        </div>
+        <div className="w-full flex flex-col gap-10">
+          <div className="flex flex-col gap-6">
+            <InputTitle
+              label="Phone number"
+              placeholder="Enter your address"
+              value={phoneNumber}
+              onChange={(e) => setPhoneNumber(e.target.value)}
+            />
+            <div>
+              <InputTitle
+                label="Password"
+                placeholder="Enter your password"
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+
+              <div className="mt-2 text-end">
+                <a
+                  href="/forget-password"
+                  className="text-dark100_light100 text-[14px] font-normal hover:underline"
+                >
+                  Forget password?
+                </a>
+              </div>
+            </div>
+          </div>
+          <Button title="Sign In" size="large" onClick={handleSubmit} />
+
+          <div className="text-center">
+            <p className="text-dark100_light100 text-4 font-nomal">
+              You don&apos;t have an account yet ?{" "}
+              <a
+                href="/sign-up"
+                className="text-dark100_light100 text-4 font-semibold hover:underline"
+              >
+                Sign Up
+              </a>
+            </p>
+          </div>
         </div>
       </div>
     </div>

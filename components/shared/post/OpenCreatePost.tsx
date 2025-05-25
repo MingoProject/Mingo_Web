@@ -4,8 +4,13 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import CreatePost from "../../forms/post/CreatePost";
 import Input from "@/components/ui/input";
+import { PostResponseDTO } from "@/dtos/PostDTO";
 
-const OpenCreatePost = ({ me, setPostsData }: any) => {
+interface OpenCreatePostProps {
+  me: any;
+  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+}
+const OpenCreatePost = ({ me, setPostsData }: OpenCreatePostProps) => {
   const [isFormOpen, setIsFormOpen] = useState(false);
 
   const toggleForm = () => {

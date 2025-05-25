@@ -20,7 +20,6 @@ import {
 } from "@/lib/services/user.service";
 import FriendRequestCard from "@/components/cards/friend/FriendRequestCard";
 import Input from "@/components/ui/input";
-import { getListChat } from "@/lib/services/message.service";
 import FriendCard from "@/components/cards/friend/FriendCardHome";
 import { removeVietnameseTones } from "@/lib/utils";
 import { suggestFriends } from "@/lib/services/friend.service";
@@ -157,34 +156,34 @@ export default function Home() {
     )
   );
 
-  const [selectedFilter, setSelectedFilter] =
-    React.useState<string>("Mới nhất");
-  const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
+  // const [selectedFilter, setSelectedFilter] =
+  //   React.useState<string>("Mới nhất");
+  // const [filteredPosts, setFilteredPosts] = useState<PostResponseDTO[]>([]);
 
-  useEffect(() => {
-    let isMounted = true;
-    const sortedPosts = [...postsData];
-    if (selectedFilter === "Mới nhất") {
-      sortedPosts.sort(
-        (a, b) =>
-          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
-      );
-    } else if (selectedFilter === "Cũ nhất") {
-      sortedPosts.sort(
-        (a, b) =>
-          new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
-      );
-    } else if (selectedFilter === "Hot nhất") {
-      sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
-    }
-    if (isMounted) {
-      setFilteredPosts(sortedPosts);
-    }
+  // useEffect(() => {
+  //   let isMounted = true;
+  //   const sortedPosts = [...postsData];
+  //   if (selectedFilter === "Mới nhất") {
+  //     sortedPosts.sort(
+  //       (a, b) =>
+  //         new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  //     );
+  //   } else if (selectedFilter === "Cũ nhất") {
+  //     sortedPosts.sort(
+  //       (a, b) =>
+  //         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+  //     );
+  //   } else if (selectedFilter === "Hot nhất") {
+  //     sortedPosts.sort((a, b) => b.likes.length - a.likes.length);
+  //   }
+  //   if (isMounted) {
+  //     setFilteredPosts(sortedPosts);
+  //   }
 
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedFilter, postsData]);
+  //   return () => {
+  //     isMounted = false;
+  //   };
+  // }, [selectedFilter, postsData]);
 
   return (
     <div className="background-light800_dark400 mt-[20px] flex w-full pt-[70px] justify-between px-[16px]">
@@ -228,17 +227,9 @@ export default function Home() {
 
       <div className="background-light800_dark400 w-[645px] flex flex-col gap-[15px] justify-center px-3 lg:w-[44%]">
         <OpenCreatePost me={profile} setPostsData={setPostsData} />
-        {/* <div className="my-2 flex items-center">
-          <div className="ml-auto flex shrink-0 items-center pl-4">
-            <p className="text-dark100_light500 mr-2">Filter: </p>
-            <FilterPost
-              selectedFilter={selectedFilter}
-              setSelectedFilter={setSelectedFilter}
-            />
-          </div>
-        </div> */}
+
         <div className="background-light800_dark400 flex w-full flex-col gap-[15px]">
-          {filteredPosts.length === 0 ? (
+          {PostsCard.length === 0 ? (
             <NoResult
               title="No Result"
               description="No posts found"
@@ -246,13 +237,20 @@ export default function Home() {
               linkTitle="Reload"
             />
           ) : (
-            filteredPosts.map((post) => (
-              <PostsCard
-                post={post}
-                profileBasic={profileBasic}
-                setPostsData={setFilteredPosts}
-              />
-            ))
+            [...postsData]
+              .sort(
+                (a, b) =>
+                  new Date(b.createdAt).getTime() -
+                  new Date(a.createdAt).getTime()
+              )
+              .map((post) => (
+                <PostsCard
+                  key={post._id}
+                  post={post}
+                  profileBasic={profileBasic}
+                  setPostsData={setPostsData}
+                />
+              ))
           )}
         </div>
       </div>

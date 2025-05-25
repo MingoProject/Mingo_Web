@@ -1,4 +1,9 @@
+import NameCard from "@/components/cards/other/NameCard";
+import Button from "@/components/ui/button";
+import InputTitle from "@/components/ui/inputTitle";
 import { changePassword } from "@/lib/services/user.service";
+import { faXmark } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useState } from "react";
 
@@ -41,66 +46,49 @@ const ChangePassword = ({ onClose }: { onClose: () => void }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
-      <div className="background-light700_dark300 max-h-[90vh] w-[700px] overflow-auto rounded-lg border shadow-lg dark:border-transparent dark:shadow-none">
-        <div className="text-dark100_light500 flex size-full flex-col gap-8 pr-4 text-xs font-thin md:text-sm">
-          <div className="mt-4 flex">
-            <div className=" flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-              Change Password
-            </div>
-            <div
-              className="ml-auto cursor-pointer pr-3 text-xl text-primary-100"
-              onClick={onClose}
-            >
-              <Icon
-                icon="ic:round-close"
-                width="28"
-                height="28"
-                className="text-primary-100"
+    <div className="fixed inset-0 z-50 flex items-start justify-center">
+      <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="background-light200_dark200 max-w-2xl text-dark100_light100 my-32 max-h-screen w-2/5 overflow-y-auto rounded-md py-6 shadow-lg custom-scrollbar">
+          <div className="flex size-full flex-col">
+            <div className="flex items-center justify-between px-4 py-2 pl-0">
+              <NameCard name="Saved Posts" />
+              <FontAwesomeIcon
+                onClick={onClose}
+                icon={faXmark}
+                className="mb-2 cursor-pointer size-6"
               />
             </div>
           </div>
 
-          <div className="px-5 pb-10">
+          <div className="px-10 flex flex-col gap-5 my-5">
             {error && <div className="mb-4 text-sm text-red-500">{error}</div>}
             {success && (
               <div className="mb-4 text-sm text-green-500">{success}</div>
             )}
-            <div className="flex w-full items-center gap-2 border-b border-gray-300 p-3">
-              <input
-                type="password"
-                className="w-full bg-transparent px-2 focus:outline-none"
-                placeholder="Old password"
-                value={oldPassword}
-                onChange={(e) => setOldPassword(e.target.value)}
-              />
-            </div>
-            <div className="mt-2 flex w-full items-center gap-2 border-b border-gray-300 p-3">
-              <input
-                type="password"
-                className="w-full bg-transparent px-2 focus:outline-none"
-                placeholder="New password"
-                value={newPassword}
-                onChange={(e) => setNewPassword(e.target.value)}
-              />
-            </div>
-            <div className="mt-2 flex w-full items-center gap-2 border-b border-gray-300 p-3">
-              <input
-                type="password"
-                className="w-full bg-transparent px-2 focus:outline-none"
-                placeholder="Confirm new password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-
-            <div className="mt-6 flex justify-end">
-              <button
+            <InputTitle
+              label="Old Password"
+              placeholder="Enter old password"
+              value={oldPassword}
+              onChange={(e) => setOldPassword(e.target.value)}
+            />
+            <InputTitle
+              label="New Password"
+              placeholder="Enter new password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <InputTitle
+              label="Confirm New Password"
+              placeholder="Enter confirm new password"
+              value={confirmPassword}
+              onChange={(e) => setConfirmPassword(e.target.value)}
+            />
+            <div className="mt-2">
+              <Button
+                title="Change Password"
+                size="large"
                 onClick={handleChangePassword}
-                className="hover:bg-primary-200 rounded bg-primary-100 px-4 py-2 text-white"
-              >
-                Change password
-              </button>
+              />
             </div>
           </div>
         </div>

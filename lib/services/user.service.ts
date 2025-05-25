@@ -92,7 +92,6 @@ export async function login(userData: UserLoginDTO) {
     }
 
     const data = await response.json();
-    console.log("token", data.token);
 
     localStorage.setItem("token", data.token);
 
