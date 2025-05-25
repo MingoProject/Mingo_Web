@@ -5,7 +5,7 @@ import Image from "next/image";
 import { Icon } from "@iconify/react";
 import { createMedia } from "@/lib/services/media.service";
 import { createPost } from "@/lib/services/post.service";
-import { PostCreateDTO } from "@/dtos/PostDTO";
+import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 import { createNotification } from "@/lib/services/notification.service";
 import NameCard from "@/components/cards/other/NameCard";
@@ -15,7 +15,13 @@ import TextArea from "@/components/ui/textarea";
 import TitleIcon from "@/components/ui/titleIcon";
 import Input from "@/components/ui/input";
 
-const CreatePost = ({ onClose, me, setPostsData }: any) => {
+interface CreatePostProps {
+  onClose: () => void;
+  me: any;
+  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+}
+
+const CreatePost = ({ onClose, me, setPostsData }: CreatePostProps) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
@@ -129,17 +135,44 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
         }
       }
 
-      setPostsData((prevPosts: any[]) => [
+      setPostsData((prevPosts) => [
         {
-          ...res,
-          media: res.media || [],
+          _id: res._id,
           content: res.content || "",
-          likes: res.likes || [],
-          author: res.author || me,
-          tags: res.tags || [],
-          location: res.location || null,
-          privacy: res.privacy || { type: "public" },
-        },
+          media:
+            res.media?.map((m) => ({
+              _id: String(m._id),
+              url: m.url,
+              type: m.type,
+            })) || [],
+          createdAt: new Date(res.createdAt),
+
+          author: {
+            _id: me._id,
+            firstName: me.firstName,
+            lastName: me.lastName,
+            avatar: me.avatar,
+          },
+
+          shares: [],
+          likes: [],
+          likedIds: [],
+          savedByUsers: [],
+          comments: [],
+          tags: taggedFriends.map((f) => ({
+            _id: f._id,
+            firstName: f.firstName,
+            lastName: f.lastName,
+            avatar: f.avatar,
+          })),
+
+          location: location || "",
+          flag: true,
+          privacy: {
+            type: privacy,
+            allowedUsers: [],
+          },
+        } as PostResponseDTO,
         ...prevPosts,
       ]);
 
