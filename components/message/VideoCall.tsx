@@ -65,7 +65,7 @@ export const VideoCall = () => {
 
         {/* Local video preview */}
         {localStream && (
-          <div className="absolute top-56 right-12 w-1/4 h-1/4">
+          <div className="absolute top-44 right-14 w-1/4 h-1/4">
             <SmallVideoContainer
               stream={localStream}
               isLocalStream={true}

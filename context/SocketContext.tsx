@@ -50,6 +50,7 @@ export const SocketContextProvider = ({
   const [localStream, setLocalStream] = useState<MediaStream | null>(null);
   const [peer, setPeer] = useState<PeerData | null>(null);
   const [isCallEnded, setIsCallEnded] = useState(false);
+  const router = useRouter();
 
   console.log("online User", onlineUsers);
   console.log("socket", socket);
@@ -167,6 +168,7 @@ export const SocketContextProvider = ({
         setLocalStream(null);
       }
       setIsCallEnded(true);
+      router.back();
     },
     [socket, user, localStream]
   );

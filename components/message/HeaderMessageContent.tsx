@@ -54,10 +54,6 @@ const HeaderMessageContent = ({
     (user) => user?.userId?.toString() === isOnlineUser.toString()
   );
 
-  console.log("Online Users:", onlineUsers);
-
-  console.log("Selected User:", onlineUser);
-
   // useEffect(() => {
   //   if (onlineUser) {
   //     console.log("Call started with:", onlineUser);
@@ -69,6 +65,10 @@ const HeaderMessageContent = ({
     handleCall(onlineUser, isVideoCall);
     router.push(`/call/${onlineUser.socketId}`);
   };
+
+  console.log("Online Users:", onlineUsers);
+
+  console.log("Selected User:", onlineUser);
 
   return (
     <div className="w-full border-b border-gray-200 dark:border-gray-900 flex px-4">

@@ -5,10 +5,11 @@ import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import { useRouter } from "next/navigation";
 import { OngoingCall } from "@/dtos/SocketDTO";
+import { createCall } from "@/lib/services/call.service";
+import { CallCreateDTO } from "@/dtos/CallDTO";
 
 const CallNotification = () => {
   const { ongoingCall, handleJoinCall, handleHangUp } = useSocket();
-  console.log("Ongoing Call:", ongoingCall);
   const router = useRouter();
 
   const handleAccept = async (ongoingCall: OngoingCall) => {
@@ -16,9 +17,36 @@ const CallNotification = () => {
     router.push(`/call/${ongoingCall.participants.receiver.socketId}`);
     handleJoinCall(ongoingCall);
   };
-  console.log(ongoingCall, "ongoingcall hehe");
 
-  if (!ongoingCall?.isRinging) return;
+  const handleReject = async (ongoingCall: OngoingCall) => {
+    if (!ongoingCall) return;
+
+    try {
+      // Gọi rejectCall từ service
+      const callPayload: CallCreateDTO = {
+        callerId: ongoingCall.participants.caller.userId,
+        receiverId: ongoingCall.participants.receiver.userId,
+        callType: "video",
+        startTime: new Date(),
+        status: "rejected", // Trạng thái cuộc gọi là "rejected"
+        createBy: ongoingCall.participants.caller.userId,
+        endTime: new Date(),
+      };
+      const res = await createCall(callPayload);
+
+      console.log("Call rejected:", res);
+    } catch (error) {
+      console.error("Error rejecting call:", error);
+    }
+
+    // // Xử lý sự kiện reject (tắt cuộc gọi)
+    handleHangUp({
+      ongoingCall: ongoingCall ? ongoingCall : undefined,
+      isEmitHangUp: true,
+    });
+  };
+
+  if (!ongoingCall?.isRinging) return null;
 
   return (
     <div className="absolute bg-slate-500 w-screen bg-opacity-70 h-screen top-0 left-0 justify-center items-center flex">
@@ -57,12 +85,7 @@ const CallNotification = () => {
 
           <button
             className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white cursor-pointer"
-            onClick={() =>
-              handleHangUp({
-                ongoingCall: ongoingCall ? ongoingCall : undefined,
-                isEmitHangUp: true,
-              })
-            }
+            onClick={() => handleReject(ongoingCall)} // Gọi rejectCall khi nhấn Reject
           >
             <Icon
               icon="material-symbols:call"

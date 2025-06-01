@@ -20,13 +20,14 @@ const VideoContainer = ({
   console.log(stream, "large");
   console.log(isLocalStream, "local large");
   return (
-    <div className="absolute w-[800px] h-[800px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-50">
+    <div className="absolute w-[700px] h-[500px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center z-50">
       <video
         className="rounded border"
         autoPlay
         playsInline
         muted={isLocalStream}
         ref={videoRef}
+        style={{ width: "100%", height: "100%", objectFit: "cover" }}
       />
     </div>
   );
