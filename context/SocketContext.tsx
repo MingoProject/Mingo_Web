@@ -91,20 +91,15 @@ export const SocketContextProvider = ({
       }
 
       try {
-        const devices = await navigator.mediaDevices.enumerateDevices();
-        const videoDevices = devices.filter(
-          (device) => device.kind === "videoinput"
-        );
-        console.log("Available devices:", devices);
         navigator.permissions.query({ name: "camera" }).then(console.log);
         navigator.permissions.query({ name: "microphone" }).then(console.log);
         const stream = await navigator.mediaDevices.getUserMedia({
           audio: true,
           video: {
             width: { min: 640, ideal: 1280, max: 1920 },
-            height: { min: 360, ideal: 720, max: 1080 },
-            frameRate: { min: 16, ideal: 30, max: 30 },
-            facingMode: videoDevices.length > 0 ? faceMode : undefined,
+            height: { min: 480, ideal: 720, max: 1080 },
+            frameRate: { min: 15, ideal: 24, max: 30 },
+            facingMode: "user",
           },
         });
         console.log("Media stream obtained:", stream);

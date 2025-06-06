@@ -13,7 +13,7 @@ import { getMyProfile } from "@/lib/services/user.service";
 import { useChatContext } from "@/context/ChatContext";
 import { useAuth } from "@/context/AuthContext";
 import { useSocket } from "@/context/SocketContext";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { SocketUser } from "@/dtos/SocketDTO";
 
 const HeaderMessageContent = ({
@@ -27,7 +27,8 @@ const HeaderMessageContent = ({
   const { onlineUsers, handleCall, ongoingCall } = useSocket();
   const [isOnlineUser, setIsOnlineUser] = useState("");
   const router = useRouter();
-
+  const params = useParams();
+  const boxId = params.id?.toString();
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -63,7 +64,7 @@ const HeaderMessageContent = ({
 
   const navigateCallRoom = (onlineUser: SocketUser, isVideoCall: boolean) => {
     handleCall(onlineUser, isVideoCall);
-    router.push(`/call/${onlineUser.socketId}`);
+    router.push(`/call/${boxId}`);
   };
 
   console.log("Online Users:", onlineUsers);

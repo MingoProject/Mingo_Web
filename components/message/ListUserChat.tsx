@@ -40,7 +40,8 @@ const ListUserChat = () => {
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { profile } = useAuth();
   const { onlineUsers, handleCall } = useSocket();
-  const { id }: any = useParams();
+  const params = useParams();
+  const id = params.id?.toString();
   const toggleForm = () => {
     setIsFormOpen(!isFormOpen);
   };

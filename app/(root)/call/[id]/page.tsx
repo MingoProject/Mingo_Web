@@ -2,6 +2,7 @@
 
 import { AudioCall } from "@/components/message/AudioCall";
 import { VideoCall } from "@/components/message/VideoCall";
+import { useParams } from "next/navigation";
 import React from "react";
 
 const page = () => {

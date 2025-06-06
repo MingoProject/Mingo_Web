@@ -3,41 +3,58 @@ import { useSocket } from "@/context/SocketContext";
 import Avatar from "../forms/personalPage/Avatar";
 import Image from "next/image";
 import { Icon } from "@iconify/react/dist/iconify.js";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { OngoingCall } from "@/dtos/SocketDTO";
 import { createCall } from "@/lib/services/call.service";
 import { CallCreateDTO } from "@/dtos/CallDTO";
+import { sendMessage } from "@/lib/services/message.service";
 
 const CallNotification = () => {
   const { ongoingCall, handleJoinCall, handleHangUp } = useSocket();
   const router = useRouter();
+  const params = useParams();
+  const boxId = params.id?.toString();
+
+  const handleSendTextMessage = async () => {
+    // Tạo đối tượng SegmentMessageDTO
+    const messageData = {
+      boxId: boxId,
+      content: "//Cuoc goi ket thuc; time: 00:00", // content is now a string
+    };
+
+    if (!messageData.boxId) {
+      console.error("Missing required fields in message data");
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("boxId", messageData.boxId.toString());
+    formData.append("content", JSON.stringify(messageData.content)); // Directly append the string
+
+    // Gửi API
+    try {
+      const storedToken = localStorage.getItem("token");
+      if (!storedToken) return;
+
+      const response = await sendMessage(formData);
+      console.log("Message sent successfully:", response);
+    } catch (error) {
+      console.error("Error sending message: ", error);
+    }
+  };
+
+  const handleSend = async () => {
+    await handleSendTextMessage();
+  };
 
   const handleAccept = async (ongoingCall: OngoingCall) => {
     if (!ongoingCall) return;
-    router.push(`/call/${ongoingCall.participants.receiver.socketId}`);
+    router.push(`/call/${boxId}`);
     handleJoinCall(ongoingCall);
   };
 
   const handleReject = async (ongoingCall: OngoingCall) => {
-    if (!ongoingCall) return;
-
-    try {
-      // Gọi rejectCall từ service
-      const callPayload: CallCreateDTO = {
-        callerId: ongoingCall.participants.caller.userId,
-        receiverId: ongoingCall.participants.receiver.userId,
-        callType: "video",
-        startTime: new Date(),
-        status: "rejected", // Trạng thái cuộc gọi là "rejected"
-        createBy: ongoingCall.participants.caller.userId,
-        endTime: new Date(),
-      };
-      const res = await createCall(callPayload);
-
-      console.log("Call rejected:", res);
-    } catch (error) {
-      console.error("Error rejecting call:", error);
-    }
+    handleSend();
 
     // // Xử lý sự kiện reject (tắt cuộc gọi)
     handleHangUp({
