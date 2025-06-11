@@ -158,16 +158,18 @@ const CommentAction = ({
         setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
 
         comment.replies = [enrichedComment._id, ...(comment.replies || [])];
+
         if (setCommentsData) {
           setCommentsData((prevComments) =>
-            prevComments.map((c) =>
-              c._id === originalCommentId
-                ? {
-                    ...c,
-                    replies: [enrichedComment._id, ...(c.replies || [])],
-                  }
-                : c
-            )
+            prevComments.map((c) => {
+              if (c._id === originalCommentId) {
+                return {
+                  ...c,
+                  replies: [enrichedComment._id, ...(c.replies || [])],
+                };
+              }
+              return c;
+            })
           );
         }
         if (comment.author._id !== profileBasic._id) {
@@ -233,16 +235,18 @@ const CommentAction = ({
         setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
 
         comment.replies = [enrichedComment._id, ...(comment.replies || [])];
+
         if (setCommentsData) {
           setCommentsData((prevComments) =>
-            prevComments.map((c) =>
-              c._id === originalCommentId
-                ? {
-                    ...c,
-                    replies: [enrichedComment._id, ...(c.replies || [])],
-                  }
-                : c
-            )
+            prevComments.map((c) => {
+              if (c._id === originalCommentId) {
+                return {
+                  ...c,
+                  replies: [enrichedComment._id, ...(c.replies || [])],
+                };
+              }
+              return c;
+            })
           );
         }
         if (comment.author._id !== profileBasic._id) {

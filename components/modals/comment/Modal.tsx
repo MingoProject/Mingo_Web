@@ -1,5 +1,8 @@
 import ReportCard from "@/components/cards/ReportCard";
+import Button from "@/components/ui/button";
 import ButtonClose from "@/components/ui/buttonClose";
+import { CommentResponseDTO } from "@/dtos/CommentDTO";
+import { UserBasicInfo } from "@/dtos/UserDTO";
 import {
   deleteComment,
   deleteCommentMedia,
@@ -9,12 +12,28 @@ import {
 } from "@/lib/services/comment.service";
 import React, { useState, useEffect, useRef } from "react";
 
+interface CommentMenuProps {
+  commentUserId: string;
+  commentId: string;
+  originalCommentId: string;
+  content: string;
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+  handleCloseMenu: () => void;
+  postId?: string;
+  mediaId?: string;
+  setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
+  numberOfComments: number;
+  setParentCommentsData?: React.Dispatch<
+    React.SetStateAction<CommentResponseDTO[]>
+  >;
+  repliesCount?: number;
+}
+
 const CommentMenu = ({
   commentUserId,
   commentId,
   originalCommentId,
   content,
-  commentsData,
   setCommentsData,
   handleCloseMenu,
   postId,
@@ -22,7 +41,8 @@ const CommentMenu = ({
   setNumberOfComments,
   numberOfComments,
   repliesCount,
-}: any) => {
+  setParentCommentsData,
+}: CommentMenuProps) => {
   const [newComment, setNewComment] = useState(content); // Khởi tạo giá trị mặc định là content
   const [isEditing, setIsEditing] = useState(false);
   const menuRef = useRef(null);
@@ -45,10 +65,6 @@ const CommentMenu = ({
   const handleOpenEditComment = () => {
     setIsEditing(true);
   };
-
-  // const handleCloseEditComment = () => {
-  //   setIsEditing(false);
-  // };
 
   const isCommentOwner = (commentUserId: string) => {
     return commentUserId === userId;
@@ -82,78 +98,7 @@ const CommentMenu = ({
     }
   };
 
-  // const handleDeleteComment = async (commentId: string, postId: string) => {
-  //   const token = localStorage.getItem("token");
-  //   if (!token) return;
-
-  //   try {
-  //     if (postId) {
-  //       if (originalCommentId === null) {
-  //         await deleteComment(commentId, postId, token);
-  //         setNumberOfComments(numberOfComments - (repliesCount + 1));
-  //         setCommentsData((prev: any) =>
-  //           prev.filter((comment: any) => comment._id !== commentId)
-  //         );
-  //       } else {
-  //         await deleteCommentReply(commentId, postId, originalCommentId, token);
-  //         setCommentsData((prev: any) =>
-  //           prev.map((comment: any) => {
-  //             if (comment._id === originalCommentId) {
-  //               const newReplies = comment.replies.filter(
-  //                 (id: string) => id !== commentId
-  //               );
-  //               return {
-  //                 ...comment,
-  //                 replies: newReplies,
-  //               };
-  //             }
-  //             return comment;
-  //           })
-  //         );
-  //         setNumberOfComments(numberOfComments - 1);
-  //       }
-  //     } else {
-  //       if (originalCommentId === null) {
-  //         await deleteCommentMedia(commentId, mediaId, token);
-  //         setNumberOfComments(numberOfComments - (repliesCount + 1));
-  //         setCommentsData((prev: any) =>
-  //           prev.filter((comment: any) => comment._id !== commentId)
-  //         );
-  //       } else {
-  //         await deleteCommentReplyMedia(
-  //           commentId,
-  //           mediaId,
-  //           originalCommentId,
-  //           token
-  //         );
-  //         setCommentsData((prev: any) =>
-  //           prev.map((comment: any) => {
-  //             if (comment._id === originalCommentId) {
-  //               const newReplies = comment.replies.filter(
-  //                 (id: string) => id !== commentId
-  //               );
-  //               return {
-  //                 ...comment,
-  //                 replies: newReplies,
-  //               };
-  //             }
-  //             return comment;
-  //           })
-  //         );
-  //         setNumberOfComments(numberOfComments - 1);
-  //       }
-  //     }
-
-  //     setCommentsData((prev: any) =>
-  //       prev.filter((comment: any) => comment._id !== commentId)
-  //     );
-  //     handleCloseMenu();
-  //   } catch (error) {
-  //     console.error("Failed to delete comment:", error);
-  //   }
-  // };
-
-  const handleDeleteComment = async (commentId: string, postId: string) => {
+  const handleDeleteComment = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
 
@@ -166,71 +111,75 @@ const CommentMenu = ({
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          if (repliesCount)
+            setNumberOfComments(numberOfComments - (repliesCount + 1));
         } else {
           // Xóa comment reply (POST)
           await deleteCommentReply(commentId, postId, originalCommentId, token);
 
-          // Gỡ khỏi replies của comment gốc và cập nhật số lượng
-          setCommentsData((prev: any) =>
-            prev.map((comment: any) => {
-              if (comment._id === originalCommentId) {
-                const newReplies = comment.replies.filter(
-                  (id: string) => id !== commentId
-                );
-                return {
-                  ...comment,
-                  replies: newReplies,
-                };
-              }
-              return comment;
-            })
-          );
-
-          // Xoá reply khỏi danh sách chính
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
 
+          // cập nhật comment gốc trong danh sách cha
+          if (setParentCommentsData) {
+            setParentCommentsData((prev: any) =>
+              prev.map((comment: any) => {
+                if (comment._id === originalCommentId) {
+                  return {
+                    ...comment,
+                    replies: comment.replies.filter(
+                      (id: string) => id !== commentId
+                    ),
+                  };
+                }
+                return comment;
+              })
+            );
+          }
           setNumberOfComments(numberOfComments - 1);
         }
       } else {
         if (originalCommentId === null) {
           // Xóa comment gốc (MEDIA)
-          await deleteCommentMedia(commentId, mediaId, token);
+          if (mediaId) {
+            await deleteCommentMedia(commentId, mediaId, token);
+          }
 
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+          if (repliesCount)
+            setNumberOfComments(numberOfComments - (repliesCount + 1));
         } else {
-          // Xóa comment reply (MEDIA)
-          await deleteCommentReplyMedia(
-            commentId,
-            mediaId,
-            originalCommentId,
-            token
-          );
+          if (mediaId) {
+            await deleteCommentReplyMedia(
+              commentId,
+              mediaId,
+              originalCommentId,
+              token
+            );
+          }
 
-          setCommentsData((prev: any) =>
-            prev.map((comment: any) => {
-              if (comment._id === originalCommentId) {
-                const newReplies = comment.replies.filter(
-                  (id: string) => id !== commentId
-                );
-                return {
-                  ...comment,
-                  replies: newReplies,
-                };
-              }
-              return comment;
-            })
-          );
-
-          // Xoá reply khỏi danh sách chính
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
+
+          if (setParentCommentsData) {
+            setParentCommentsData((prev: any) =>
+              prev.map((comment: any) => {
+                if (comment._id === originalCommentId) {
+                  return {
+                    ...comment,
+                    replies: comment.replies.filter(
+                      (id: string) => id !== commentId
+                    ),
+                  };
+                }
+                return comment;
+              })
+            );
+          }
 
           setNumberOfComments(numberOfComments - 1);
         }
@@ -245,52 +194,58 @@ const CommentMenu = ({
   return (
     <div
       ref={menuRef}
-      className="absolute rounded-md mr-10 shadow-lg background-light800_dark400"
+      className="absolute rounded-md mr-10 shadow-lg background-light400_dark400"
     >
       {isCommentOwner(commentUserId) ? (
         <>
           <button
             onClick={handleOpenEditComment}
-            className="text-dark100_light500 w-full px-4 pb-1 pt-2 text-left text-sm "
+            className="text-dark100_light100 w-full px-4 py-2 text-left text-sm "
           >
             Edit
           </button>
 
           {isEditing && (
             <div className="fixed inset-0 z-50 flex text-dark100_light500 items-center justify-center bg-black bg-opacity-50">
-              <div className="background-light700_dark300 w-[400px] rounded-md p-4 shadow-lg">
-                <h3 className="text-lg font-bold">Edit Comment</h3>
+              <div className="background-light200_dark200 w-[400px] rounded-md p-4 shadow-lg">
+                <h3 className="text-lg font-semibold text-dark100_light100">
+                  Edit Comment
+                </h3>
                 <textarea
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
-                  className="bg-transparent border border-gray-300 text-dark100_light500 mt-2 w-full rounded-md p-2"
+                  className="bg-transparent border border-light-300 dark:border-dark-300 text-dark100_light100 mt-2 w-full rounded-md p-2"
                 />
                 <div className="mt-4 flex justify-end space-x-2">
-                  <ButtonClose
+                  <Button
+                    title="Close"
+                    size="small"
+                    color="transparent"
+                    border="border border-border-100"
+                    fontColor="text-dark100_light100"
                     onClick={() => {
                       setIsEditing(false), handleCloseMenu();
                     }}
                   />
-                  <button
+                  <Button
+                    title="Save"
+                    size="small"
                     onClick={() => handleEditComment(commentId, newComment)}
-                    className="rounded-md bg-primary-100 px-3 py-1 text-sm text-white"
-                  >
-                    Save
-                  </button>
+                  />
                 </div>
               </div>
             </div>
           )}
           <button
-            onClick={() => handleDeleteComment(commentId, postId)}
-            className="text-dark100_light500 w-full px-4 pt-1 pb-2 text-left text-sm "
+            onClick={() => handleDeleteComment()}
+            className="text-dark100_light100 w-full px-4 pt-1 pb-2 text-left text-sm "
           >
             Delete
           </button>
         </>
       ) : (
         <button
-          className="text-dark100_light500 w-full px-4 py-2 text-left text-sm "
+          className="text-dark100_light100 w-full px-4 py-2 text-left text-sm "
           onClick={() => setIsReport(true)}
         >
           Report

@@ -87,7 +87,7 @@ const ReplyCard = ({
                 <span>
                   {reply?.parentId?.firstName || reply?.parentId?.lastName
                     ? `${reply?.parentId?.firstName || ""} ${reply?.parentId?.lastName || ""}`
-                    : "Comment đã bị xóa"}
+                    : "Comment was deleted"}
                 </span>
               </>
             )}
@@ -117,13 +117,13 @@ const ReplyCard = ({
                   commentId={reply._id}
                   originalCommentId={reply.originalCommentId}
                   content={reply.content}
-                  commentsData={replies}
                   setCommentsData={setReplies}
                   handleCloseMenu={handleCloseMenu}
                   postId={postId}
                   mediaId={mediaId}
                   setNumberOfComments={setNumberOfComments}
                   numberOfComments={numberOfComments}
+                  setParentCommentsData={setCommentsData}
                 />
               </div>
             )}
@@ -140,6 +140,7 @@ const ReplyCard = ({
               author={author}
               originalCommentId={commentId}
               setReplies={setReplies}
+              setCommentsData={setCommentsData}
             />
           </div>
         </div>
