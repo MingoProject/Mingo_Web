@@ -82,6 +82,77 @@ const CommentMenu = ({
     }
   };
 
+  // const handleDeleteComment = async (commentId: string, postId: string) => {
+  //   const token = localStorage.getItem("token");
+  //   if (!token) return;
+
+  //   try {
+  //     if (postId) {
+  //       if (originalCommentId === null) {
+  //         await deleteComment(commentId, postId, token);
+  //         setNumberOfComments(numberOfComments - (repliesCount + 1));
+  //         setCommentsData((prev: any) =>
+  //           prev.filter((comment: any) => comment._id !== commentId)
+  //         );
+  //       } else {
+  //         await deleteCommentReply(commentId, postId, originalCommentId, token);
+  //         setCommentsData((prev: any) =>
+  //           prev.map((comment: any) => {
+  //             if (comment._id === originalCommentId) {
+  //               const newReplies = comment.replies.filter(
+  //                 (id: string) => id !== commentId
+  //               );
+  //               return {
+  //                 ...comment,
+  //                 replies: newReplies,
+  //               };
+  //             }
+  //             return comment;
+  //           })
+  //         );
+  //         setNumberOfComments(numberOfComments - 1);
+  //       }
+  //     } else {
+  //       if (originalCommentId === null) {
+  //         await deleteCommentMedia(commentId, mediaId, token);
+  //         setNumberOfComments(numberOfComments - (repliesCount + 1));
+  //         setCommentsData((prev: any) =>
+  //           prev.filter((comment: any) => comment._id !== commentId)
+  //         );
+  //       } else {
+  //         await deleteCommentReplyMedia(
+  //           commentId,
+  //           mediaId,
+  //           originalCommentId,
+  //           token
+  //         );
+  //         setCommentsData((prev: any) =>
+  //           prev.map((comment: any) => {
+  //             if (comment._id === originalCommentId) {
+  //               const newReplies = comment.replies.filter(
+  //                 (id: string) => id !== commentId
+  //               );
+  //               return {
+  //                 ...comment,
+  //                 replies: newReplies,
+  //               };
+  //             }
+  //             return comment;
+  //           })
+  //         );
+  //         setNumberOfComments(numberOfComments - 1);
+  //       }
+  //     }
+
+  //     setCommentsData((prev: any) =>
+  //       prev.filter((comment: any) => comment._id !== commentId)
+  //     );
+  //     handleCloseMenu();
+  //   } catch (error) {
+  //     console.error("Failed to delete comment:", error);
+  //   }
+  // };
+
   const handleDeleteComment = async (commentId: string, postId: string) => {
     const token = localStorage.getItem("token");
     if (!token) return;
@@ -89,56 +160,82 @@ const CommentMenu = ({
     try {
       if (postId) {
         if (originalCommentId === null) {
+          // Xóa comment gốc
           await deleteComment(commentId, postId, token);
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
         } else {
-          const childReplies = commentsData.filter(
-            (comment: any) => comment.parentId === commentId
-          );
-          setCommentsData((prev: any) =>
-            prev.filter(
-              (comment: any) =>
-                comment._id !== commentId &&
-                !childReplies.some((child: any) => child._id === comment._id)
-            )
-          );
+          // Xóa comment reply (POST)
           await deleteCommentReply(commentId, postId, originalCommentId, token);
-          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+
+          // Gỡ khỏi replies của comment gốc và cập nhật số lượng
+          setCommentsData((prev: any) =>
+            prev.map((comment: any) => {
+              if (comment._id === originalCommentId) {
+                const newReplies = comment.replies.filter(
+                  (id: string) => id !== commentId
+                );
+                return {
+                  ...comment,
+                  replies: newReplies,
+                };
+              }
+              return comment;
+            })
+          );
+
+          // Xoá reply khỏi danh sách chính
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+
+          setNumberOfComments(numberOfComments - 1);
         }
       } else {
         if (originalCommentId === null) {
+          // Xóa comment gốc (MEDIA)
           await deleteCommentMedia(commentId, mediaId, token);
-          setNumberOfComments(numberOfComments - (repliesCount + 1));
+
           setCommentsData((prev: any) =>
             prev.filter((comment: any) => comment._id !== commentId)
           );
+          setNumberOfComments(numberOfComments - (repliesCount + 1));
         } else {
-          const childReplies = commentsData.filter(
-            (comment: any) => comment.parentId === commentId
-          );
-          setCommentsData((prev: any) =>
-            prev.filter(
-              (comment: any) =>
-                comment._id !== commentId &&
-                !childReplies.some((child: any) => child._id === comment._id)
-            )
-          );
+          // Xóa comment reply (MEDIA)
           await deleteCommentReplyMedia(
             commentId,
             mediaId,
             originalCommentId,
             token
           );
-          setNumberOfComments(numberOfComments - (childReplies.length + 1));
+
+          setCommentsData((prev: any) =>
+            prev.map((comment: any) => {
+              if (comment._id === originalCommentId) {
+                const newReplies = comment.replies.filter(
+                  (id: string) => id !== commentId
+                );
+                return {
+                  ...comment,
+                  replies: newReplies,
+                };
+              }
+              return comment;
+            })
+          );
+
+          // Xoá reply khỏi danh sách chính
+          setCommentsData((prev: any) =>
+            prev.filter((comment: any) => comment._id !== commentId)
+          );
+
+          setNumberOfComments(numberOfComments - 1);
         }
       }
 
-      setCommentsData((prev: any) =>
-        prev.filter((comment: any) => comment._id !== commentId)
-      );
       handleCloseMenu();
     } catch (error) {
       console.error("Failed to delete comment:", error);

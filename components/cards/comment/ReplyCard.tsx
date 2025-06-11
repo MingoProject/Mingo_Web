@@ -17,6 +17,7 @@ interface ReplyCardProps {
   mediaId?: string;
   setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
   numberOfComments: number;
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
 }
 
 const ReplyCard = ({
@@ -30,6 +31,7 @@ const ReplyCard = ({
   mediaId,
   setNumberOfComments,
   numberOfComments,
+  setCommentsData,
 }: ReplyCardProps) => {
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
     null
@@ -83,8 +85,9 @@ const ReplyCard = ({
               <>
                 <Icon icon="raphael:arrowright" />
                 <span>
-                  {reply?.parentId?.firstName || ""}{" "}
-                  {reply?.parentId?.lastName || ""}
+                  {reply?.parentId?.firstName || reply?.parentId?.lastName
+                    ? `${reply?.parentId?.firstName || ""} ${reply?.parentId?.lastName || ""}`
+                    : "Comment đã bị xóa"}
                 </span>
               </>
             )}

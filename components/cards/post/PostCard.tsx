@@ -21,9 +21,15 @@ interface PostCardProps {
   post: PostResponseDTO;
   profileBasic: UserBasicInfo;
   setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+  isTrending: boolean;
 }
 
-const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
+const PostCard = ({
+  post,
+  profileBasic,
+  setPostsData,
+  isTrending,
+}: PostCardProps) => {
   const comments = post?.comments ?? [];
   const likes = post?.likes ?? [];
   const [isLiked, setIsLiked] = useState(false);
@@ -94,6 +100,11 @@ const PostCard = ({ post, profileBasic, setPostsData }: PostCardProps) => {
 
   return (
     <div className="background-light200_dark200 px-[24px] py-[21px] h-auto w-full  rounded-[10px] shadow-subtle flex flex-col gap-[15px]">
+      {isTrending && (
+        <div className="text-sm text-white bg-orange-500 px-2 py-1 rounded self-start">
+          Bài viết gợi ý
+        </div>
+      )}
       <PostHeader post={post} setPostsData={setPostsData} />
       <div className="">
         <p className="text-dark100_light100">{post?.content}</p>
