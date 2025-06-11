@@ -185,7 +185,7 @@ const PostDetailCard = ({
                 {commentsData.length > 0 ? (
                   commentsData.map(
                     (comment: any) =>
-                      comment.parentId === null && (
+                      comment.originalCommentId === null && (
                         <div
                           key={comment._id}
                           className="group mb-3 flex items-start"

@@ -12,7 +12,6 @@ import {
 } from "@/lib/services/comment.service";
 import { createNotification } from "@/lib/services/notification.service";
 import { timeSinceMessage } from "@/lib/utils";
-import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 
 interface CommentActionProps {
@@ -25,6 +24,7 @@ interface CommentActionProps {
   author: UserBasicInfo;
   originalCommentId: string;
   setReplies: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
+  setCommentsData?: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
 }
 const CommentAction = ({
   comment,
@@ -36,6 +36,7 @@ const CommentAction = ({
   author,
   originalCommentId,
   setReplies,
+  setCommentsData,
 }: CommentActionProps) => {
   const [isLiked, setIsLiked] = useState(false);
   const [replyingTo, setReplyingTo] = useState<string | null>(null);
@@ -128,7 +129,7 @@ const CommentAction = ({
           postId
         );
         if (newCommentData) {
-          await addReplyToComment(replyingTo, newCommentData._id, token);
+          await addReplyToComment(originalCommentId, newCommentData._id, token);
         }
 
         const currentTime = new Date();
@@ -153,8 +154,24 @@ const CommentAction = ({
           originalCommentId: originalCommentId,
         };
 
+        // setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
         setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
 
+        comment.replies = [enrichedComment._id, ...(comment.replies || [])];
+
+        if (setCommentsData) {
+          setCommentsData((prevComments) =>
+            prevComments.map((c) => {
+              if (c._id === originalCommentId) {
+                return {
+                  ...c,
+                  replies: [enrichedComment._id, ...(c.replies || [])],
+                };
+              }
+              return c;
+            })
+          );
+        }
         if (comment.author._id !== profileBasic._id) {
           const notificationParams = {
             senderId: profileBasic._id,
@@ -189,7 +206,7 @@ const CommentAction = ({
           mediaId
         );
         if (newCommentData) {
-          await addReplyToComment(replyingTo, newCommentData._id, token);
+          await addReplyToComment(originalCommentId, newCommentData._id, token);
         }
 
         const currentTime = new Date();
@@ -214,8 +231,24 @@ const CommentAction = ({
           originalCommentId: originalCommentId,
         };
 
+        // setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
         setReplies((prev: CommentResponseDTO[]) => [enrichedComment, ...prev]);
 
+        comment.replies = [enrichedComment._id, ...(comment.replies || [])];
+
+        if (setCommentsData) {
+          setCommentsData((prevComments) =>
+            prevComments.map((c) => {
+              if (c._id === originalCommentId) {
+                return {
+                  ...c,
+                  replies: [enrichedComment._id, ...(c.replies || [])],
+                };
+              }
+              return c;
+            })
+          );
+        }
         if (comment.author._id !== profileBasic._id) {
           const notificationParams = {
             senderId: profileBasic._id,

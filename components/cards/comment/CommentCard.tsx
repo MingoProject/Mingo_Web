@@ -160,12 +160,12 @@ const CommentCard = ({
             />
           </div>
 
-          {comment.replies && comment.replies?.length > 0 && (
+          {comment.replies && comment.replies.length > 0 && (
             <p
               className="mb-1 cursor-pointer text-primary-100"
               onClick={toggleShowReplies}
             >
-              {comment.replies?.length} replies
+              {comment.replies.length} replies
             </p>
           )}
 
@@ -183,6 +183,7 @@ const CommentCard = ({
                   mediaId={mediaId}
                   setNumberOfComments={setNumberOfComments}
                   numberOfComments={numberOfComments}
+                  setCommentsData={setCommentsData}
                 />
               </div>
             ))}

@@ -17,6 +17,7 @@ interface ReplyCardProps {
   mediaId?: string;
   setNumberOfComments: React.Dispatch<React.SetStateAction<number>>;
   numberOfComments: number;
+  setCommentsData: React.Dispatch<React.SetStateAction<CommentResponseDTO[]>>;
 }
 
 const ReplyCard = ({
@@ -30,6 +31,7 @@ const ReplyCard = ({
   mediaId,
   setNumberOfComments,
   numberOfComments,
+  setCommentsData,
 }: ReplyCardProps) => {
   const [selectedCommentId, setSelectedCommentId] = useState<string | null>(
     null
@@ -83,8 +85,9 @@ const ReplyCard = ({
               <>
                 <Icon icon="raphael:arrowright" />
                 <span>
-                  {reply?.parentId?.firstName || ""}{" "}
-                  {reply?.parentId?.lastName || ""}
+                  {reply?.parentId?.firstName || reply?.parentId?.lastName
+                    ? `${reply?.parentId?.firstName || ""} ${reply?.parentId?.lastName || ""}`
+                    : "Comment was deleted"}
                 </span>
               </>
             )}
@@ -114,13 +117,13 @@ const ReplyCard = ({
                   commentId={reply._id}
                   originalCommentId={reply.originalCommentId}
                   content={reply.content}
-                  commentsData={replies}
                   setCommentsData={setReplies}
                   handleCloseMenu={handleCloseMenu}
                   postId={postId}
                   mediaId={mediaId}
                   setNumberOfComments={setNumberOfComments}
                   numberOfComments={numberOfComments}
+                  setParentCommentsData={setCommentsData}
                 />
               </div>
             )}
@@ -137,6 +140,7 @@ const ReplyCard = ({
               author={author}
               originalCommentId={commentId}
               setReplies={setReplies}
+              setCommentsData={setCommentsData}
             />
           </div>
         </div>

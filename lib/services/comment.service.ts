@@ -3,7 +3,6 @@ import {
   CreateCommentDTO,
   UpdateCommentDTO,
 } from "@/dtos/CommentDTO";
-import { UserResponseDTO } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -322,25 +321,6 @@ export async function dislikeComment(commentId: string, token: string) {
     return data;
   } catch (error) {
     console.error("Failed to like comment:", error);
-    throw error;
-  }
-}
-
-export async function getLikesByCommentId(
-  commentId: String
-): Promise<UserResponseDTO[]> {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/comment/get-likes?commentId=${commentId}`
-    );
-    if (!response.ok) {
-      throw new Error("Error fetching likes by commentId");
-    }
-    const data = await response.json();
-    // console.log(data);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch likes by commentId:", error);
     throw error;
   }
 }
