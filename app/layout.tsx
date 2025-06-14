@@ -6,6 +6,7 @@ import { ThemeProvider } from "@/context/ThemeProvider";
 import { AuthProvider } from "@/context/AuthContext";
 import { ChatItemProvider } from "@/context/ChatItemContext";
 import { ChatProvider } from "@/context/ChatContext";
+import { SocketProvider } from "@/providers/SocketProvider";
 
 export const metadata: Metadata = {
   title: "Mingle",
@@ -22,24 +23,27 @@ export default function RootLayout({
 }) {
   return (
     <AuthProvider>
-      <ChatItemProvider>
-        <ChatProvider>
-          <html lang="en">
-            <body className="background-light500_dark500">
-              <ClerkProvider
-                appearance={{
-                  elements: {
-                    formButtonPrimary: "primary-gradient",
-                    footerActionLink: "primary-gradient hover:text-primary-500",
-                  },
-                }}
-              >
-                <ThemeProvider>{children}</ThemeProvider>
-              </ClerkProvider>
-            </body>
-          </html>
-        </ChatProvider>
-      </ChatItemProvider>
+      <SocketProvider>
+        <ChatItemProvider>
+          <ChatProvider>
+            <html lang="en">
+              <body className="relative">
+                <ClerkProvider
+                  appearance={{
+                    elements: {
+                      formButtonPrimary: "primary-gradient",
+                      footerActionLink:
+                        "primary-gradient hover:text-primary-500",
+                    },
+                  }}
+                >
+                  <ThemeProvider>{children}</ThemeProvider>
+                </ClerkProvider>
+              </body>
+            </html>
+          </ChatProvider>
+        </ChatItemProvider>
+      </SocketProvider>
     </AuthProvider>
   );
 }

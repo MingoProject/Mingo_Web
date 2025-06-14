@@ -11,6 +11,10 @@ import { ItemChat } from "@/dtos/MessageDTO";
 import { FindUserDTO } from "@/dtos/UserDTO";
 import { getMyProfile } from "@/lib/services/user.service";
 import { useChatContext } from "@/context/ChatContext";
+import { useAuth } from "@/context/AuthContext";
+import { useSocket } from "@/context/SocketContext";
+import { useParams, useRouter } from "next/navigation";
+import { SocketUser } from "@/dtos/SocketDTO";
 
 const HeaderMessageContent = ({
   item,
@@ -20,11 +24,17 @@ const HeaderMessageContent = ({
   toggleRightSide: () => void;
 }) => {
   const { isOnlineChat, setIsOnlineChat } = useChatContext();
+  const { onlineUsers, handleCall, ongoingCall } = useSocket();
+  const [isOnlineUser, setIsOnlineUser] = useState("");
+  const router = useRouter();
+  const params = useParams();
+  const boxId = params.id?.toString();
   useEffect(() => {
     const fetchProfile = async () => {
       try {
         if (item) {
           const data = await getMyProfile(item?.receiverId?.toString() || "");
+          setIsOnlineUser(data.userProfile._id);
           setIsOnlineChat((prevState) => ({
             ...prevState,
             [item?.receiverId?.toString() || ""]: data.userProfile.status,
@@ -36,6 +46,31 @@ const HeaderMessageContent = ({
     };
     fetchProfile();
   }, [item, item?.receiverId]);
+
+  if (!onlineUsers) {
+    console.warn("onlineUsers is undefined");
+    return;
+  }
+  const onlineUser = onlineUsers.find(
+    (user) => user?.userId?.toString() === isOnlineUser.toString()
+  );
+
+  // useEffect(() => {
+  //   if (onlineUser) {
+  //     console.log("Call started with:", onlineUser);
+  //     handleCall(onlineUser);
+  //   }
+  // }, [onlineUser]); // Chỉ chạy lại khi `onlineUser` thay đổi
+
+  const navigateCallRoom = (onlineUser: SocketUser, isVideoCall: boolean) => {
+    handleCall(onlineUser, isVideoCall);
+    router.push(`/call/${boxId}`);
+  };
+
+  console.log("Online Users:", onlineUsers);
+
+  console.log("Selected User:", onlineUser);
+
   return (
     <div className="w-full border-b border-gray-200 dark:border-gray-900 flex px-4">
       <div className="text-dark100_light500 flex w-full items-center justify-between py-2">
@@ -63,16 +98,18 @@ const HeaderMessageContent = ({
           )}
         </div>
         {/* Icons */}
-        <div className="flex gap-6 self-center">
+        <div className="flex gap-6 self-center cursor-pointer">
           <FontAwesomeIcon
             icon={faPhone}
             size="xl"
             className="text-primary-100"
+            onClick={() => onlineUser && navigateCallRoom(onlineUser, false)}
           />
           <FontAwesomeIcon
             icon={faVideo}
             size="xl"
-            className="text-primary-100"
+            className="text-primary-100 cursor-pointer"
+            onClick={() => onlineUser && navigateCallRoom(onlineUser, true)}
           />
           <FontAwesomeIcon
             icon={faCircleInfo}

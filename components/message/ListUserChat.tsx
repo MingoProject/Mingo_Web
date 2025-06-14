@@ -27,6 +27,10 @@ import { pusherClient } from "@/lib/pusher";
 import { getUserById } from "@/lib/services/user.service";
 import { FindUserDTO } from "@/dtos/UserDTO";
 import { ItemChat, StatusResponse } from "@/dtos/MessageDTO";
+import { useSocket } from "@/context/SocketContext";
+import CallNotification from "./CallNotification";
+import user from "pusher-js/types/src/core/user";
+import { VideoCall } from "./VideoCall";
 
 const ListUserChat = () => {
   const { allChat, setAllChat } = useChatItemContext();
@@ -35,10 +39,13 @@ const ListUserChat = () => {
   const router = useRouter();
   const [isFormOpen, setIsFormOpen] = useState(false);
   const { profile } = useAuth();
-  const { id }: any = useParams();
+  const { onlineUsers, handleCall } = useSocket();
+  const params = useParams();
+  const id = params.id?.toString();
   const toggleForm = () => {
     setIsFormOpen(!isFormOpen);
   };
+
   const channelRefs = useRef<any[]>([]);
 
   const fetchChats = useCallback(async () => {
@@ -306,7 +313,6 @@ const ListUserChat = () => {
 
     setFilteredChat(sortedFilteredChats);
   };
-
   const handleChatClick = (id: string) => {
     router.push(`/message/${id}`);
   };
@@ -342,6 +348,8 @@ const ListUserChat = () => {
             filteredChat.map((item) => (
               <div key={item.id} onClick={() => handleChatClick(item.id)}>
                 <ListUserChatCard itemChat={item} />
+                <CallNotification />
+                <VideoCall />
               </div>
             ))
           )}

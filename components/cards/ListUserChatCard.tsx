@@ -407,7 +407,7 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
       <ContextMenuTrigger>
         <div className="text-dark100_light500 flex w-full items-center justify-between px-4 py-2 hover:bg-primary-100/20 hover:rounded-lg">
           <div className="flex w-full items-center gap-3">
-            <div className="relative w-[45px] h-[45px]">
+            <div className="relative w-[45px] h-[45px] sm:w-[40px] sm:h-[40px]">
               <Image
                 src={itemChat.avatarUrl || "/assets/images/default-user.png"}
                 alt="Avatar"
@@ -420,30 +420,46 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                 <span className="absolute bottom-0 right-0 h-3 w-3 rounded-full border-2 border-white bg-green-500"></span>
               )}
             </div>
-            <div className="hidden w-[55%] gap-1 text-xs md:flex md:flex-col">
-              <span className="text-base font-semibold whitespace-nowrap overflow-hidden truncate">
+            <div className="w-[55%] gap-1 text-xs md:flex md:flex-col">
+              <span className="text-[10px] sm:text-sm md:text-base font-semibold whitespace-nowrap overflow-hidden truncate">
                 {itemChat.groupName}
               </span>
               <span className={`truncate text-sm font-medium`}>
                 {!lastMessage.createBy &&
                 !lastMessage.text &&
                 !lastMessage.contentId?.type ? (
-                  <p className={isRead ? "font-normal" : "font-bold"}>
+                  <p
+                    className={
+                      isRead
+                        ? "text-[10px] sm:text-sm font-normal"
+                        : " text-[10px] sm:text-sm font-bold"
+                    }
+                  >
                     Started the chat
                   </p>
                 ) : isReceiver ? (
-                  <div className="flex gap-1 text-sm">
-                    <p className={`${isRead ? "font-normal" : "font-bold"}`}>
+                  <div className="flex gap-1 text-sm sm:text-[10px]">
+                    <p
+                      className={`${isRead ? "text-[10px] sm:text-sm font-normal" : "text-[10px] sm:text-sm font-bold"}`}
+                    >
                       {itemChat.userName.trim().split(" ").pop()}:{" "}
                     </p>
                     {(() => {
                       const type =
                         lastMessage.contentId?.type?.toLowerCase() || "";
                       const messageStatusClass = isRead
-                        ? "font-normal"
-                        : "font-bold";
-
-                      if (lastMessage.text !== "") {
+                        ? "text-[10px] sm:text-sm font-normal"
+                        : "text-[10px] sm:text-sm font-bold";
+                      const isEndCallMessage = lastMessage.text?.startsWith(
+                        "//Cuoc goi ket thuc"
+                      );
+                      if (isEndCallMessage) {
+                        return (
+                          <p className={messageStatusClass}>
+                            Cuộc gọi kết thúc
+                          </p>
+                        );
+                      } else if (lastMessage.text !== "") {
                         return (
                           <p className={messageStatusClass}>
                             {lastMessage.text}
@@ -483,7 +499,16 @@ const ListUserChatCard = ({ itemChat }: { itemChat: ItemChat }) => {
                         ? "font-normal"
                         : "font-normal";
 
-                      if (lastMessage.text !== "") {
+                      const isEndCallMessage = lastMessage.text?.startsWith(
+                        "//Cuoc goi ket thuc"
+                      );
+                      if (isEndCallMessage) {
+                        return (
+                          <p className={messageStatusClass}>
+                            Cuộc gọi kết thúc
+                          </p>
+                        );
+                      } else if (lastMessage.text !== "") {
                         return (
                           <p className={messageStatusClass}>
                             {lastMessage.text}
