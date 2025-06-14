@@ -1,8 +1,6 @@
 import ReportCard from "@/components/cards/ReportCard";
 import Button from "@/components/ui/button";
-import ButtonClose from "@/components/ui/buttonClose";
 import { CommentResponseDTO } from "@/dtos/CommentDTO";
-import { UserBasicInfo } from "@/dtos/UserDTO";
 import {
   deleteComment,
   deleteCommentMedia,

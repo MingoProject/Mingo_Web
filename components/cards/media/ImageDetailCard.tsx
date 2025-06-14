@@ -63,23 +63,18 @@ const ImageDetailCard = ({
       );
 
       const currentTime = new Date();
-      const isoStringWithOffset = currentTime
-        .toISOString()
-        .replace("Z", "+00:00");
-      console.log(
-        "Current Time (new Date()):",
-        currentTime.toISOString().replace("Z", "+00:00")
-      );
-      const enrichedComment = {
+      const enrichedComment: CommentResponseDTO = {
         ...newCommentData,
-        userId: {
+        author: {
           _id: profileBasic?._id,
-          avatar: profileBasic?.avatar || "/assets/images/capy.jpg",
+          avatar: profileBasic?.avatar || "/assets/images/default-avatar.jpg",
           firstName: profileBasic?.firstName || "Anonymous",
           lastName: profileBasic?.lastName || "Anonymous",
         },
-        createAt: isoStringWithOffset,
+        createAt: currentTime,
+        likes: [],
       };
+      image.comments = [newCommentData._id, ...image.comments];
 
       setCommentsData((prev: any) => [enrichedComment, ...prev]);
 
