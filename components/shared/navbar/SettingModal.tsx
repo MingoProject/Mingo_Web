@@ -120,7 +120,7 @@ const SettingModal = ({ profile, logout }: any) => {
   return (
     <>
       <Link href="/" className=" text-primary-100">
-        <p className="hidden md:block text-[16px] font-semibold">
+        <p className="hidden lg:block text-[16px] font-semibold">
           {profile.firstName} {profile.lastName}
         </p>
       </Link>

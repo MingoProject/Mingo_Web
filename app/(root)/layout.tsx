@@ -6,12 +6,13 @@ import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { OnlineEvent } from "@/dtos/MessageDTO";
 import Navbar from "@/components/shared/navbar/Navbar";
+import CallNotification from "@/components/message/CallNotification";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const checkOnlineStatus = async () => {
     try {
       const userId = localStorage.getItem("userId");
       const result = await IsOnline(userId?.toString() || "");
-      console.log("User online status:", result);
+      // console.log("User online status:", result);
     } catch (error) {
       console.error("Error checking online status:", error);
     }
@@ -78,6 +79,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <div className="background-light500_dark500 mx-auto size-full">
             {children}
           </div>
+          <CallNotification />
         </section>
       </div>
     </main>

@@ -64,7 +64,7 @@ const Navbar = () => {
   if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
-    <nav className="flex-between background-light200_dark200 fixed z-50 w-full py-[10px] px-[35px]">
+    <nav className="flex-between background-light200_dark200 fixed z-50 w-full lg:py-[10px] sm:pl-[20px] lg:px-[35px]  ">
       <Link href="/" className="flex items-center gap-1 w-[256px]">
         <p className="text-dark100_light100 text-[40px] font-medium logo">
           Min
@@ -72,7 +72,7 @@ const Navbar = () => {
         </p>
       </Link>
 
-      <div className="hidden w-[32%] sm:flex gap-[84px]">
+      <div className="hidden w-[32%] sm:flex gap-[84px] sm:justify-center">
         <Sheet>
           {navbarLinks.map((item) => {
             const isDrawerLink =
