@@ -110,7 +110,7 @@ const Navbar = () => {
   if (error) return <div className="mt-96">Error: {error}</div>;
 
   return (
-    <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5">
+    <nav className="flex-between background-light700_dark300 fixed z-50 h-[79px] w-full gap-5 border-b p-6 dark:border-transparent sm:px-5 md:flex md:flex-row md:items-center">
       <Link href="/" className="flex items-center gap-1">
         <p className="text-dark100_light500 text-3xl">
           Min<span className="text-3xl text-primary-100 ">gle</span>
@@ -118,7 +118,7 @@ const Navbar = () => {
       </Link>
 
       {/* Sidebar links */}
-      <div className="hidden w-auto sm:flex">
+      <div className="hidden w-auto sm:flex md:flex sm:justify-center">
         <Sheet>
           {navbarLinks.map((item) => {
             // Check if the route is for a drawer (Search, Notifications) or a regular link
@@ -173,7 +173,7 @@ const Navbar = () => {
       </div>
 
       {/* Right side options */}
-      <div className="flex-between w-auto">
+      <div className="flex-between w-auto ">
         <Theme />
         {profile ? (
           <SettingModal
