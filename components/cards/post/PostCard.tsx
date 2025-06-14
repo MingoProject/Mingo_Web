@@ -21,7 +21,7 @@ interface PostCardProps {
   post: PostResponseDTO;
   profileBasic: UserBasicInfo;
   setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
-  isTrending: boolean;
+  isTrending?: boolean;
 }
 
 const PostCard = ({
@@ -101,8 +101,8 @@ const PostCard = ({
   return (
     <div className="background-light200_dark200 px-[24px] py-[21px] h-auto w-full  rounded-[10px] shadow-subtle flex flex-col gap-[15px]">
       {isTrending && (
-        <div className="text-sm text-white bg-orange-500 px-2 py-1 rounded self-start">
-          Bài viết gợi ý
+        <div className="text-sm text-white bg-primary-100 px-4 py-2 rounded-xl self-start">
+          Trending
         </div>
       )}
       <PostHeader post={post} setPostsData={setPostsData} />
