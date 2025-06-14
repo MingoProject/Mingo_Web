@@ -5,13 +5,16 @@ import {
   UpdateUserBioDTO,
   UpdateUserDTO,
   FindUserDTO,
+  SearchUserResponseDTO,
 } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
-export async function fetchUsers(): Promise<UserResponseDTO[]> {
+export async function fetchUsers(
+  userId: string | undefined
+): Promise<SearchUserResponseDTO[]> {
   try {
-    const response = await fetch(`${BASE_URL}/user/all`);
+    const response = await fetch(`${BASE_URL}/user/all?userId=${userId}`);
     if (!response.ok) {
       throw new Error("Error fetching users");
     }
@@ -89,7 +92,6 @@ export async function login(userData: UserLoginDTO) {
     }
 
     const data = await response.json();
-    console.log("token", data.token);
 
     localStorage.setItem("token", data.token);
 

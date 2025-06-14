@@ -1,26 +1,41 @@
 import React, { useEffect, useState } from "react";
 import NoResult from "@/components/shared/NoResult";
-import PostsCard from "@/components/cards/PostsCard";
-import UserCard from "./UserCard";
+import PostsCard from "@/components/cards/post/PostCard";
+import UserCard from "../../cards/user/UserSearchCard";
 import { fetchUsers } from "@/lib/services/user.service";
-import { fetchPosts, getPostByPostId } from "@/lib/services/post.service";
-
-const RenderSearch = ({ activeTab, query, profile }: any) => {
+import { fetchPosts } from "@/lib/services/post.service";
+import { UserBasicInfo } from "@/dtos/UserDTO";
+import { PostResponseDTO } from "@/dtos/PostDTO";
+import UserSearchCard from "../../cards/user/UserSearchCard";
+interface RenderSearchProps {
+  activeTab: "all" | "posts" | "users";
+  query: string | null;
+  profileBasic: UserBasicInfo;
+}
+const RenderSearch = ({
+  activeTab,
+  query,
+  profileBasic,
+}: RenderSearchProps) => {
+  console.log("profileBasic", profileBasic);
   const [results, setResults] = useState<any[]>([]);
-  const [postsData, setPostsData] = useState<any[]>([]);
+  const [postsData, setPostsData] = useState<PostResponseDTO[]>([]);
   const [userDisplayCount, setUserDisplayCount] = useState(5);
 
   useEffect(() => {
     const fetchData = async () => {
       if (!query) return;
 
-      try {
-        const [users, posts] = await Promise.all([fetchUsers(), fetchPosts()]);
+      const userId = localStorage.getItem("userId") || "{}";
+      console.log(userId);
 
-        const detailedPosts = await Promise.all(
-          posts.map(async (post) => await getPostByPostId(post._id))
-        );
-        setPostsData(detailedPosts);
+      try {
+        const [users, posts] = await Promise.all([
+          fetchUsers(userId),
+          fetchPosts(),
+        ]);
+
+        setPostsData(posts);
         const userResults = users.filter(
           (user) =>
             user.lastName.toLowerCase().includes(query.toLowerCase()) ||
@@ -37,48 +52,21 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
           activeTab === "users"
             ? userResults.map((user) => ({
                 type: "user",
-                userId: user._id,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                avatar: user.avatar,
+                user,
               }))
             : activeTab === "posts"
               ? postResults.map((post) => ({
                   type: "post",
-                  postId: post._id,
-                  author: post.author,
-                  content: post.content,
-                  media: post.media,
-                  createdAt: post.createdAt,
-                  likes: post.likes,
-                  comments: post.comments,
-                  shares: post.shares,
-                  location: post.location,
-                  privacy: post.privacy,
-                  tags: post.tags,
+                  post,
                 }))
               : [
                   ...userResults.map((user) => ({
                     type: "user",
-                    userId: user._id,
-                    firstName: user.firstName,
-                    lastName: user.lastName,
-                    avatar: user.avatar,
-                    nickName: user.nickName,
+                    user,
                   })),
                   ...postResults.map((post) => ({
                     type: "post",
-                    postId: post._id,
-                    author: post.author,
-                    content: post.content,
-                    media: post.media,
-                    createdAt: post.createdAt,
-                    likes: post.likes,
-                    comments: post.comments,
-                    shares: post.shares,
-                    location: post.location,
-                    privacy: post.privacy,
-                    tags: post.tags,
+                    post,
                   })),
                 ];
 
@@ -89,7 +77,7 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
     };
 
     fetchData();
-  }, [query, postsData]);
+  }, [query, activeTab]);
 
   return (
     <div className="background-light700_dark400 flex w-full flex-col gap-6">
@@ -99,26 +87,15 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
             title="No Result"
             description="No articles found"
             link="/"
-            linkTitle="Trở lại"
+            linkTitle="Back"
           />
         ) : (
           results
             .filter((result) => result.type === "post")
             .map((post) => (
               <PostsCard
-                key={post.postId}
-                postId={post.postId}
-                author={post.author}
-                content={post.content}
-                media={post.media}
-                createdAt={post.createdAt}
-                likes={post.likes || []}
-                comments={post.comments || []}
-                shares={post.shares || []}
-                location={post.location}
-                privacy={post.privacy}
-                tags={post.tags}
-                profile={profile}
+                post={post.post}
+                profileBasic={profileBasic}
                 setPostsData={setPostsData}
               />
             ))
@@ -130,21 +107,12 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
             title="No Result"
             description="No users found"
             link="/"
-            linkTitle="Trở lại"
+            linkTitle="Back"
           />
         ) : (
           results
             .filter((result) => result.type === "user")
-            .map((user) => (
-              <UserCard
-                key={user.userId}
-                userId={user.userId}
-                firstName={user.firstName}
-                lastName={user.lastName}
-                avatar={user.avatar}
-                nickName={user.nickName}
-              />
-            ))
+            .map((user) => <UserSearchCard user={user.user} />)
         ))}
 
       {activeTab === "all" && (
@@ -153,14 +121,7 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
             .filter((result) => result.type === "user")
             .slice(0, userDisplayCount)
             .map((user) => (
-              <UserCard
-                key={user.userId}
-                userId={user.userId}
-                firstName={user.firstName}
-                lastName={user.lastName}
-                avatar={user.avatar}
-                nickName={user.nickName}
-              />
+              <UserSearchCard user={user.user} />
             ))}
 
           {results.filter((result) => result.type === "user").length >
@@ -177,19 +138,8 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
             .filter((result) => result.type === "post")
             .map((post) => (
               <PostsCard
-                key={post.postId}
-                postId={post.postId}
-                author={post.author}
-                content={post.content}
-                media={post.media}
-                createdAt={post.createdAt}
-                likes={post.likes || []}
-                comments={post.comments || []}
-                shares={post.shares || []}
-                location={post.location}
-                privacy={post.privacy}
-                tags={post.tags}
-                profile={profile}
+                post={post.post}
+                profileBasic={profileBasic}
                 setPostsData={setPostsData}
               />
             ))}
@@ -199,7 +149,7 @@ const RenderSearch = ({ activeTab, query, profile }: any) => {
               title="No Result"
               description="No results found"
               link="/"
-              linkTitle="Trở lại"
+              linkTitle="Back"
             />
           )}
         </>

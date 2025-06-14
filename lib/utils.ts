@@ -75,3 +75,27 @@ export const getFileFormat = (mimeType: string, fileName: string): string => {
   // Trả về "unknown" nếu không xác định được
   return "unknown";
 };
+
+export function timeSinceMessage(timestamp: Date | string) {
+  const now = new Date();
+  const messageTimestamp = new Date(timestamp);
+  const diffInMs = now.getTime() - messageTimestamp.getTime();
+  const diffInSeconds = Math.floor(diffInMs / 1000);
+  const diffInMinutes = Math.floor(diffInSeconds / 60);
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+
+  if (diffInDays > 0) return `${diffInDays} days ago`;
+  if (diffInHours > 0) return `${diffInHours} hours ago`;
+  if (diffInMinutes > 0) return `${diffInMinutes} minutes ago`;
+  return `${diffInSeconds} seconds ago`;
+}
+
+export function removeVietnameseTones(str: string) {
+  return str
+    .normalize("NFD") // tách dấu
+    .replace(/[\u0300-\u036f]/g, "") // xóa dấu
+    .replace(/đ/g, "d")
+    .replace(/Đ/g, "D")
+    .toLowerCase();
+}

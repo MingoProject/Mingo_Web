@@ -3,11 +3,21 @@ import { useEffect, useState } from "react";
 import RenderSearch from "@/components/shared/search/RenderSearch";
 import { useAuth } from "@/context/AuthContext";
 import { useSearchParams } from "next/navigation";
+import NameCard from "@/components/cards/other/NameCard";
+import Tab from "@/components/ui/tab";
+import { Icon } from "@iconify/react/dist/iconify.js";
+import { UserBasicInfo } from "@/dtos/UserDTO";
 
 const ResultSearch = () => {
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState<"all" | "posts" | "users">("all");
   const [query, setQuery] = useState<string | null>(null);
   const { profile } = useAuth();
+  const profileBasic: UserBasicInfo = {
+    _id: profile?._id,
+    avatar: profile?.avatar,
+    firstName: profile?.firstName,
+    lastName: profile?.lastName,
+  };
   const searchParams = useSearchParams();
 
   useEffect(() => {
@@ -17,48 +27,39 @@ const ResultSearch = () => {
   }, [searchParams]);
 
   return (
-    <div className="background-light700_dark400 h-full pt-20">
-      <div className="flex h-[39px] w-fit items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 px-4 text-white">
-        Search results for: {query}
-      </div>
-      <div className="flex">
-        <div className="m-10 mx-[5%] mb-5 ">
-          <span
-            className={` cursor-pointer text-xl ${
-              activeTab === "all"
-                ? "border-b-2 border-primary-100 font-medium text-primary-100"
-                : "text-dark100_light500"
-            }`}
-            onClick={() => setActiveTab("all")}
-          >
-            All
-          </span>
-          <hr className="mb-5 border-transparent"></hr>
-          <span
-            className={` cursor-pointer text-xl ${
-              activeTab === "posts"
-                ? "border-b-2 border-primary-100 font-medium text-primary-100"
-                : "text-dark100_light500"
-            }`}
-            onClick={() => setActiveTab("posts")}
-          >
-            Posts
-          </span>
-          <hr className="mb-5 border-transparent"></hr>
-          <span
-            className={`cursor-pointer text-xl ${
-              activeTab === "users"
-                ? "border-b-2 border-primary-100 font-medium text-primary-100"
-                : "text-dark100_light500"
-            }`}
-            onClick={() => setActiveTab("users")}
-          >
-            Users
-          </span>
+    <div className="background-light500_dark500 h-full pt-[70px] mt-[20px]">
+      <div className="flex ">
+        <div className="flex flex-col gap-4">
+          <NameCard name={`Search results for ${query}`} />
+          <div className="ml-[20px] flex flex-col gap-4">
+            <div className="text-dark100_light100 flex gap-4">
+              <Icon icon="majesticons:filter-line" className="size-6 " />
+              <span className="text-4 font-semibold">Filter:</span>
+            </div>
+            <Tab
+              content="All results"
+              isActive={activeTab === "all"}
+              onClick={() => setActiveTab("all")}
+            />
+            <Tab
+              content="Posts"
+              isActive={activeTab === "posts"}
+              onClick={() => setActiveTab("posts")}
+            />
+            <Tab
+              content="Users"
+              isActive={activeTab === "users"}
+              onClick={() => setActiveTab("users")}
+            />
+          </div>
         </div>
         <div className="my-5 ml-[20%] w-[543px]">
-          <RenderSearch activeTab={activeTab} query={query} profile={profile} />
-        </div>{" "}
+          <RenderSearch
+            activeTab={activeTab}
+            query={query}
+            profileBasic={profileBasic}
+          />
+        </div>
       </div>
     </div>
   );

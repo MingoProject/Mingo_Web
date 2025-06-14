@@ -1,7 +1,6 @@
 import { faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useState } from "react";
-import { Button } from "../ui/button";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 import { useParams } from "next/navigation";
 import {
@@ -177,19 +176,19 @@ const ReportCard = ({
 
           {/* Nút xác nhận */}
           <div className="text-dark100_light500 flex items-center justify-between gap-4 px-8 py-4">
-            <Button
+            <button
               onClick={onClose}
               className="h-[35px] w-32 bg-white text-xs shadow-md dark:border dark:bg-transparent md:text-sm"
             >
               Cancel
-            </Button>
-            <Button
+            </button>
+            <button
               onClick={handleSubmit} // Truyền giá trị đã chọn
               disabled={!selectedOption} // Vô hiệu hóa nếu chưa chọn mục
               className="h-[35px] w-32 bg-primary-100 text-xs text-white shadow-md md:text-sm"
             >
               Confirm
-            </Button>
+            </button>
           </div>
         </div>
       </div>

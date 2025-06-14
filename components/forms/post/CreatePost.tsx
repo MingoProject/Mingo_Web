@@ -1,14 +1,27 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import { createMedia } from "@/lib/services/media.service";
 import { createPost } from "@/lib/services/post.service";
-import { PostCreateDTO } from "@/dtos/PostDTO";
+import { PostCreateDTO, PostResponseDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 import { createNotification } from "@/lib/services/notification.service";
+import NameCard from "@/components/cards/other/NameCard";
+import Button from "@/components/ui/button";
+import TagFriendCard from "@/components/cards/friend/TagFriendCard";
+import TextArea from "@/components/ui/textarea";
+import TitleIcon from "@/components/ui/titleIcon";
+import Input from "@/components/ui/input";
 
-const CreatePost = ({ onClose, me, setPostsData }: any) => {
+interface CreatePostProps {
+  onClose: () => void;
+  me: any;
+  setPostsData: React.Dispatch<React.SetStateAction<PostResponseDTO[]>>;
+}
+
+const CreatePost = ({ onClose, me, setPostsData }: CreatePostProps) => {
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
@@ -18,6 +31,7 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
   const [captions, setCaptions] = useState<string[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     let isMounted = true;
@@ -40,29 +54,23 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
       }
     };
     fetchFriends();
-
     return () => {
       isMounted = false;
     };
   }, [me._id]);
 
   const toggleTagFriend = (friend: any) => {
-    setTaggedFriends((prev) => {
-      if (prev.some((f) => f._id === friend._id)) {
-        return prev.filter((f) => f._id !== friend._id);
-      } else {
-        return [...prev, friend];
-      }
-    });
+    setTaggedFriends((prev) =>
+      prev.some((f) => f._id === friend._id)
+        ? prev.filter((f) => f._id !== friend._id)
+        : [...prev, friend]
+    );
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
-    setCaptions((prevCaptions) => [
-      ...prevCaptions,
-      ...selectedFiles.map(() => ""),
-    ]);
+    setFiles((prev) => [...prev, ...selectedFiles]);
+    setCaptions((prev) => [...prev, ...selectedFiles.map(() => "")]);
   };
 
   const handleCaptionChange = (index: number, value: string) => {
@@ -97,54 +105,78 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
         const uploadPromises = files.map(async (file, index) => {
           const caption = captions[index];
           const uploadedMedia = await createMedia(file, caption, token);
-          console.log(uploadedMedia);
           return uploadedMedia.media._id;
         });
 
         mediaIds = await Promise.all(uploadPromises);
       }
-      console.log("tags", taggedFriends);
 
       const postPayload: PostCreateDTO = {
         content: content || "",
         media: mediaIds,
         location,
         tags: taggedFriends.map((friend) => friend._id),
-        privacy: {
-          type: privacy,
-        },
+        privacy: { type: privacy },
       };
 
       const res = await createPost(postPayload, token);
 
-      if (taggedFriends && taggedFriends.length > 0) {
+      if (taggedFriends.length > 0) {
         for (const friend of taggedFriends) {
-          const notificationParams = {
-            senderId: me._id,
-            receiverId: friend._id,
-            type: "tags",
-            postId: res._id,
-          };
-
-          await createNotification(notificationParams, token);
+          await createNotification(
+            {
+              senderId: me._id,
+              receiverId: friend._id,
+              type: "tags",
+              postId: res._id,
+            },
+            token
+          );
         }
       }
-      console.log(res);
-      setPostsData((prevPosts: any[]) => [
+
+      setPostsData((prevPosts) => [
         {
-          ...res,
-          media: res.media || [],
+          _id: res._id,
           content: res.content || "",
-          likes: res.likes || [],
-          author: res.author || me,
-          tags: res.tags || [],
-          location: res.location || null,
-          privacy: res.privacy || { type: "public" },
-        },
+          media:
+            res.media?.map((m) => ({
+              _id: String(m._id),
+              url: m.url,
+              type: m.type,
+            })) || [],
+          createdAt: new Date(res.createdAt),
+
+          author: {
+            _id: me._id,
+            firstName: me.firstName,
+            lastName: me.lastName,
+            avatar: me.avatar,
+          },
+
+          shares: [],
+          likes: [],
+          likedIds: [],
+          savedByUsers: [],
+          comments: [],
+          tags: taggedFriends.map((f) => ({
+            _id: f._id,
+            firstName: f.firstName,
+            lastName: f.lastName,
+            avatar: f.avatar,
+          })),
+
+          location: location || "",
+          flag: true,
+          privacy: {
+            type: privacy,
+            allowedUsers: [],
+          },
+        } as PostResponseDTO,
         ...prevPosts,
       ]);
-      alert("Post created successfully!");
 
+      alert("Post created successfully!");
       onClose();
     } catch (err: any) {
       console.error(err);
@@ -154,222 +186,205 @@ const CreatePost = ({ onClose, me, setPostsData }: any) => {
     }
   };
 
-  const handleToggleFriendsDropdown = (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
-    document.getElementById("friendsDropdown")?.classList.toggle("hidden");
-  };
-
   return (
     <>
-      <div
-        className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40"
-        onClick={onClose}
-      />
-      <div className="background-light700_dark300 overflow-auto max-h-[90vh] h-[700px] custom-scrollbar mt-10 fixed inset-0 z-50 mx-auto rounded-md py-6 shadow-md lg:w-1/2">
-        <div className="flex pr-5">
-          <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-            Create post
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 z-50 flex justify-center items-center text-dark100_light100">
+        <div className="background-light200_dark200 text-dark100_light100 w-full max-w-2xl max-h-[78vh] overflow-y-auto rounded-lg relative py-6 shadow-lg custom-scrollbar">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-4">
+            <NameCard name="Create Post" />
+            <Icon
+              icon="ic:round-close"
+              className="size-6 cursor-pointer mr-5 "
+              onClick={onClose}
+            />
           </div>
-          <Icon
-            icon="ic:round-close"
-            className="text-dark100_light500 ml-auto size-8"
-            onClick={onClose}
-          />
-        </div>
-        <div className="my-7 mb-4 flex items-center px-6">
-          <Image
-            width={40}
-            height={40}
-            src={me?.avatar || "/assets/images/capy.jpg"}
-            alt="Avatar"
-            className="mr-2 size-10 rounded-full"
-          />
-          <div>
-            <span className="text-dark100_light500">
+
+          {/* Avatar */}
+          <div className="flex items-center px-5 gap-3 mb-3">
+            <Image
+              src={me?.avatar || "/assets/images/capy.jpg"}
+              width={40}
+              height={40}
+              alt="Avatar"
+              className="rounded-full object-cover size-10"
+            />
+            <span className="font-semibold">
               {me?.firstName} {me?.lastName}
             </span>
           </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="mx-6">
-          <div className="mb-4">
-            <textarea
+          <form onSubmit={handleSubmit} className="px-5 flex flex-col gap-5">
+            {/* Content */}
+
+            <TextArea
+              placeholder="Write something..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="What's on your mind?"
-              className="text-dark100_light500 h-24 w-full bg-transparent p-2"
             />
-          </div>
-          <div>
-            <label
-              htmlFor="file"
-              className="block text-sm font-medium text-primary-100"
-            >
-              Select Media
-            </label>
-            <input
-              type="file"
-              id="file"
-              accept="image/*,video/*"
-              multiple
-              onChange={handleFileChange}
-              className="text-dark100_light500 mt-1 block w-full bg-transparent"
-            />
-            {files.map((file, index) => (
-              <div key={index} className="mt-2 flex items-center space-x-4">
-                <div className="relative">
-                  {file.type.startsWith("image") ? (
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${file.name}`}
-                      width={100}
-                      height={100}
-                      className="size-20 rounded-lg object-cover"
-                    />
-                  ) : file.type.startsWith("video") ? (
-                    <video
-                      src={URL.createObjectURL(file)}
-                      controls
-                      className="rounded-lg w-[80px] h-[80px] object-cover"
-                      width={100}
-                      height={100}
-                    />
-                  ) : null}
-                  <button
-                    type="button"
-                    className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
-                    onClick={() => handleDeleteFile(index)}
-                  >
-                    <Icon icon="ic:round-close" className="text-white" />
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Caption"
-                  value={captions[index]}
-                  onChange={(e) => handleCaptionChange(index, e.target.value)}
-                  className=" text-dark100_light500 py-1 mt-1 block w-full rounded-md border-gray-500 px-3 bg-transparent shadow-sm"
-                />
-              </div>
-            ))}
-          </div>
-          <div className="flex items-center">
-            <span className="text-sm text-primary-100">Add location</span>
-            <div className="mb-4 ml-auto">
-              <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
-              />
-            </div>
-          </div>
 
-          <div className="text-dark100_light500 flex items-center">
-            <span className="text-sm text-primary-100">Tag friends</span>
-            <div className="relative mb-4 ml-auto">
-              <button
-                type="button"
-                className="rounded bg-primary-100 px-4 py-2 text-white"
-                onClick={handleToggleFriendsDropdown}
-              >
-                Select Friends
-              </button>
-              <div
-                id="friendsDropdown"
-                className="background-light800_dark400 absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg shadow-lg"
-              >
-                {friends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-black/50"
-                    onClick={() => toggleTagFriend(friend)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={taggedFriends.some((f) => f._id === friend._id)}
-                      readOnly
-                      className="mr-2"
-                    />
-                    <Image
-                      width={40}
-                      height={40}
-                      src={friend?.avatar || "/assets/images/capy.jpg"}
-                      alt="Avatar"
-                      className="mr-2 size-10 rounded-full"
-                    />
-                    <span className="">
-                      {friend.firstName} {friend.lastName}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {taggedFriends.length > 0 && (
-            <div className="text-dark100_light500 mt-4">
-              <p className="text-sm text-gray-600">Tagged friends:</p>
-              <div className="flex flex-wrap">
-                {taggedFriends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="m-1 flex items-center rounded-full bg-primary-100 px-3 py-1 text-white"
-                  >
-                    <Image
-                      width={40}
-                      height={40}
-                      src={friend?.avatar || "/assets/images/capy.jpg"}
-                      alt="Avatar"
-                      className="mr-2 size-10 rounded-full"
-                    />
-                    {friend.firstName} {friend.lastName}
+            {/* Media Preview */}
+            <div className="grid grid-cols-2 gap-4">
+              {files.map((file, index) => (
+                <div key={index} className=" rounded-lg relative">
+                  <div className="w-full aspect-square relative">
+                    {file.type.startsWith("image") ? (
+                      <Image
+                        src={URL.createObjectURL(file)}
+                        alt={`media-${index}`}
+                        fill
+                        className="rounded-lg object-cover"
+                      />
+                    ) : (
+                      <video
+                        src={URL.createObjectURL(file)}
+                        controls
+                        className="w-full h-full object-cover rounded-lg"
+                      />
+                    )}
                     <button
-                      className="ml-2 text-sm"
-                      onClick={() => toggleTagFriend(friend)}
+                      type="button"
+                      onClick={() => handleDeleteFile(index)}
+                      className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1"
                     >
-                      ✖
+                      <Icon icon="ic:round-close" />
                     </button>
                   </div>
-                ))}
+                  <TextArea
+                    placeholder="Add notes to media"
+                    value={captions[index]}
+                    onChange={(e) => handleCaptionChange(index, e.target.value)}
+                    className="mt-2"
+                  />
+                </div>
+              ))}
+            </div>
+
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div>
+              <Button
+                title="+ Add media"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                size="small"
+                className="w-auto"
+              />
+            </div>
+
+            <div className="flex justify-between items-center ">
+              <TitleIcon
+                iconSrc="solar:users-group-rounded-linear"
+                content="Tag friends"
+              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() =>
+                    document
+                      .getElementById("friendsDropdown")
+                      ?.classList.toggle("hidden")
+                  }
+                  className="px-3 py-1 rounded text-sm"
+                >
+                  Select friends
+                </button>
+
+                <div
+                  id="friendsDropdown"
+                  className="hidden absolute right-0 top-full mt-2 background-light400_dark400 shadow-md rounded-md z-10 max-h-60 overflow-y-auto w-64"
+                >
+                  {friends.map((friend) => (
+                    <div
+                      key={friend._id}
+                      onClick={() => toggleTagFriend(friend)}
+                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-primary-100"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={taggedFriends.some(
+                          (f) => f._id === friend._id
+                        )}
+                        readOnly
+                        className="mr-2 text-primary-100"
+                      />
+                      <Image
+                        src={friend.avatar || "/assets/images/capy.jpg"}
+                        width={28}
+                        height={28}
+                        alt="avatar"
+                        className="rounded-full mr-2"
+                      />
+                      <span className="text-sm">
+                        {friend.firstName} {friend.lastName}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          )}
 
-          {error && <p className="text-red-500">{error}</p>}
-          <Button
-            type="submit"
-            className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
-            disabled={loading}
-          >
-            {loading ? "Creating..." : "Create Post"}
-          </Button>
-        </form>
-        <style jsx>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px; /* Độ rộng của thanh cuộn */
-            height: 6px; /* Độ cao của thanh cuộn ngang */
-          }
+            {/* Tagged friends display */}
+            <div className="flex flex-wrap gap-2">
+              {taggedFriends.map((friend) => (
+                <div key={friend._id}>
+                  <TagFriendCard
+                    avatar={friend.avatar}
+                    firstName={friend.firstName}
+                    lastName={friend.lastName}
+                    onClick={() => toggleTagFriend(friend)}
+                  />
+                </div>
+              ))}
+            </div>
 
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
-            border-radius: 10px; /* Bo góc */
-          }
+            {/* Location input */}
+            <div className="flex justify-between">
+              <TitleIcon
+                iconSrc="proicons:location"
+                content="Add location"
+                className="mt-4"
+              />
+              <div>
+                <Input
+                  placeholder="Select location"
+                  readOnly={false}
+                  cursor="Text"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-[166px]"
+                />
+              </div>
+            </div>
 
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
-          }
+            {/* Music line */}
+            <div className="flex items-center gap-2 text-primary-100 text-sm mb-6">
+              <Icon icon="mdi:music" />
+              Dung lam trái tim anh đau
+            </div>
 
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
-            border-radius: 10px;
-          }
-        `}</style>
+            {/* Error */}
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+
+            {/* Submit */}
+            <Button
+              size="large"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary-100 font-semibold py-2 rounded-md"
+            >
+              {loading ? "Creating..." : "Create Post"}
+            </Button>
+          </form>
+        </div>
       </div>
-      {/* </div> */}
     </>
   );
 };

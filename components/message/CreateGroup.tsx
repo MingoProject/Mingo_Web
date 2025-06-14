@@ -6,7 +6,6 @@ import { createPost } from "@/lib/services/post.service";
 import { PostCreateDTO } from "@/dtos/PostDTO";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
 import { createNotification } from "@/lib/services/notification.service";
-import { Button } from "../ui/button";
 import { useAuth } from "@/context/AuthContext";
 import {
   createGroup,
@@ -233,13 +232,13 @@ const CreateGroup = ({ onClose, me }: any) => {
               </div>
             )}
             {error && <p className="text-red-500">{error}</p>}
-            <Button
+            <button
               type="submit"
               className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
               disabled={loading}
             >
               {loading ? "Creating..." : "Create Group"}
-            </Button>
+            </button>
           </form>
         </div>
       </div>

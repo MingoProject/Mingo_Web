@@ -1,122 +1,84 @@
-import React, { useEffect, useState } from "react";
+"use client";
+
+import React, { useEffect, useRef, useState } from "react";
 import Image from "next/image";
-import { Button } from "../../ui/button";
 import { Icon } from "@iconify/react";
 import { editPost, getPostByPostId } from "@/lib/services/post.service";
 import { createMedia } from "@/lib/services/media.service";
 import { useAuth } from "@/context/AuthContext";
 import { getMyBffs, getMyFriends } from "@/lib/services/user.service";
+import NameCard from "@/components/cards/other/NameCard";
+import Button from "@/components/ui/button";
+import TextArea from "@/components/ui/textarea";
+import TitleIcon from "@/components/ui/titleIcon";
+import TagFriendCard from "@/components/cards/friend/TagFriendCard";
+import Input from "@/components/ui/input";
 
-const EditPost = ({
-  postId,
-  onClose,
-  setPostsData,
-}: {
-  postId: string;
-  onClose: () => void;
-  setPostsData: any;
-}) => {
+const EditPost = ({ postId, onClose, setPostsData }: any) => {
+  const { profile } = useAuth();
   const [privacy, setPrivacy] = useState("public");
   const [content, setContent] = useState("");
   const [location, setLocation] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [files, setFiles] = useState<File[]>([]);
-  const [existingMedia, setExistingMedia] = useState<any[]>([]);
   const [captions, setCaptions] = useState<string[]>([]);
+  const [existingMedia, setExistingMedia] = useState<any[]>([]);
   const [friends, setFriends] = useState<any[]>([]);
   const [taggedFriends, setTaggedFriends] = useState<any[]>([]);
-  const { profile } = useAuth();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    let isMounted = true;
+    getPostByPostId(postId).then((post) => {
+      setContent(post.content || "");
+      setLocation(post.location || "");
+      setPrivacy(post.privacy.type || "public");
+      setTaggedFriends(post.tags || []);
+      setExistingMedia(post.media || []);
+    });
+
     const fetchFriends = async () => {
-      try {
-        const friendsData = await getMyFriends(profile._id);
-        const bffsData = await getMyBffs(profile._id);
-        const combinedFriends = [...bffsData, ...friendsData];
-
-        const uniqueFriends = combinedFriends.filter(
-          (friend, index, self) =>
-            index === self.findIndex((f) => f._id === friend._id)
-        );
-
-        if (isMounted) {
-          setFriends(uniqueFriends);
-        }
-      } catch (error) {
-        console.error(error);
-      }
+      const friendsData = await getMyFriends(profile._id);
+      const bffsData = await getMyBffs(profile._id);
+      const combined = [...bffsData, ...friendsData];
+      const unique = combined.filter(
+        (f, i, arr) => i === arr.findIndex((x) => x._id === f._id)
+      );
+      setFriends(unique);
     };
+
     fetchFriends();
-
-    return () => {
-      isMounted = false;
-    };
-  }, [profile._id]);
-
-  useEffect(() => {
-    let isMounted = true;
-    const fetchPostDetails = async () => {
-      try {
-        const post = await getPostByPostId(postId); // Fetch existing post data
-        if (isMounted) {
-          setContent(post.content || "");
-          setLocation(post.location || "");
-          setPrivacy(post.privacy.type || "public");
-          setTaggedFriends(post.tags || []);
-          setExistingMedia(post.media || []);
-        }
-      } catch (err) {
-        console.error("Failed to fetch post details", err);
-        setError("Failed to load post details");
-      }
-    };
-
-    fetchPostDetails();
-    return () => {
-      isMounted = false;
-    };
-  }, [postId]);
+  }, [postId, profile._id]);
 
   const toggleTagFriend = (friend: any) => {
-    setTaggedFriends((prev) => {
-      if (prev.some((f) => f._id === friend._id)) {
-        return prev.filter((f) => f._id !== friend._id);
-      } else {
-        return [...prev, friend];
-      }
-    });
+    setTaggedFriends((prev) =>
+      prev.some((f) => f._id === friend._id)
+        ? prev.filter((f) => f._id !== friend._id)
+        : [...prev, friend]
+    );
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedFiles = e.target.files ? Array.from(e.target.files) : [];
-    setFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
-    setCaptions((prevCaptions) => [
-      ...prevCaptions,
-      ...selectedFiles.map(() => ""),
-    ]);
+    const selected = e.target.files ? Array.from(e.target.files) : [];
+    setFiles((prev) => [...prev, ...selected]);
+    setCaptions((prev) => [...prev, ...selected.map(() => "")]);
   };
-
-  // const handleCaptionChange = (index: number, value: string) => {
-  //   setCaptions((prev) => {
-  //     const updated = [...prev];
-  //     updated[index] = value;
-  //     return updated;
-  //   });
-  // };
 
   const handleCaptionChange = (index: number, value: string) => {
-    setExistingMedia((prev) => {
-      const updatedMedia = [...prev];
-      updatedMedia[index].caption = value; // Update caption for the specific media
-      return updatedMedia;
-    });
-  };
-
-  const handleDeleteFile = (index: number) => {
-    setFiles((prev) => prev.filter((_, i) => i !== index));
-    setCaptions((prev) => prev.filter((_, i) => i !== index));
+    if (index < existingMedia.length) {
+      setExistingMedia((prev) => {
+        const updated = [...prev];
+        updated[index].caption = value;
+        return updated;
+      });
+    } else {
+      const newIndex = index - existingMedia.length;
+      setCaptions((prev) => {
+        const updated = [...prev];
+        updated[newIndex] = value;
+        return updated;
+      });
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -127,368 +89,245 @@ const EditPost = ({
     const token = localStorage.getItem("token");
     if (!token) {
       setError("Authentication is required");
-      setLoading(false);
-      return;
+      return setLoading(false);
     }
 
     try {
-      console.log("Tagged friends before submitting: ", taggedFriends);
-      let mediaIds: string[] = existingMedia.map((media) => media._id);
+      let mediaIds = existingMedia.map((m) => m._id);
+      const uploads = await Promise.all(
+        files.map((file, i) => createMedia(file, captions[i], token))
+      );
+      mediaIds.push(...uploads.map((m) => m.media._id));
 
-      if (files.length > 0) {
-        const uploadPromises = files.map(async (file, index) => {
-          const caption = captions[index];
-          const uploadedMedia = await createMedia(file, caption, token);
-          return uploadedMedia.media._id;
-        });
-
-        const newMediaIds = await Promise.all(uploadPromises);
-        mediaIds = [...mediaIds, ...newMediaIds];
-      }
-
-      const postPayload = {
-        content: content || "",
-        media: mediaIds,
+      const payload = {
+        content,
         location,
-        tags: taggedFriends.map((friend) => friend._id),
-        privacy: {
-          type: privacy,
-        },
+        media: mediaIds,
+        tags: taggedFriends.map((f) => f._id),
+        privacy: { type: privacy },
       };
 
-      const updatedPost = await editPost(postPayload, postId, token);
-      setPostsData((prevPosts: any[]) =>
-        prevPosts.map((post) => {
-          if (post._id === updatedPost._id) {
-            return {
-              ...post,
-              media: updatedPost.media || post.media,
-              content: updatedPost.content || post.content,
-              likes: updatedPost.likes || post.likes,
-              author: updatedPost.author || post.author,
-              tags: updatedPost.tags || post.tags,
-              location: updatedPost.location || post.location,
-              privacy: updatedPost.privacy || post.privacy,
-            };
-          }
-          return post;
-        })
+      const updated = await editPost(payload, postId, token);
+      setPostsData((prev: any[]) =>
+        prev.map((p) => (p._id === updated._id ? updated : p))
       );
       alert("Post updated successfully!");
       onClose();
     } catch (err: any) {
-      console.error(err);
       setError(err.message || "Error updating post");
     } finally {
       setLoading(false);
     }
   };
 
-  const handleToggleFriendsDropdown = (
-    e: React.MouseEvent<HTMLButtonElement>
-  ) => {
-    e.preventDefault();
-    document.getElementById("friendsDropdown")?.classList.toggle("hidden");
-  };
-
   return (
     <>
-      <div
-        className="fixed inset-0 z-50 bg-black opacity-50"
-        onClick={onClose}
-      />
-      {/* <div className="fixed inset-0 z-50 flex items-center justify-center"> */}
-      <div className="background-light700_dark300 overflow-auto max-h-[90vh] h-[700px] custom-scrollbar mt-10 fixed inset-0 z-50 mx-auto rounded-md py-6 shadow-md lg:w-1/2">
-        <div className="flex pr-5">
-          <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-            Edit post
+      <div className="fixed inset-0 z-40 bg-black/50" onClick={onClose} />
+      <div className="fixed inset-0 z-50 flex justify-center items-center">
+        <div className="background-light200_dark200 text-dark100_light100 w-full max-w-2xl max-h-[78vh] overflow-y-auto rounded-lg py-6 shadow-lg custom-scrollbar">
+          <div className="flex items-center justify-between pr-5 mb-4">
+            <NameCard name="Edit Post" />
+            <Icon
+              icon="ic:round-close"
+              className="cursor-pointer size-6"
+              onClick={onClose}
+            />
           </div>
-          <Icon
-            icon="ic:round-close"
-            className="text-dark100_light500 ml-auto size-8"
-            onClick={onClose}
-          />
-        </div>
-        <div className="my-7 mb-4 flex items-center px-6">
-          <Image
-            width={40}
-            height={40}
-            src={profile?.avatar || "/assets/images/capy.jpg"}
-            alt="Avatar"
-            className="mr-2 size-10 rounded-full"
-          />
-          <div>
-            <span className="text-dark100_light500">
+
+          <div className="flex items-center px-5 gap-3 mb-3">
+            <Image
+              src={profile?.avatar || "/assets/images/capy.jpg"}
+              width={40}
+              height={40}
+              alt="Avatar"
+              className="rounded-full object-cover size-10"
+            />
+            <span className="font-semibold">
               {profile?.firstName} {profile?.lastName}
             </span>
-            <div></div>
           </div>
-        </div>
 
-        <form onSubmit={handleSubmit} className="mx-6">
-          <div className="mb-4">
-            <textarea
+          <form onSubmit={handleSubmit} className="px-5 flex flex-col gap-5">
+            <TextArea
+              placeholder="Write something..."
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              placeholder="What's on your mind?"
-              className="text-dark100_light500 h-16 w-full bg-transparent p-2"
             />
-          </div>
-          <div className="">
-            <label
-              htmlFor="file"
-              className="block  text-sm font-medium text-primary-100"
-            >
-              Select media
-            </label>
-            <input
-              type="file"
-              id="file"
-              accept="image/*,video/*"
-              multiple
-              onChange={handleFileChange}
-              className="text-dark100_light500 mt-1 block w-full bg-transparent"
-            />
-            {/* Hiển thị các media có sẵn */}
-            {existingMedia.length > 0 && (
-              <div className="">
-                {existingMedia.map((media, index) => (
-                  <>
-                    <div
-                      key={index}
-                      className="mt-2 flex items-center space-x-4"
-                    >
-                      <div className="relative">
-                        {/* <Image
-                          src={media.url}
-                          alt={`Existing Media ${index + 1}`}
-                          width={100}
-                          height={100}
-                          className="size-20 rounded-lg object-cover"
-                        /> */}
-                        {media.type === "video" ? (
-                          <video
-                            controls
-                            className="size-20 rounded-lg object-cover"
-                            width={100}
-                            height={100}
-                          >
-                            <source src={media.url} type="video/mp4" />
-                            Your browser does not support the video tag.
-                          </video>
-                        ) : (
-                          <Image
-                            src={media.url}
-                            alt={`Existing Media ${index + 1}`}
-                            width={100}
-                            height={100}
-                            className="size-20 rounded-lg object-cover"
-                          />
-                        )}
-                        <button
-                          type="button"
-                          className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
-                          onClick={() =>
+
+            <div className="flex overflow-x-auto gap-4 custom-scrollbar py-2">
+              {[...existingMedia, ...files].map((media, index) => {
+                const isExisting = index < existingMedia.length;
+                const src = isExisting ? media.url : URL.createObjectURL(media);
+                const type = isExisting ? media.type : media.type;
+
+                return (
+                  <div
+                    key={index}
+                    className="min-w-[200px] max-w-[200px] flex-shrink-0"
+                  >
+                    <div className="w-full aspect-square relative rounded-lg overflow-hidden">
+                      {type.startsWith("image") ? (
+                        <Image
+                          src={src}
+                          alt="media"
+                          fill
+                          className="object-cover"
+                        />
+                      ) : (
+                        <video
+                          src={src}
+                          controls
+                          className="w-full h-full object-cover"
+                        />
+                      )}
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (isExisting) {
                             setExistingMedia((prev) =>
                               prev.filter((_, i) => i !== index)
-                            )
+                            );
+                          } else {
+                            const idx = index - existingMedia.length;
+                            setFiles((prev) =>
+                              prev.filter((_, i) => i !== idx)
+                            );
+                            setCaptions((prev) =>
+                              prev.filter((_, i) => i !== idx)
+                            );
                           }
-                        >
-                          <Icon icon="ic:round-close" className="text-white" />
-                        </button>
-                      </div>
-                      {/* <input
-                        type="text"
-                        placeholder="Caption"
-                        value={media.caption}
-                        onChange={(e) =>
-                          handleCaptionChange(index, e.target.value)
-                        }
-                        className=" text-dark100_light500 mt-1 block w-full rounded-md border-gray-300 bg-transparent shadow-sm"
-                      /> */}
-                      <input
-                        type="text"
-                        placeholder="Caption"
-                        value={media.caption} // Use the updated caption from existing media
-                        onChange={(e) =>
-                          handleCaptionChange(index, e.target.value)
-                        } // Update the caption
-                        className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
-                      />
+                        }}
+                        className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 z-10"
+                      >
+                        <Icon icon="ic:round-close" />
+                      </button>
                     </div>
-                  </>
-                ))}
-              </div>
-            )}
-
-            {/* Thêm media mới */}
-
-            {files.map((file, index) => (
-              <div key={index} className="mt-2 flex items-center space-x-4">
-                <div className="relative">
-                  {/* <Image
-                    src={URL.createObjectURL(file)}
-                    alt={`Preview ${file.name}`}
-                    width={100}
-                    height={100}
-                    className="size-20 rounded-lg object-cover"
-                  /> */}
-                  {file.type.startsWith("video") ? (
-                    <video
-                      controls
-                      className="size-20 rounded-lg object-cover"
-                      width={100}
-                      height={100}
-                    >
-                      <source
-                        src={URL.createObjectURL(file)}
-                        type={file.type}
-                      />
-                      Your browser does not support the video tag.
-                    </video>
-                  ) : (
-                    <Image
-                      src={URL.createObjectURL(file)}
-                      alt={`Preview ${file.name}`}
-                      width={100}
-                      height={100}
-                      className="size-20 rounded-lg object-cover"
+                    <TextArea
+                      placeholder="Add notes to media"
+                      value={
+                        isExisting
+                          ? media.caption
+                          : captions[index - existingMedia.length] || ""
+                      }
+                      onChange={(e) =>
+                        handleCaptionChange(index, e.target.value)
+                      }
+                      className="mt-2"
                     />
-                  )}
-                  <button
-                    type="button"
-                    className="absolute right-0 top-0 rounded-full bg-primary-100 p-1 text-white"
-                    onClick={() => handleDeleteFile(index)}
-                  >
-                    <Icon icon="ic:round-close" className="text-white" />
-                  </button>
-                </div>
-                <input
-                  type="text"
-                  placeholder="Caption"
-                  value={captions[index]}
-                  onChange={(e) => handleCaptionChange(index, e.target.value)}
-                  className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
-                />
-              </div>
-            ))}
-          </div>
+                  </div>
+                );
+              })}
+            </div>
 
-          <div className="flex items-center">
-            <span className="text-sm text-primary-100">Add location</span>
-            <div className="mb-4 ml-auto">
-              <input
-                type="text"
-                placeholder="Location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                className="text-dark100_light500 w-full rounded border border-gray-300 bg-transparent p-2"
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            <div>
+              <Button
+                title="+ Add media"
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                size="small"
+                className="w-auto"
               />
             </div>
-          </div>
 
-          <div className="text-dark100_light500 flex items-center">
-            <span className="text-sm text-primary-100">Tag friends</span>
-            <div className="relative mb-4 ml-auto">
-              <button
-                type="button"
-                className="rounded bg-primary-100 px-4 py-2 text-white"
-                onClick={handleToggleFriendsDropdown}
-              >
-                Select Friends
-              </button>
-              <div
-                id="friendsDropdown"
-                className="background-light800_dark400 absolute right-0 z-10 mt-2 hidden max-h-64 w-64 overflow-y-auto rounded-lg shadow-lg"
-              >
-                {friends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="flex cursor-pointer items-center px-4 py-2 hover:bg-gray-100 dark:hover:bg-black/50"
-                    onClick={() => toggleTagFriend(friend)}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={taggedFriends.some((f) => f._id === friend._id)}
-                      readOnly
-                      className="mr-2"
-                    />
-                    <Image
-                      width={40}
-                      height={40}
-                      src={friend?.avatar || "/assets/images/capy.jpg"}
-                      alt="Avatar"
-                      className="mr-2 size-10 rounded-full"
-                    />
-                    <span className="">
-                      {friend.firstName} {friend.lastName}
-                    </span>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {taggedFriends.length > 0 && (
-            <div className="text-dark100_light500 mt-4">
-              <p className="text-sm text-gray-600">Tagged friends:</p>
-              <div className="flex flex-wrap">
-                {taggedFriends.map((friend) => (
-                  <div
-                    key={friend._id}
-                    className="m-1 flex items-center rounded-full bg-primary-100 px-3 py-1 text-white"
-                  >
-                    <Image
-                      width={40}
-                      height={40}
-                      src={friend?.avatar || "/assets/images/capy.jpg"}
-                      alt="Avatar"
-                      className="mr-2 size-10 rounded-full"
-                    />
-                    {friend.firstName} {friend.lastName}
-                    <button
-                      className="ml-2 text-sm"
+            <div className="flex justify-between items-center">
+              <TitleIcon
+                iconSrc="solar:users-group-rounded-linear"
+                content="Tag friends"
+              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() =>
+                    document
+                      .getElementById("friendsDropdown")
+                      ?.classList.toggle("hidden")
+                  }
+                  className="px-3 py-1 rounded text-sm"
+                >
+                  Select friends
+                </button>
+                <div
+                  id="friendsDropdown"
+                  className="hidden right-0 absolute background-light400_dark400 shadow-md rounded-md z-10 max-h-60 overflow-y-auto w-64"
+                >
+                  {friends.map((friend) => (
+                    <div
+                      key={friend._id}
                       onClick={() => toggleTagFriend(friend)}
+                      className="flex items-center px-4 py-2 cursor-pointer hover:bg-gray-100"
                     >
-                      ✖
-                    </button>
-                  </div>
-                ))}
+                      <input
+                        type="checkbox"
+                        checked={taggedFriends.some(
+                          (f) => f._id === friend._id
+                        )}
+                        readOnly
+                        className="mr-2"
+                      />
+                      <Image
+                        src={friend.avatar || "/assets/images/capy.jpg"}
+                        width={28}
+                        height={28}
+                        alt="avatar"
+                        className="rounded-full mr-2"
+                      />
+                      <span className="text-sm">
+                        {friend.firstName} {friend.lastName}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          )}
 
-          {error && <p className="text-red-500">{error}</p>}
-          <Button
-            type="submit"
-            className="mt-10 w-full rounded bg-primary-100 p-2 text-white"
-            disabled={loading}
-          >
-            {loading ? "Updating..." : "Update Post"}
-          </Button>
-        </form>
-        <style jsx>{`
-          .custom-scrollbar::-webkit-scrollbar {
-            width: 6px; /* Độ rộng của thanh cuộn */
-            height: 6px; /* Độ cao của thanh cuộn ngang */
-          }
+            <div className="flex flex-wrap gap-2">
+              {taggedFriends.map((friend) => (
+                <TagFriendCard
+                  key={friend._id}
+                  avatar={friend.avatar}
+                  firstName={friend.firstName}
+                  lastName={friend.lastName}
+                  onClick={() => toggleTagFriend(friend)}
+                />
+              ))}
+            </div>
 
-          .custom-scrollbar::-webkit-scrollbar-thumb {
-            background-color: rgba(100, 100, 100, 0.8); /* Màu của thanh cuộn */
-            border-radius: 10px; /* Bo góc */
-          }
+            <div className="flex justify-between items-center">
+              <TitleIcon
+                iconSrc="proicons:location"
+                content="Add location"
+                className="mt-4"
+              />
+              <div>
+                <Input
+                  placeholder="Select location"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  className="w-[166px]"
+                />
+              </div>
+            </div>
 
-          .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-            background-color: rgba(80, 80, 80, 1); /* Màu khi hover */
-          }
-
-          .custom-scrollbar::-webkit-scrollbar-track {
-            background-color: rgba(230, 230, 230, 0.5); /* Màu nền track */
-            border-radius: 10px;
-          }
-        `}</style>
+            {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
+            <Button
+              size="large"
+              type="submit"
+              disabled={loading}
+              className="w-full bg-primary-100 font-semibold py-2 rounded-md"
+            >
+              {loading ? "Updating..." : "Update Post"}
+            </Button>
+          </form>
+        </div>
       </div>
-      {/* </div> */}
     </>
   );
 };

@@ -1,12 +1,11 @@
 "use client";
-import Navbar from "@/components/shared/navbar/Navbar";
-import { ChatItemProvider } from "@/context/ChatItemContext";
 import React, { useEffect } from "react";
 import { IsOffline, IsOnline } from "@/lib/services/message.service";
 import { useChatItemContext } from "@/context/ChatItemContext";
 import { useChatContext } from "@/context/ChatContext";
 import { pusherClient } from "@/lib/pusher";
 import { OnlineEvent } from "@/dtos/MessageDTO";
+import Navbar from "@/components/shared/navbar/Navbar";
 import CallNotification from "@/components/message/CallNotification";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   const checkOnlineStatus = async () => {
@@ -73,11 +72,11 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
     });
   });
   return (
-    <main className="background-light800_dark400 relative h-full">
+    <main className="background-light500_dark500 relative h-full">
       <Navbar />
-      <div className=" background-light800_dark400 flex h-full">
-        <section className=" background-light800_dark400 flex flex-1 flex-col">
-          <div className=" background-light800_dark400 mx-auto size-full">
+      <div className="background-light500_dark500 flex h-full">
+        <section className="background-light500_dark500 flex flex-1 flex-col">
+          <div className="background-light500_dark500 mx-auto size-full">
             {children}
           </div>
           <CallNotification />

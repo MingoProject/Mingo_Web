@@ -3,7 +3,6 @@ import {
   CreateCommentDTO,
   UpdateCommentDTO,
 } from "@/dtos/CommentDTO";
-import { UserResponseDTO } from "@/dtos/UserDTO";
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
 
@@ -87,7 +86,7 @@ export async function createReplyCommentPost(
 export async function createReplyCommentMedia(
   params: CreateCommentDTO,
   token: string,
-  mediaId: string
+  mediaId: string | undefined
 ): Promise<CommentResponseDTO> {
   try {
     const response = await fetch(
@@ -111,25 +110,6 @@ export async function createReplyCommentMedia(
     return data;
   } catch (error) {
     console.error("Failed to create comment:", error);
-    throw error;
-  }
-}
-
-export async function getAuthorByCommentId(
-  commentId: String
-): Promise<UserResponseDTO> {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/comment/get-author?commentId=${commentId}`
-    );
-    if (!response.ok) {
-      throw new Error("Error fetching author by commentId");
-    }
-    const data = await response.json();
-    // console.log(data);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch author by commentId:", error);
     throw error;
   }
 }
@@ -345,25 +325,6 @@ export async function dislikeComment(commentId: string, token: string) {
   }
 }
 
-export async function getLikesByCommentId(
-  commentId: String
-): Promise<UserResponseDTO[]> {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/comment/get-likes?commentId=${commentId}`
-    );
-    if (!response.ok) {
-      throw new Error("Error fetching likes by commentId");
-    }
-    const data = await response.json();
-    // console.log(data);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch likes by commentId:", error);
-    throw error;
-  }
-}
-
 export async function createCommentMedia(
   params: CreateCommentDTO,
   token: string,
@@ -421,23 +382,6 @@ export async function deleteCommentMedia(
     return data;
   } catch (error) {
     console.error("Failed to delete comment:", error);
-    throw error;
-  }
-}
-
-export async function getRepliesByCommentId(commentId: String) {
-  try {
-    const response = await fetch(
-      `${BASE_URL}/comment/get-replies?commentId=${commentId}`
-    );
-    if (!response.ok) {
-      throw new Error("Error fetching replies by commentId");
-    }
-    const data = await response.json();
-    console.log("replies", data);
-    return data;
-  } catch (error) {
-    console.error("Failed to fetch replies by commentId:", error);
     throw error;
   }
 }

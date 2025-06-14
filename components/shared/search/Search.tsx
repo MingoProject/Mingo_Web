@@ -2,6 +2,8 @@
 import { Icon } from "@iconify/react/dist/iconify.js";
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation"; // Thay đổi import
+import Input from "@/components/ui/input";
+import NameCard from "@/components/cards/other/NameCard";
 
 const recentSearches = ["h", "a", "u", "y", "1"];
 
@@ -10,10 +12,6 @@ const Search = ({ closeDrawer }: any) => {
   const router = useRouter();
   const [filteredSearches, setFilteredSearches] =
     useState<string[]>(recentSearches);
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchTerm(e.target.value);
-  };
 
   const handleDeleteSearch = (search: string) => {
     setFilteredSearches((prevSearches) =>
@@ -43,27 +41,41 @@ const Search = ({ closeDrawer }: any) => {
 
   return (
     <>
-      <div className="flex h-[39px] w-[186px] items-center justify-center rounded-r-lg border border-primary-100 bg-primary-100 text-white">
-        Search
+      <div className="flex justify-between items-center mr-10">
+        <NameCard name="Search" />
+        <Icon
+          icon="mingcute:close-line"
+          className="text-dark100_light100  text-[20px]"
+          onClick={closeDrawer}
+        />
       </div>
-      <div className="p-6">
-        <div className="mb-4 flex items-center">
-          <input
-            type="text"
+
+      <div className="px-10 py-5 flex flex-col gap-[15px]">
+        <div>
+          <Input
+            iconSrc="iconoir:search"
+            placeholder="search"
+            readOnly={false}
+            cursor="text"
             value={searchTerm}
-            onChange={handleInputChange}
-            placeholder="Search..."
-            className="text-dark100_light500 h-10 grow rounded-l-lg border border-primary-100 bg-transparent px-4 focus:outline-none focus:ring"
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                handleSearch();
+              }
+            }}
           />
-          <button
-            className="h-10 rounded-r-lg bg-primary-100 px-4 text-white"
-            onClick={handleSearch}
-          >
-            Search
-          </button>
         </div>
 
-        <h2 className="mb-2 text-lg font-normal text-primary-100">Recently</h2>
+        <div className="flex items-center justify-between">
+          <span className=" text-[14px] font-semibold text-dark100_light100">
+            Recently
+          </span>
+          <span className=" text-[14px] font-normal text-primary-100 hover:underline cursor-pointer">
+            Clear all
+          </span>
+        </div>
+
         <ul className="space-y-1">
           {filteredSearches.length > 0 ? (
             filteredSearches.map((search, index) => (
@@ -71,14 +83,21 @@ const Search = ({ closeDrawer }: any) => {
                 key={index}
                 className="flex cursor-pointer items-center justify-between rounded-md px-5 py-2 hover:bg-light-700 dark:hover:bg-dark-400"
               >
-                <span className="text-dark100_light500">{search}</span>
-                <button onClick={() => handleDeleteSearch(search)}>
-                  <Icon icon="mdi:close" className="text-dark100_light500" />
-                </button>
+                <span className="text-dark100_light100 text-[16px] font-normal">
+                  {search}
+                </span>
+
+                <div className="p-[7px] background-light400_dark400 rounded-full">
+                  <Icon
+                    icon="mdi:close"
+                    className="text-primary-100 size-[20px]"
+                    onClick={() => handleDeleteSearch(search)}
+                  />
+                </div>
               </li>
             ))
           ) : (
-            <p className="text-dark100_light500">No results found</p>
+            <p className="text-dark100_light100">No results found</p>
           )}
         </ul>
       </div>

@@ -138,7 +138,7 @@ export const AudioCall = () => {
   }
   return (
     <div>
-      <div className="absolute w-[900px] h-[600px] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-start pt-20 z-50 bg-slate-200 rounded-md">
+      <div className="absolute w-full h-full top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-start pt-20 z-50 bg-slate-200 rounded-md">
         <div className="flex flex-col gap-8 ">
           <Image
             src={otherUser?.profile?.avatar || "/assets/images/capy.jpg"}
@@ -147,12 +147,17 @@ export const AudioCall = () => {
             height={100}
             className="size-28 rounded-full object-cover"
           />
-          <div className="call-info text-center ">
+          <div className="call-info text-center flex justify-center flex-col items-center">
             <h3 className="text-xl font-semibold">
-              {ongoingCall?.participants?.receiver?.profile.firstName ??
-                "Unknown User"}
+              {ongoingCall?.participants?.receiver?.profile?.firstName &&
+              ongoingCall?.participants?.receiver?.profile?.lastName
+                ? `${ongoingCall.participants.receiver.profile.firstName} ${ongoingCall.participants.receiver.profile.lastName}`
+                : "Unknown User"}
             </h3>
-            <p className="text-gray-500 mt-8">Audio call in progress</p>
+
+            <div className="flex items-center text-sm text-black  bg-opacity-50 px-3 py-1 rounded-xl">
+              <span>{formatDuration(callDuration)}</span>
+            </div>
           </div>
         </div>
       </div>
@@ -206,10 +211,6 @@ export const AudioCall = () => {
             />
           )}
         </button>
-        <div className="flex items-center gap-2 text-sm text-white bg-black bg-opacity-50 px-3 py-1 rounded-xl">
-          <Icon icon="mdi:clock-time-four-outline" width={18} height={18} />
-          <span>{formatDuration(callDuration)}</span>
-        </div>
       </div>
     </div>
   );
