@@ -48,7 +48,7 @@ const UpdateInformation = ({
     firstName: user?.firstName || "",
     lastName: user?.lastName || "",
     nickName: user?.nickName || "",
-    gender: user?.gender || false,
+    gender: user?.gender === true ? "true" : "false",
     job: user?.job || "",
     address: user?.address || "",
     relationShip: user?.relationShip || "",
@@ -86,7 +86,7 @@ const UpdateInformation = ({
           firstName: formValues.firstName,
           lastName: formValues.lastName,
           nickName: formValues.nickName,
-          gender: formValues.gender,
+          gender: formValues.gender === "true",
           job: formValues.job,
           hobbies: selectedHobbies,
           address: formValues.address,
@@ -139,12 +139,14 @@ const UpdateInformation = ({
           </div> */}
           <InputTitle
             label="First Name"
+            name="firstName"
             placeholder="Enter your first name"
             value={formValues.firstName}
             onChange={handleChange}
           />
           <InputTitle
             label="Last Name"
+            name="lastName"
             placeholder="Enter your last name"
             value={formValues.lastName}
             onChange={handleChange}
@@ -152,12 +154,18 @@ const UpdateInformation = ({
         </div>
         <div className="mt-4 flex space-x-4 px-5">
           <SelectTitle
+            name="gender"
             label="Gender"
-            value={formValues.gender ? "true" : "false"}
+            value={formValues.gender}
             onChange={handleChange}
-            options={["Male", "Female"]}
+            options={[
+              { label: "Male", value: "true" },
+              { label: "Female", value: "false" },
+            ]}
           />
+
           <InputTitle
+            name="nickName"
             label="Nickname"
             placeholder="Enter your nickname"
             value={formValues.nickName}
@@ -169,6 +177,7 @@ const UpdateInformation = ({
           <div className="block space-y-4">
             <InputTitle
               label="Job"
+              name="job"
               placeholder="Enter your job"
               value={formValues.job}
               onChange={handleChange}
@@ -176,6 +185,7 @@ const UpdateInformation = ({
             {/* Address */}
             <InputTitle
               label="Address"
+              name="address"
               placeholder="Enter your address"
               value={formValues.address}
               onChange={handleChange}
@@ -185,19 +195,21 @@ const UpdateInformation = ({
           <div className="flex space-x-4">
             <SelectTitle
               label="Relationship"
+              name="relationShip"
               value={formValues.relationShip}
               onChange={handleChange}
-              name="relationShip"
               options={[
-                "Single",
-                "In a relationship",
-                "Married",
-                "Divorced",
-                "Widowed",
+                { label: "Single", value: "Single" },
+                { label: "In a relationship", value: "In a relationship" },
+                { label: "Married", value: "Married" },
+                { label: "Divorced", value: "Divorced" },
+                { label: "Widowed", value: "Widowed" },
               ]}
             />
+
             <DatePickerTitle
               label="Date of birth"
+              name="birthDay"
               value={formValues.birthDay}
               onChange={handleChange}
             />

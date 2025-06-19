@@ -1,4 +1,5 @@
 import Button from "@/components/ui/button";
+import { FriendResponseDTO } from "@/dtos/FriendDTO";
 import { NotificationResponseDTO } from "@/dtos/NotificationDTO";
 import {
   acceptAddFriend,
@@ -17,12 +18,14 @@ interface FriendRequestActionProps {
   setNotifications?: React.Dispatch<
     React.SetStateAction<NotificationResponseDTO[]>
   >;
+  setInvitations: React.Dispatch<React.SetStateAction<FriendResponseDTO[]>>;
 }
 
 const FriendRequestAction: React.FC<FriendRequestActionProps> = ({
   senderId,
   receiverId,
   setNotifications,
+  setInvitations,
 }: FriendRequestActionProps) => {
   const handleRefuseFriend = async () => {
     try {
@@ -50,6 +53,7 @@ const FriendRequestAction: React.FC<FriendRequestActionProps> = ({
         },
         token
       );
+      setInvitations?.((prev) => prev.filter((inv) => inv._id !== senderId));
 
       await deleteNotification(notification._id, token);
 
@@ -97,6 +101,8 @@ const FriendRequestAction: React.FC<FriendRequestActionProps> = ({
         },
         token
       );
+
+      setInvitations?.((prev) => prev.filter((inv) => inv._id !== senderId));
 
       await deleteNotification(notification._id, token);
 

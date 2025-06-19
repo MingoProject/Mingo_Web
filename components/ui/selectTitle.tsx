@@ -7,7 +7,7 @@ interface SelectTitleProps {
   label: string;
   value: string;
   onChange: (e: React.ChangeEvent<HTMLSelectElement>) => void;
-  options: string[];
+  options: { label: string; value: string }[];
   name?: string;
   className?: string;
   placeholder?: string;
@@ -38,8 +38,8 @@ const SelectTitle: React.FC<SelectTitleProps> = ({
             {placeholder}
           </option>
           {options.map((opt, idx) => (
-            <option key={idx} value={opt}>
-              {opt}
+            <option key={idx} value={opt.value}>
+              {opt.label}
             </option>
           ))}
         </select>

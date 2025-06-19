@@ -28,7 +28,7 @@ const HeaderMessageContent = ({
   const [isOnlineUser, setIsOnlineUser] = useState("");
   const router = useRouter();
   const params = useParams();
-  const boxId = params.id?.toString();
+  const boxId = params?.id?.toString();
   useEffect(() => {
     const fetchProfile = async () => {
       try {
@@ -47,11 +47,11 @@ const HeaderMessageContent = ({
     fetchProfile();
   }, [item, item?.receiverId]);
 
-  if (!onlineUsers) {
-    console.warn("onlineUsers is undefined");
-    return;
-  }
-  const onlineUser = onlineUsers.find(
+  // if (!onlineUsers) {
+  //   console.warn("onlineUsers is undefined");
+  //   return;
+  // }
+  const onlineUser = onlineUsers?.find(
     (user) => user?.userId?.toString() === isOnlineUser.toString()
   );
 

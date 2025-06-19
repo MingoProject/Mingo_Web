@@ -8,11 +8,13 @@ import React from "react";
 interface FriendRequestCardProps {
   follower: FriendResponseDTO;
   profileBasic: UserBasicInfo;
+  setInvitations: React.Dispatch<React.SetStateAction<FriendResponseDTO[]>>;
 }
 
 const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
   follower,
   profileBasic,
+  setInvitations,
 }) => {
   return (
     <div className="background-light200_dark200 rounded-[10px] py-[15px] px-[13px] shadow-subtle w-full flex flex-col">
@@ -60,6 +62,7 @@ const FriendRequestCard: React.FC<FriendRequestCardProps> = ({
             <FriendRequestAction
               senderId={follower._id}
               receiverId={profileBasic._id}
+              setInvitations={setInvitations}
             />
           </div>
         </div>

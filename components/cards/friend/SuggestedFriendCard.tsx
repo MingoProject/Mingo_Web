@@ -1,16 +1,45 @@
+import { useAuth } from "@/context/AuthContext";
 import { FriendResponseDTO } from "@/dtos/FriendDTO";
+import { requestAddFriend } from "@/lib/services/friend.service";
 import { Icon } from "@iconify/react/dist/iconify.js";
 import Image from "next/image";
 import Link from "next/link";
-import React from "react";
+import React, { useState } from "react";
 
 interface SuggestedFriendCardProps {
   suggestedFriend: FriendResponseDTO;
+  setSuggestedFriends: React.Dispatch<
+    React.SetStateAction<FriendResponseDTO[]>
+  >;
 }
 
 const SuggestedFriendCard: React.FC<SuggestedFriendCardProps> = ({
   suggestedFriend,
+  setSuggestedFriends,
 }) => {
+  const [isRequested, setIsRequested] = useState(false);
+  const { profile } = useAuth();
+  const handleAddFriend = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token || !profile?._id) return;
+
+      await requestAddFriend(
+        {
+          sender: profile._id,
+          receiver: suggestedFriend._id,
+        },
+        token
+      );
+
+      setIsRequested(true);
+      setSuggestedFriends((prev) =>
+        prev.filter((f) => f._id !== suggestedFriend._id)
+      );
+    } catch (error) {
+      console.error("Add friend failed:", error);
+    }
+  };
   return (
     <div className="background-light200_dark200 rounded-[10px] py-[15px] px-[13px] shadow-subtle w-full flex flex-col">
       <div className="flex gap-[10px] ">
@@ -51,11 +80,25 @@ const SuggestedFriendCard: React.FC<SuggestedFriendCardProps> = ({
               </p>
             </div>
           </div>
-          <div className="pl-[9px] pr-[5px] py-[7px] background-light400_dark400 rounded-full">
-            <Icon
-              icon="solar:user-plus-broken"
-              className="text-primary-100 size-[20px] cursor-pointer"
-            />
+          <div
+            className="pl-[9px] pr-[5px] py-[7px] background-light400_dark400 rounded-full cursor-pointer"
+            onClick={handleAddFriend}
+          >
+            {isRequested ? (
+              <Icon
+                icon="mingcute:user-follow-2-line"
+                width={24}
+                height={24}
+                className="text-green-500"
+              />
+            ) : (
+              <Icon
+                icon="solar:user-plus-broken"
+                width={20}
+                height={20}
+                className="text-primary-100"
+              />
+            )}
           </div>
         </div>
       </div>

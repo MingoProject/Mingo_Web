@@ -337,7 +337,7 @@ const RelationModal = ({ relation, onClose, id, setRelation }: any) => {
 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
-      <div className="text-dark100_light500 background-light700_dark300 w-[300px] rounded-md  p-5 shadow-md">
+      <div className="text-dark100_light100 background-light200_dark200 w-[300px] rounded-md  p-5 shadow-md">
         <h2 className="text-lg font-semibold">Relationship options</h2>
         <div className="mt-4 space-y-2">{renderOptions()}</div>
         <button onClick={onClose} className="mt-4 text-blue-500">
