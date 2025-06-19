@@ -3,7 +3,6 @@ import PostsCard from "@/components/cards/post/PostCard";
 import NoResult from "@/components/shared/NoResult";
 import OpenCreatePost from "../../../shared/post/OpenCreatePost";
 import RenderFriend from "./RenderFriend";
-import FilterPost from "../../FilterPost";
 import { PostResponseDTO } from "@/dtos/PostDTO";
 import { getMyPosts } from "@/lib/services/user.service";
 import Images from "../../../shared/user/Images";

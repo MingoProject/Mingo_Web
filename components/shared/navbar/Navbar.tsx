@@ -11,9 +11,12 @@ import SettingModal from "./SettingModal";
 import { useAuth } from "@/context/AuthContext";
 import Notification from "../notification/Notification";
 import NavbarTab from "@/components/ui/navbarTab";
+import Button from "@/components/ui/button";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const [isDrawerOpen, setDrawerOpen] = useState(false);
   const [activeDrawer, setActiveDrawer] = useState("");
   const [loading, setLoading] = useState<boolean>(true);
@@ -60,6 +63,10 @@ const Navbar = () => {
     setActiveDrawer("");
   };
 
+  const handleNavigateToSignIn = () => {
+    router.push("/sign-in");
+  };
+
   if (loading) return <div className="mt-96">Loading...</div>;
   if (error) return <div className="mt-96">Error: {error}</div>;
 
@@ -99,11 +106,11 @@ const Navbar = () => {
         {profile ? (
           <SettingModal profile={profile} logout={logout} />
         ) : (
-          <Link href="/sign-in">
-            <button className="rounded bg-primary-100 px-4 py-2 text-white">
-              Login
-            </button>
-          </Link>
+          <Button
+            title="Sign In"
+            size="small"
+            onClick={() => handleNavigateToSignIn()}
+          />
         )}
       </div>
 
